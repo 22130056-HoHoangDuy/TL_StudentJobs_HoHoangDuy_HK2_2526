@@ -20,8 +20,8 @@ fun AppNavGraph(viewModel: AuthViewModel) {
     val context = LocalContext.current
     val prefs = AppPreferences(context)
 
-    // 👉 DEBUG MODE
-    val DEBUG_ALWAYS_SHOW_ONBOARDING = true
+    // DEBUG MODE
+    val DEBUG_ALWAYS_SHOW_ONBOARDING = false
 
     val startDestination = when {
         DEBUG_ALWAYS_SHOW_ONBOARDING -> "onboarding"
