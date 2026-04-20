@@ -5,13 +5,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.studentjobs.app.data.model.User
 import com.studentjobs.app.utils.UiState
 import com.studentjobs.app.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel,
-    onLoginSuccess: () -> Unit = {},
+    onLoginSuccess: (User) -> Unit = {},
     onNavigateToRegister: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
@@ -71,21 +72,23 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (state) {
+        when (val currentState = state) {
+
             is UiState.Loading -> {
                 CircularProgressIndicator()
             }
 
-            is UiState.Success -> {
-                // Điều hướng sang Home
-                LaunchedEffect(Unit) {
-                    onLoginSuccess()
+            is UiState.Success<*> -> {
+                val user = currentState.data as User
+
+                LaunchedEffect(user.uid) {
+                    onLoginSuccess(user)
                 }
             }
 
             is UiState.Error -> {
                 Text(
-                    text = (state as UiState.Error).message,
+                    text = currentState.message,
                     color = MaterialTheme.colorScheme.error
                 )
             }

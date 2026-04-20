@@ -2,6 +2,7 @@ package com.studentjobs.app.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.studentjobs.app.data.model.User
 import com.studentjobs.app.data.repository.AuthRepository
 import com.studentjobs.app.utils.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +25,14 @@ class AuthViewModel(
 
             val result = repository.login(email, password)
 
-            _loginState.value = if (result.isSuccess) {
-                UiState.Success
-            } else {
-                UiState.Error(result.exceptionOrNull()?.message ?: "Login failed")
-            }
+            _loginState.value = result.fold(
+                onSuccess = { user ->
+                    UiState.Success(user)
+                },
+                onFailure = { e ->
+                    UiState.Error(e.message ?: "Login failed")
+                }
+            )
         }
     }
 
@@ -44,11 +48,14 @@ class AuthViewModel(
 
             val result = repository.register(email, password)
 
-            _registerState.value = if (result.isSuccess) {
-                UiState.Success
-            } else {
-                UiState.Error(result.exceptionOrNull()?.message ?: "Register failed")
-            }
+            _registerState.value = result.fold(
+                onSuccess = { user ->
+                    UiState.Success(user)
+                },
+                onFailure = { e ->
+                    UiState.Error(e.message ?: "Register failed")
+                }
+            )
         }
     }
 }
