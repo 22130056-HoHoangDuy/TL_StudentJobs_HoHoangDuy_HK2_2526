@@ -1,0 +1,62 @@
+package com.studentjobs.app.feature.profile
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.studentjobs.app.firebase.firestore.UserService
+import com.studentjobs.app.utils.AppPreferences
+import com.studentjobs.app.utils.calculateTrustScore
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+class ProfileViewModel(
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val userService = UserService()
+    private val prefs = AppPreferences(application)
+
+    private val _uiState = MutableStateFlow(ProfileUiState())
+    val uiState: StateFlow<ProfileUiState> = _uiState
+
+    init {
+        loadUser()
+    }
+
+    private fun loadUser() {
+        viewModelScope.launch {
+
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+            if (uid == null) {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                return@launch
+            }
+
+            val user = userService.getUser(uid)
+
+            if (user != null) {
+
+                val score = calculateTrustScore(user)
+
+                // 🔥 SYNC ROLE VỀ LOCAL (RẤT QUAN TRỌNG)
+                prefs.saveUserRole(user.role.name)
+
+                _uiState.value = _uiState.value.copy(
+                    name = user.name,
+                    email = user.email,
+                    role = user.role,
+                    trustScore = score,
+                    isLoading = false
+                )
+
+            } else {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+            }
+        }
+    }
+}

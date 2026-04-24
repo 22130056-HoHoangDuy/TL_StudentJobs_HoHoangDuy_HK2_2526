@@ -1,4 +1,4 @@
-package com.studentjobs.app.ui.screen.role
+package com.studentjobs.app.feature.role
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,14 +10,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.studentjobs.app.data.model.UserRole
-import com.studentjobs.app.ui.component.RoleCard
+import com.studentjobs.app.feature.role.components.RoleCard
+import com.studentjobs.app.utils.AppPreferences
 
 @Composable
 fun RoleSelectionScreen(
     onContinue: (UserRole) -> Unit
 ) {
+
+    val context = LocalContext.current
+    val prefs = remember { AppPreferences(context) }
 
     var selectedRole by remember { mutableStateOf<UserRole?>(null) }
 
@@ -50,7 +55,7 @@ fun RoleSelectionScreen(
                 title = "Student",
                 description = "Find part-time jobs",
                 selected = selectedRole == UserRole.STUDENT,
-                icon = { Icon(Icons.Default.School, contentDescription = null) }
+                icon = { Icon(Icons.Default.School, null) }
             ) {
                 selectedRole = UserRole.STUDENT
             }
@@ -61,7 +66,7 @@ fun RoleSelectionScreen(
                 title = "Employer",
                 description = "Post jobs & hire students",
                 selected = selectedRole == UserRole.EMPLOYER,
-                icon = { Icon(Icons.Default.Business, contentDescription = null) }
+                icon = { Icon(Icons.Default.Business, null) }
             ) {
                 selectedRole = UserRole.EMPLOYER
             }
@@ -70,7 +75,10 @@ fun RoleSelectionScreen(
 
             Button(
                 onClick = {
-                    selectedRole?.let { onContinue(it) }
+                    selectedRole?.let { role ->
+                        prefs.saveUserRole(role.name) // 🔥 FIX QUAN TRỌNG
+                        onContinue(role)
+                    }
                 },
                 enabled = selectedRole != null,
                 modifier = Modifier

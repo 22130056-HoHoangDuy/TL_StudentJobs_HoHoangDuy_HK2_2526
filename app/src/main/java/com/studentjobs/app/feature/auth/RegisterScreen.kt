@@ -1,4 +1,4 @@
-package com.studentjobs.app.ui.screen.auth
+package com.studentjobs.app.feature.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,15 +13,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import com.studentjobs.app.data.model.User
+import com.studentjobs.app.data.model.UserRole
 import com.studentjobs.app.utils.UiState
-import com.studentjobs.app.viewmodel.AuthViewModel
+import com.studentjobs.app.utils.AppPreferences
 
 @Composable
 fun RegisterScreen(
     viewModel: AuthViewModel,
     onRegisterSuccess: (User) -> Unit
 ) {
+
+    val context = LocalContext.current
+
+    // ✅ convert String → UserRole an toàn
+    val role = remember {
+        AppPreferences(context)
+            .getUserRole()
+            ?.let { UserRole.valueOf(it) }
+    }
 
     val state by viewModel.registerState.collectAsState()
 
@@ -78,7 +89,12 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
-                    onClick = { viewModel.register(email, password) },
+                    onClick = {
+                        if (role != null) {
+                            viewModel.register(email, password, role)
+                        }
+                    },
+                    enabled = role != null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
@@ -90,16 +106,19 @@ fun RegisterScreen(
 
                 when (val s = state) {
                     is UiState.Loading -> CircularProgressIndicator()
+
                     is UiState.Error -> Text(
                         s.message,
                         color = MaterialTheme.colorScheme.error
                     )
+
                     is UiState.Success<*> -> {
                         val user = s.data as User
                         LaunchedEffect(user.uid) {
                             onRegisterSuccess(user)
                         }
                     }
+
                     else -> {}
                 }
             }

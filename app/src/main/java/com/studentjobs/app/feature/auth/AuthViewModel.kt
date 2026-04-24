@@ -1,8 +1,8 @@
-package com.studentjobs.app.viewmodel
+package com.studentjobs.app.feature.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.studentjobs.app.data.model.User
+import com.studentjobs.app.data.model.UserRole
 import com.studentjobs.app.data.repository.AuthRepository
 import com.studentjobs.app.utils.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,11 +42,11 @@ class AuthViewModel(
     private val _registerState = MutableStateFlow<UiState>(UiState.Idle)
     val registerState: StateFlow<UiState> = _registerState
 
-    fun register(email: String, password: String) {
+    fun register(email: String, password: String, role: UserRole) {
         viewModelScope.launch {
             _registerState.value = UiState.Loading
 
-            val result = repository.register(email, password)
+            val result = repository.register(email, password, role)
 
             _registerState.value = result.fold(
                 onSuccess = { user ->

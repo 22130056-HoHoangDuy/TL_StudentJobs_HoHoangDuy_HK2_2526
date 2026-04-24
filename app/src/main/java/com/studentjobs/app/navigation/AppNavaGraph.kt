@@ -1,17 +1,18 @@
 package com.studentjobs.app.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.studentjobs.app.ui.screen.auth.LoginScreen
-import com.studentjobs.app.ui.screen.auth.RegisterScreen
-import com.studentjobs.app.ui.screen.onboarding.OnBoardingScreen
-import com.studentjobs.app.ui.screen.role.RoleSelectionScreen
+import com.studentjobs.app.feature.auth.LoginScreen
+import com.studentjobs.app.feature.auth.RegisterScreen
+import com.studentjobs.app.feature.onboarding.OnBoardingScreen
+import com.studentjobs.app.feature.role.RoleSelectionScreen
+import com.studentjobs.app.feature.home.student.StudentHomeScreen
 import com.studentjobs.app.utils.AppPreferences
-import com.studentjobs.app.viewmodel.AuthViewModel
+import com.studentjobs.app.feature.auth.AuthViewModel
+import com.studentjobs.app.ui.MainScreen
 
 @Composable
 fun AppNavGraph(viewModel: AuthViewModel) {
@@ -20,8 +21,7 @@ fun AppNavGraph(viewModel: AuthViewModel) {
     val context = LocalContext.current
     val prefs = AppPreferences(context)
 
-    // DEBUG MODE
-    val DEBUG_ALWAYS_SHOW_ONBOARDING = false
+    val DEBUG_ALWAYS_SHOW_ONBOARDING = true
 
     val startDestination = when {
         DEBUG_ALWAYS_SHOW_ONBOARDING -> "onboarding"
@@ -34,14 +34,11 @@ fun AppNavGraph(viewModel: AuthViewModel) {
         startDestination = startDestination
     ) {
 
-        // ========================
         // ONBOARDING
-        // ========================
         composable("onboarding") {
             OnBoardingScreen(
                 onFinish = {
                     prefs.setOnboardingShown()
-
                     navController.navigate("role") {
                         popUpTo("onboarding") { inclusive = true }
                     }
@@ -49,13 +46,10 @@ fun AppNavGraph(viewModel: AuthViewModel) {
             )
         }
 
-        // ========================
         // ROLE
-        // ========================
         composable("role") {
             RoleSelectionScreen(
                 onContinue = { role ->
-
                     prefs.saveUserRole(role.name)
 
                     navController.navigate("login") {
@@ -65,9 +59,7 @@ fun AppNavGraph(viewModel: AuthViewModel) {
             )
         }
 
-        // ========================
         // LOGIN
-        // ========================
         composable("login") {
             LoginScreen(
                 viewModel = viewModel,
@@ -75,16 +67,14 @@ fun AppNavGraph(viewModel: AuthViewModel) {
                     navController.navigate("register")
                 },
                 onLoginSuccess = {
-                    navController.navigate("home") {
+                    navController.navigate("main") {
                         popUpTo("login") { inclusive = true }
                     }
                 }
             )
         }
 
-        // ========================
         // REGISTER
-        // ========================
         composable("register") {
             RegisterScreen(
                 viewModel = viewModel,
@@ -96,11 +86,8 @@ fun AppNavGraph(viewModel: AuthViewModel) {
             )
         }
 
-        // ========================
-        // HOME
-        // ========================
-        composable("home") {
-            Text("Home Screen")
+        composable("main") {
+            MainScreen()
         }
     }
 }
