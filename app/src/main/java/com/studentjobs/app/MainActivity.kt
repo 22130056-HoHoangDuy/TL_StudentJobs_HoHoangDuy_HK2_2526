@@ -18,7 +18,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // ⚠️ Tạo dependencies (chưa cần DI)
         val authService = AuthService()
         val userService = UserService()
         val repository = AuthRepository(authService, userService)

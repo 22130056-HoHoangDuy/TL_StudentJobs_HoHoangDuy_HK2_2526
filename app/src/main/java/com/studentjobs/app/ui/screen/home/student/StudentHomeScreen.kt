@@ -20,23 +20,40 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.studentjobs.app.ui.component.JobCard
-import com.studentjobs.app.viewmodel.JobViewModel
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 
 @Composable
-fun StudentHomeScreen(viewModel: JobViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun StudentHomeScreen() {
 
     var search by remember { mutableStateOf("") }
-    val jobs by viewModel.jobs.collectAsState()
+
+    val jobs = listOf(
+        "Barista - Highlands",
+        "Shop Assistant - Circle K",
+        "Waiter - KFC"
+    )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
+            .padding(WindowInsets.systemBars.asPaddingValues())
             .padding(16.dp)
     ) {
 
-        Text("Hello 👋", style = MaterialTheme.typography.headlineMedium)
-        Text("Find your part-time job")
+        Text(
+            text = "Hello 👋",
+            style = MaterialTheme.typography.headlineMedium
+        )
+
+        Text(
+            text = "Find your part-time job",
+            style = MaterialTheme.typography.bodyMedium
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -53,9 +70,20 @@ fun StudentHomeScreen(viewModel: JobViewModel = androidx.lifecycle.viewmodel.com
             modifier = Modifier.weight(1f)
         ) {
             items(jobs) { job ->
-                JobCard(job)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Text(
+                        text = job,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
         }
     }
 }
+
+
 
