@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.WindowCompat
 import com.studentjobs.app.ui.theme.StudentJobsTheme
 import com.studentjobs.app.navigation.AppNavGraph
-import com.studentjobs.app.viewmodel.AuthViewModel
+import com.studentjobs.app.feature.auth.AuthViewModel
 import com.studentjobs.app.data.repository.AuthRepository
 import com.studentjobs.app.firebase.auth.AuthService
 import com.studentjobs.app.firebase.firestore.UserService
