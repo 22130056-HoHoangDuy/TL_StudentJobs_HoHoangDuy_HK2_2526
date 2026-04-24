@@ -1,4 +1,4 @@
-package com.studentjobs.app.viewmodel
+package com.studentjobs.app.feature.home
 
 import androidx.lifecycle.ViewModel
 import com.studentjobs.app.data.datasource.fakeJobs

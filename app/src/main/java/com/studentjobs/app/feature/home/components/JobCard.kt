@@ -1,4 +1,4 @@
-package com.studentjobs.app.ui.component
+package com.studentjobs.app.feature.home.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

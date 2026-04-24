@@ -1,4 +1,4 @@
-package com.studentjobs.app.ui.screen.home.student
+package com.studentjobs.app.feature.home.student
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
