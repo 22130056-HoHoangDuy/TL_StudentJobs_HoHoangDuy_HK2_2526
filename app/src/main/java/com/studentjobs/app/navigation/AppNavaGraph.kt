@@ -5,13 +5,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.studentjobs.app.ui.screen.auth.LoginScreen
-import com.studentjobs.app.ui.screen.auth.RegisterScreen
-import com.studentjobs.app.ui.screen.onboarding.OnBoardingScreen
-import com.studentjobs.app.ui.screen.role.RoleSelectionScreen
-import com.studentjobs.app.ui.screen.home.student.StudentHomeScreen
+import com.studentjobs.app.feature.auth.LoginScreen
+import com.studentjobs.app.feature.auth.RegisterScreen
+import com.studentjobs.app.feature.onboarding.OnBoardingScreen
+import com.studentjobs.app.feature.role.RoleSelectionScreen
+import com.studentjobs.app.feature.home.student.StudentHomeScreen
 import com.studentjobs.app.utils.AppPreferences
-import com.studentjobs.app.viewmodel.AuthViewModel
+import com.studentjobs.app.feature.auth.AuthViewModel
+import com.studentjobs.app.ui.MainScreen
 
 @Composable
 fun AppNavGraph(viewModel: AuthViewModel) {
@@ -66,7 +67,7 @@ fun AppNavGraph(viewModel: AuthViewModel) {
                     navController.navigate("register")
                 },
                 onLoginSuccess = {
-                    navController.navigate("home") {
+                    navController.navigate("main") {
                         popUpTo("login") { inclusive = true }
                     }
                 }
@@ -85,8 +86,8 @@ fun AppNavGraph(viewModel: AuthViewModel) {
             )
         }
 
-        composable("home") {
-            StudentHomeScreen()
+        composable("main") {
+            MainScreen()
         }
     }
 }
