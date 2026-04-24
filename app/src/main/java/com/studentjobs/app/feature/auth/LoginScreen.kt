@@ -1,4 +1,4 @@
-package com.studentjobs.app.ui.screen.auth
+package com.studentjobs.app.feature.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.studentjobs.app.data.model.User
 import com.studentjobs.app.utils.UiState
-import com.studentjobs.app.viewmodel.AuthViewModel
+import com.studentjobs.app.feature.auth.AuthViewModel
 
 @Composable
 fun LoginScreen(

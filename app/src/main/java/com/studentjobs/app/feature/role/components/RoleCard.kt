@@ -1,4 +1,4 @@
-package com.studentjobs.app.ui.component
+package com.studentjobs.app.feature.role.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

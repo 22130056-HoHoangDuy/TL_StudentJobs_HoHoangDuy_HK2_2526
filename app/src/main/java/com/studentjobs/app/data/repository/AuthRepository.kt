@@ -10,26 +10,31 @@ class AuthRepository(
     private val userService: UserService
 ) {
 
-    suspend fun register(email: String, password: String): Result<User> {
+    suspend fun register(
+        email: String,
+        password: String,
+        role: UserRole
+    ): Result<User> {
         return try {
             val result = authService.register(email, password)
 
             val uid = result.user?.uid
                 ?: return Result.failure(Exception("User ID is null"))
 
-            // 👉 Tạo object User thay vì map
+            // ✅ dùng role từ UI (quan trọng)
             val user = User(
                 uid = uid,
                 email = email,
-                role = UserRole.STUDENT
+                role = role
             )
 
-            // 👉 Gửi User xuống Firestore
+            // ✅ save Firestore
             val firestoreResult = userService.createUser(user)
 
             if (firestoreResult.isFailure) {
                 return Result.failure(
-                    firestoreResult.exceptionOrNull() ?: Exception("Failed to save user")
+                    firestoreResult.exceptionOrNull()
+                        ?: Exception("Failed to save user")
                 )
             }
 
@@ -47,11 +52,9 @@ class AuthRepository(
             val uid = result.user?.uid
                 ?: return Result.failure(Exception("User ID is null"))
 
-            // 👉 Tạm thời tạo user cơ bản (sau này có thể fetch từ Firestore)
-            val user = User(
-                uid = uid,
-                email = email
-            )
+            // ✅ LẤY USER TỪ FIRESTORE (QUAN TRỌNG)
+            val user = userService.getUser(uid)
+                ?: return Result.failure(Exception("User not found in Firestore"))
 
             Result.success(user)
 
