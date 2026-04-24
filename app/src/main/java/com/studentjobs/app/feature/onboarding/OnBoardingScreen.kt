@@ -1,4 +1,4 @@
-package com.studentjobs.app.ui.screen.onboarding
+package com.studentjobs.app.feature.onboarding
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
