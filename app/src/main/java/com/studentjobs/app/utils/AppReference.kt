@@ -13,11 +13,12 @@ class AppPreferences(context: Context) {
     fun isOnboardingShown(): Boolean {
         return prefs.getBoolean("onboarding_shown", false)
     }
+
     fun saveUserRole(role: String) {
         prefs.edit().putString("user_role", role).apply()
     }
 
-    fun getUserRole(): String? {
-        return prefs.getString("user_role", null)
+    fun getUserRole(): String {
+        return prefs.getString("user_role", "STUDENT") ?: "STUDENT"
     }
 }
