@@ -2,14 +2,12 @@ package com.studentjobs.app.feature.profile
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.studentjobs.app.firebase.firestore.UserService
 import com.studentjobs.app.utils.AppPreferences
 import com.studentjobs.app.utils.calculateTrustScore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     application: Application
@@ -26,24 +24,23 @@ class ProfileViewModel(
     }
 
     private fun loadUser() {
-        viewModelScope.launch {
 
-            _uiState.value = _uiState.value.copy(isLoading = true)
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
 
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid == null) {
+            _uiState.value = _uiState.value.copy(isLoading = false)
+            return
+        }
 
-            if (uid == null) {
-                _uiState.value = _uiState.value.copy(isLoading = false)
-                return@launch
-            }
+        _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val user = userService.getUser(uid)
+        userService.listenUser(uid) { user ->
 
             if (user != null) {
 
                 val score = calculateTrustScore(user)
 
-                // 🔥 SYNC ROLE VỀ LOCAL (RẤT QUAN TRỌNG)
+                // 🔥 giữ nguyên logic cũ
                 prefs.saveUserRole(user.role.name)
 
                 _uiState.value = _uiState.value.copy(
@@ -51,6 +48,9 @@ class ProfileViewModel(
                     email = user.email,
                     role = user.role,
                     trustScore = score,
+                    isStudentVerified = user.isStudentVerified,
+                    isPhoneVerified = user.isPhoneVerified,
+                    isEmailVerified = user.isEmailVerified,
                     isLoading = false
                 )
 

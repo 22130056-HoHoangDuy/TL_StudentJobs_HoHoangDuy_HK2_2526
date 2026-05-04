@@ -7,5 +7,8 @@ data class ProfileUiState(
     val email: String = "",
     val trustScore: Int = 0,
     val isLoading: Boolean = true,
-    val role : UserRole = UserRole.STUDENT
+    val role: UserRole = UserRole.STUDENT,
+    val isStudentVerified: Boolean = false,
+    val isPhoneVerified: Boolean = false,
+    val isEmailVerified: Boolean = false
 )

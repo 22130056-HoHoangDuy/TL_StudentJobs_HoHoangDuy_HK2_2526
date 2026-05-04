@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
+import com.studentjobs.app.feature.profile.verification.student.StudentVerificationScreen
 
 @Composable
 fun MainNavGraph(
@@ -25,7 +26,7 @@ fun MainNavGraph(
         }
 
         composable("profile") {
-            ProfileScreen() // 🔥 FIX
+            ProfileScreen(navController)
         }
 
         composable("jobs") {
@@ -34,6 +35,19 @@ fun MainNavGraph(
 
         composable("messages") {
             Text("Messages")
+        }
+
+        // 🔥 ADD
+        composable("student_verification") {
+            StudentVerificationScreen(navController)
+        }
+
+        composable("phone_verification") {
+            Text("Phone Verification")
+        }
+
+        composable("email_verification") {
+            Text("Email Verification")
         }
     }
 }
