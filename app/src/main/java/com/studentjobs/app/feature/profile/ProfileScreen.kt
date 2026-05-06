@@ -1,7 +1,12 @@
 package com.studentjobs.app.feature.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -14,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.studentjobs.app.feature.profile.components.ProfileHeader
 import com.studentjobs.app.feature.profile.components.ProfileCompletionSection
+import com.studentjobs.app.feature.profile.components.ProfileHeader
 
 @Composable
 fun ProfileScreen(
@@ -53,13 +58,13 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 🔥 PROFILE COMPLETION
+        // PROFILE COMPLETION
         ProfileCompletionSection(
             isStudentVerified = state.isStudentVerified,
             isPhoneVerified = state.isPhoneVerified,
             isEmailVerified = state.isEmailVerified,
 
-            // 🎓 Student verification
+            // Student verification
             onStudentClick = {
                 if (!state.isStudentVerified) {
                     navController.navigate("student_verification") {
@@ -68,16 +73,14 @@ fun ProfileScreen(
                 }
             },
 
-            // 📱 Phone verification
+            // Phone verification
             onPhoneClick = {
                 if (!state.isPhoneVerified) {
-                    navController.navigate("phone_verification") {
-                        launchSingleTop = true
-                    }
+                    navController.navigate("phone_verification")
                 }
             },
 
-            // 📧 Email verification
+            // Email verification
             onEmailClick = {
                 if (!state.isEmailVerified) {
                     navController.navigate("email_verification") {

@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
+import com.studentjobs.app.feature.profile.verification.phone.PhoneVerificationScreen
 import com.studentjobs.app.feature.profile.verification.student.StudentVerificationScreen
 
 @Composable
@@ -43,7 +44,7 @@ fun MainNavGraph(
         }
 
         composable("phone_verification") {
-            Text("Phone Verification")
+            PhoneVerificationScreen(navController)
         }
 
         composable("email_verification") {

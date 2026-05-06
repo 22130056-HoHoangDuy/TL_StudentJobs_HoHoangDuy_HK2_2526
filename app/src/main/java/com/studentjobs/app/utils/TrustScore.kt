@@ -7,15 +7,15 @@ fun calculateTrustScore(user: User): Int {
 
     var score = 0
 
-    if (user.isEmailVerified) score += 30
-    if (user.isPhoneVerified) score += 30
+    if (user.isEmailVerified) score += 20
+    if (user.isPhoneVerified) score += 10
 
     when (user.role) {
         UserRole.STUDENT -> {
-            if (user.isStudentVerified) score += 40
+            if (user.isStudentVerified) score += 20
         }
         UserRole.EMPLOYER -> {
-            if (user.isBusinessVerified) score += 40
+            if (user.isBusinessVerified) score += 20
         }
     }
 
