@@ -9,8 +9,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.studentjobs.app.feature.profile.components.VerificationCard
-import com.studentjobs.app.feature.profile.components.VerificationStatus
+import com.studentjobs.app.feature.profile.shared.components.VerificationCard
+import com.studentjobs.app.feature.profile.shared.components.VerificationStatus
 
 @Composable
 fun EmployerVerificationScreen() {

@@ -1,4 +1,4 @@
-package com.studentjobs.app.feature.profile.components
+package com.studentjobs.app.feature.profile.student.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

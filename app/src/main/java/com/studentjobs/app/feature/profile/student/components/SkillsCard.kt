@@ -1,7 +1,8 @@
-package com.studentjobs.app.feature.profile.components
+package com.studentjobs.app.feature.profile.student.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,7 +43,7 @@ fun SkillsCard(
         color = Color.Transparent
     ) {
 
-        androidx.compose.foundation.layout.Column(
+        Column(
             modifier = Modifier
                 .background(gradient)
                 .padding(22.dp)

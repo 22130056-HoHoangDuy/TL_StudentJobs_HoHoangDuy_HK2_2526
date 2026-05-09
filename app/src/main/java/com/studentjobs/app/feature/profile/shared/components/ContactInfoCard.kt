@@ -1,4 +1,4 @@
-package com.studentjobs.app.feature.profile.components
+package com.studentjobs.app.feature.profile.shared.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,9 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,13 +28,13 @@ import androidx.compose.ui.unit.dp
 import com.studentjobs.app.feature.profile.ProfileUiState
 
 @Composable
-fun AcademicInfoCard(
+fun ContactInfoCard(
     state: ProfileUiState
 ) {
 
     val gradient = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF0F172A),
+            Color(0xFF111827),
             Color(0xFF1E293B)
         )
     )
@@ -56,15 +57,15 @@ fun AcademicInfoCard(
             ) {
 
                 Icon(
-                    imageVector = Icons.Default.School,
+                    imageVector = Icons.Default.Call,
                     contentDescription = null,
-                    tint = Color(0xFF60A5FA)
+                    tint = Color(0xFF22D3EE)
                 )
 
                 Spacer(modifier = Modifier.height(0.dp))
 
                 Text(
-                    text = " Academic Information",
+                    text = " Contact Information",
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
@@ -73,70 +74,52 @@ fun AcademicInfoCard(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            AcademicItem(
-                label = "Full Name",
-                value = state.extractedName.ifEmpty {
-                    state.name
-                }
+            ContactItem(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.PhoneAndroid,
+                        contentDescription = null,
+                        tint = Color(0xFF8B5CF6)
+                    )
+                },
+                label = "Phone Number",
+                value = state.phone
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
-            AcademicItem(
-                label = "Student ID",
-                value = state.studentId
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            AcademicItem(
-                label = "University",
-                value = state.school
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            AcademicItem(
+            ContactItem(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Email,
+                        contentDescription = null,
+                        tint = Color(0xFF60A5FA)
+                    )
+                },
                 label = "Student Email",
                 value = state.studentEmail
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
-            AcademicItem(
-                label = "Date Of Birth",
-                value = state.dateOfBirth
+            ContactItem(
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Public,
+                        contentDescription = null,
+                        tint = Color(0xFF22C55E)
+                    )
+                },
+                label = "Login Email",
+                value = state.email
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Verified footer
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.Verified,
-                    contentDescription = null,
-                    tint = Color(0xFF4ADE80)
-                )
-
-                Spacer(modifier = Modifier.height(0.dp))
-
-                Text(
-                    text = " OCR Verified Student Identity",
-                    color = Color(0xFF4ADE80),
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
         }
     }
 }
 
 @Composable
-private fun AcademicItem(
+private fun ContactItem(
+    icon: @Composable () -> Unit,
     label: String,
     value: String
 ) {
@@ -152,16 +135,11 @@ private fun AcademicItem(
         Spacer(modifier = Modifier.height(6.dp))
 
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
-            Icon(
-                imageVector = Icons.Default.Badge,
-                contentDescription = null,
-                tint = Color(0xFF8B5CF6)
-            )
-
-            Spacer(modifier = Modifier.height(0.dp))
+            icon()
 
             Text(
                 text = value.ifEmpty { "Not Available" },

@@ -1,4 +1,4 @@
-package com.studentjobs.app.feature.profile.components
+package com.studentjobs.app.feature.profile.shared.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -60,7 +60,7 @@ fun VerificationStatusCard(
                     tint = Color(0xFF4ADE80)
                 )
 
-                androidx.compose.foundation.layout.Spacer(
+                Spacer(
                     modifier = Modifier.size(10.dp)
                 )
 

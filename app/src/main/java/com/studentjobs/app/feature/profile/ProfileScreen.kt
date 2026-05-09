@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.studentjobs.app.data.model.UserRole
-import com.studentjobs.app.feature.profile.components.ProfileCompletionSection
-import com.studentjobs.app.feature.profile.components.VerifiedStudentProfile
+import com.studentjobs.app.feature.profile.student.components.ProfileCompletionSection
+import com.studentjobs.app.feature.profile.student.components.VerifiedStudentProfile
 
 @Composable
 fun ProfileScreen(

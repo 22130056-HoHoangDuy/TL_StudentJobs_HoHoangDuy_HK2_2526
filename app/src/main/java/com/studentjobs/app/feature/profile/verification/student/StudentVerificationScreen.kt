@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.studentjobs.app.feature.profile.components.UploadCard
+import com.studentjobs.app.feature.profile.shared.components.UploadCard
 import com.studentjobs.app.firebase.firestore.UserService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

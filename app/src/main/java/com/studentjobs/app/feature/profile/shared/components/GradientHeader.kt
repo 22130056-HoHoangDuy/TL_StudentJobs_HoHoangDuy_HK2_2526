@@ -1,4 +1,4 @@
-package com.studentjobs.app.feature.profile.components
+package com.studentjobs.app.feature.profile.shared.components
 
 import android.net.Uri
 import android.widget.Toast

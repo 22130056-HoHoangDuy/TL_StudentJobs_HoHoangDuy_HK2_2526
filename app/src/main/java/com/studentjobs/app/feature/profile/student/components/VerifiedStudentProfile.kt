@@ -1,4 +1,4 @@
-package com.studentjobs.app.feature.profile.components
+package com.studentjobs.app.feature.profile.student.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -7,6 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.studentjobs.app.feature.profile.ProfileUiState
+import com.studentjobs.app.feature.profile.shared.components.ContactInfoCard
+import com.studentjobs.app.feature.profile.shared.components.GradientHeader
+import com.studentjobs.app.feature.profile.shared.components.TrustScoreCard
+import com.studentjobs.app.feature.profile.shared.components.VerificationStatusCard
 
 @Composable
 fun VerifiedStudentProfile(
