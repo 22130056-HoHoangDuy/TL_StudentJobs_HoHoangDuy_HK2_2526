@@ -5,14 +5,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.studentjobs.app.feature.auth.AuthViewModel
 import com.studentjobs.app.feature.auth.LoginScreen
 import com.studentjobs.app.feature.auth.RegisterScreen
 import com.studentjobs.app.feature.onboarding.OnBoardingScreen
 import com.studentjobs.app.feature.role.RoleSelectionScreen
-import com.studentjobs.app.feature.home.student.StudentHomeScreen
-import com.studentjobs.app.utils.AppPreferences
-import com.studentjobs.app.feature.auth.AuthViewModel
 import com.studentjobs.app.ui.MainScreen
+import com.studentjobs.app.utils.AppPreferences
 
 @Composable
 fun AppNavGraph(viewModel: AuthViewModel) {
@@ -74,12 +73,13 @@ fun AppNavGraph(viewModel: AuthViewModel) {
             )
         }
 
-        // REGISTER
+        // REGISTER (🔥 FIX QUAN TRỌNG)
         composable("register") {
             RegisterScreen(
                 viewModel = viewModel,
                 onRegisterSuccess = {
-                    navController.navigate("home") {
+                    // 👉 Sau khi register → quay về login
+                    navController.navigate("login") {
                         popUpTo("register") { inclusive = true }
                     }
                 }
