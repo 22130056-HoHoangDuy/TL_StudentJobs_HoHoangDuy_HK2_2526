@@ -75,6 +75,7 @@ dependencies {
     // Icons
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.runtime)
+    implementation("com.google.firebase:firebase-functions-ktx")
 
     // Test
     testImplementation(libs.junit)

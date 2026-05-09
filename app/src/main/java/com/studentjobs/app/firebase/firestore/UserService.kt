@@ -2,6 +2,7 @@ package com.studentjobs.app.firebase.firestore
 
 import android.net.Uri
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.studentjobs.app.data.model.User
@@ -27,6 +28,7 @@ class UserService {
                 "isEmailVerified" to user.isEmailVerified,
                 "isPhoneVerified" to user.isPhoneVerified,
                 "isStudentVerified" to user.isStudentVerified,
+                "isStudentEmailVerified" to user.isStudentEmailVerified,
                 "isBusinessVerified" to user.isBusinessVerified
             )
 
@@ -35,8 +37,7 @@ class UserService {
             user.dateOfBirth?.let { userMap["dateOfBirth"] = it }
             user.avatarUrl?.let { userMap["avatarUrl"] = it }
 
-            db.collection("users")
-                .document(user.uid)
+            db.collection("users").document(user.uid)
                 .set(userMap) // hoặc .set(userMap, SetOptions.merge())
                 .await()
 
@@ -54,10 +55,7 @@ class UserService {
     suspend fun getUser(uid: String): User? {
         return try {
 
-            val doc = db.collection("users")
-                .document(uid)
-                .get()
-                .await()
+            val doc = db.collection("users").document(uid).get().await()
 
             if (!doc.exists()) return null
 
@@ -95,21 +93,15 @@ class UserService {
     // UPDATE STUDENT CARD
     // =========================
     suspend fun updateStudentCard(
-        uid: String,
-        frontUrl: String,
-        backUrl: String
+        uid: String, frontUrl: String, backUrl: String
     ): Result<Unit> {
         return try {
 
-            db.collection("users")
-                .document(uid)
-                .update(
+            db.collection("users").document(uid).update(
                     mapOf(
-                        "studentCardFront" to frontUrl,
-                        "studentCardBack" to backUrl
+                        "studentCardFront" to frontUrl, "studentCardBack" to backUrl
                     )
-                )
-                .await()
+                ).await()
 
             Result.success(Unit)
 
@@ -123,57 +115,63 @@ class UserService {
     // REALTIME LISTENER
     // =========================
     fun listenUser(
-        uid: String,
-        onChange: (User) -> Unit
+        uid: String, onChange: (User) -> Unit
     ) {
-        db.collection("users")
-            .document(uid)
-            .addSnapshotListener { snapshot, error ->
+
+        db.collection("users").document(uid).addSnapshotListener { snapshot, error ->
 
                 if (error != null) {
                     Log.e("FIRESTORE", "Listen failed", error)
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && snapshot.exists()) {
-
-                    val role = try {
-                        UserRole.valueOf(
-                            snapshot.getString("role")?.uppercase() ?: "STUDENT"
-                        )
-                    } catch (e: Exception) {
-                        UserRole.STUDENT
-                    }
-
-                    val user = User(
-                        uid = snapshot.getString("uid") ?: "",
-                        name = snapshot.getString("name") ?: "",
-                        email = snapshot.getString("email") ?: "",
-                        role = role,
-                        isEmailVerified = snapshot.getBoolean("isEmailVerified") ?: false,
-                        isPhoneVerified = snapshot.getBoolean("isPhoneVerified") ?: false,
-                        isStudentVerified = snapshot.getBoolean("isStudentVerified") ?: false,
-                        isBusinessVerified = snapshot.getBoolean("isBusinessVerified") ?: false,
-
-                        extractedName = snapshot.getString("extractedName"),
-                        studentId = snapshot.getString("studentId"),
-
-                        school = snapshot.getString("school"),
-                        dateOfBirth = snapshot.getString("dateOfBirth"),
-                        avatarUrl = snapshot.getString("avatarUrl")
-                    )
-
-                    Log.d("LISTENER", "User updated: $user")
-
-                    onChange(user)
+                if (snapshot == null || !snapshot.exists()) {
+                    return@addSnapshotListener
                 }
+
+                val role = try {
+                    UserRole.valueOf(
+                        snapshot.getString("role")?.uppercase() ?: "STUDENT"
+                    )
+                } catch (e: Exception) {
+                    UserRole.STUDENT
+                }
+
+                val user = User(
+                    uid = snapshot.id,
+                    name = snapshot.getString("name") ?: "",
+                    email = snapshot.getString("email") ?: "",
+                    role = role,
+
+                    isEmailVerified = snapshot.getBoolean("isEmailVerified") ?: false,
+
+                    isPhoneVerified = snapshot.getBoolean("isPhoneVerified") ?: false,
+
+                    isStudentVerified = snapshot.getBoolean("isStudentVerified") ?: false,
+
+                    isBusinessVerified = snapshot.getBoolean("isBusinessVerified") ?: false,
+
+                    isStudentEmailVerified = snapshot.getBoolean("isStudentEmailVerified") ?: false,
+
+                    extractedName = snapshot.getString("extractedName"),
+                    studentId = snapshot.getString("studentId"),
+                    school = snapshot.getString("school"),
+                    dateOfBirth = snapshot.getString("dateOfBirth"),
+                    avatarUrl = snapshot.getString("avatarUrl"),
+                    phoneNumber = snapshot.getString("phoneNumber"),
+                    bio = snapshot.getString("bio"),
+                    major = snapshot.getString("major"),
+                    skills = snapshot.get("skills") as? List<String> ?: emptyList()
+                )
+
+                Log.d("LISTENER", "User updated: $user")
+
+                onChange(user)
             }
     }
 
     suspend fun uploadStudentCard(
-        uid: String,
-        frontUri: Uri,
-        backUri: Uri
+        uid: String, frontUri: Uri, backUri: Uri
     ): Result<Unit> {
 
         return try {
@@ -202,4 +200,29 @@ class UserService {
             Result.failure(e)
         }
     }
+
+    fun uploadAvatar(
+        imageUri: Uri, onSuccess: (String) -> Unit, onError: (String) -> Unit
+    ) {
+
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        val ref = FirebaseStorage.getInstance().reference.child("avatars/$uid.jpg")
+
+        ref.putFile(imageUri).continueWithTask {
+                ref.downloadUrl
+            }.addOnSuccessListener { downloadUri ->
+
+                db.collection("users").document(uid).update(
+                        mapOf(
+                            "avatarUrl" to downloadUri.toString()
+                        )
+                    ).addOnSuccessListener {
+                        onSuccess(downloadUri.toString())
+                    }
+            }.addOnFailureListener {
+                onError(it.message ?: "Upload failed")
+            }
+    }
+
 }

@@ -7,15 +7,38 @@ fun calculateTrustScore(user: User): Int {
 
     var score = 0
 
-    if (user.isEmailVerified) score += 20
-    if (user.isPhoneVerified) score += 10
+    // ===== LOGIN EMAIL =====
+    if (user.isEmailVerified) {
+        score += 20
+    }
+
+    // ===== PHONE =====
+    if (user.isPhoneVerified) {
+        score += 10
+    }
 
     when (user.role) {
+
+        // ===== STUDENT =====
         UserRole.STUDENT -> {
-            if (user.isStudentVerified) score += 20
+
+            // OCR student card
+            if (user.isStudentVerified) {
+                score += 20
+            }
+
+            // Student domain email
+            if (user.isStudentEmailVerified) {
+                score += 20
+            }
         }
+
+        // ===== EMPLOYER =====
         UserRole.EMPLOYER -> {
-            if (user.isBusinessVerified) score += 20
+
+            if (user.isBusinessVerified) {
+                score += 20
+            }
         }
     }
 

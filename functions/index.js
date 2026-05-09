@@ -1,8 +1,23 @@
+require("dotenv").config();
+
 const { onObjectFinalized } = require("firebase-functions/v2/storage");
 const admin = require("firebase-admin");
 const vision = require("@google-cloud/vision");
+const { onCall } = require("firebase-functions/v2/https");
+const nodemailer = require("nodemailer");
 
 admin.initializeApp();
+
+console.log("EMAIL:", process.env.GMAIL_EMAIL);
+console.log("PASS:", process.env.GMAIL_PASSWORD);
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_EMAIL,
+    pass: process.env.GMAIL_PASSWORD,
+  },
+});
 
 const client = new vision.ImageAnnotatorClient();
 
@@ -142,6 +157,57 @@ exports.processStudentCard = onObjectFinalized(
       console.log("Firestore updated");
     } catch (err) {
       console.error("ERROR:", err);
+    }
+  }
+);
+exports.sendStudentOtp = onCall(
+  {
+    region: "us-east1",
+  },
+  async (request) => {
+
+    try {
+
+      const { email, uid } = request.data;
+
+      if (!email || !uid) {
+        throw new Error("Missing email or uid");
+      }
+
+      // 🔥 Generate OTP
+      const otp = Math.floor(
+        100000 + Math.random() * 900000
+      ).toString();
+
+      // 🔥 Save Firestore
+      await admin.firestore()
+        .collection("email_otps")
+        .doc(uid)
+        .set({
+          email,
+          otp,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+      // 🔥 Send Email
+      await transporter.sendMail({
+        from: process.env.GMAIL_EMAIL,
+        to: email,
+        subject: "StudentJobs Verification Code",
+        text: `Your OTP is: ${otp}`,
+      });
+
+      console.log("OTP sent:", otp);
+
+      return {
+        success: true,
+      };
+
+    } catch (err) {
+
+      console.error(err);
+
+      throw new Error(err.message);
     }
   }
 );

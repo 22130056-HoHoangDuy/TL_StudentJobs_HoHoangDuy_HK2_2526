@@ -6,20 +6,19 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.studentjobs.app.data.model.UserRole
 import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
+import com.studentjobs.app.feature.profile.verification.email.EmailVerificationScreen
 import com.studentjobs.app.feature.profile.verification.phone.PhoneVerificationScreen
 import com.studentjobs.app.feature.profile.verification.student.StudentVerificationScreen
 
 @Composable
 fun MainNavGraph(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
+    navController: NavHostController, modifier: Modifier = Modifier
 ) {
     NavHost(
-        navController = navController,
-        startDestination = "home",
-        modifier = modifier
+        navController = navController, startDestination = "home", modifier = modifier
     ) {
 
         composable("home") {
@@ -47,8 +46,14 @@ fun MainNavGraph(
             PhoneVerificationScreen(navController)
         }
 
-        composable("email_verification") {
-            Text("Email Verification")
+        composable("email_verification/{role}") { backStackEntry ->
+
+            val role = UserRole.valueOf(
+                backStackEntry.arguments?.getString("role") ?: "STUDENT"
+            )
+            EmailVerificationScreen(
+                role = role, navController = navController
+            )
         }
     }
 }

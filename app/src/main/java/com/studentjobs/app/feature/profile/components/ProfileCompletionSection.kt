@@ -21,6 +21,7 @@ fun ProfileCompletionSection(
     isStudentVerified: Boolean,
     isPhoneVerified: Boolean,
     isEmailVerified: Boolean,
+    isStudentEmailVerified: Boolean,
     onStudentClick: () -> Unit,
     onPhoneClick: () -> Unit,
     onEmailClick: () -> Unit
@@ -80,8 +81,8 @@ fun ProfileCompletionSection(
             )
 
             VerificationTaskItem(
-                title = "Verify email",
-                isDone = isEmailVerified,
+                title = "Verify student email",
+                isDone = isStudentEmailVerified,
                 onClick = onEmailClick
             )
         }

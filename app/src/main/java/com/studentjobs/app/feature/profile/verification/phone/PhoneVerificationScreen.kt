@@ -129,8 +129,10 @@ fun PhoneVerificationScreen(
                                                 .collection("users")
                                                 .document(uid)
                                                 .update(
-                                                    "isPhoneVerified",
-                                                    true
+                                                    mapOf(
+                                                        "isPhoneVerified" to true,
+                                                        "phoneNumber" to formattedPhone
+                                                    )
                                                 )
                                                 .addOnSuccessListener {
 

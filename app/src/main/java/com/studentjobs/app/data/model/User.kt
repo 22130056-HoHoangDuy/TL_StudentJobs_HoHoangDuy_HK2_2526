@@ -1,6 +1,7 @@
 package com.studentjobs.app.data.model
 
 data class User(
+    // ===== BASIC =====
     val uid: String = "",
     val name: String = "",
     val email: String = "",
@@ -11,12 +12,26 @@ data class User(
     val isPhoneVerified: Boolean = false,
     val isStudentVerified: Boolean = false,
     val isBusinessVerified: Boolean = false,
+    val isStudentEmailVerified: Boolean = false,
 
     // ===== OCR DATA =====
     val extractedName: String? = null,
     val studentId: String? = null,
     val school: String? = null,
     val dateOfBirth: String? = null,
-    // ===== MEDIA =====
-    val avatarUrl: String? = null
+
+    // ===== CONTACT =====
+    val phoneNumber: String? = null,
+    val studentEmail: String? = null,
+
+    // ===== PROFILE =====
+    val avatarUrl: String? = null,
+    val bio: String? = null,
+
+    // ===== CAREER =====
+    val major: String? = null,
+    val skills: List<String> = emptyList(),
+
+    // ===== SYSTEM =====
+    val trustScore: Int = 0
 )

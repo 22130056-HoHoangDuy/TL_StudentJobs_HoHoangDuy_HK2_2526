@@ -14,9 +14,11 @@ class ProfileViewModel(
 ) : AndroidViewModel(application) {
 
     private val userService = UserService()
+
     private val prefs = AppPreferences(application)
 
     private val _uiState = MutableStateFlow(ProfileUiState())
+
     val uiState: StateFlow<ProfileUiState> = _uiState
 
     init {
@@ -25,38 +27,71 @@ class ProfileViewModel(
 
     private fun loadUser() {
 
-        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        val uid = FirebaseAuth
+            .getInstance()
+            .currentUser
+            ?.uid
 
         if (uid == null) {
-            _uiState.value = _uiState.value.copy(isLoading = false)
+
+            _uiState.value = _uiState.value.copy(
+                isLoading = false
+            )
+
             return
         }
 
-        _uiState.value = _uiState.value.copy(isLoading = true)
+        _uiState.value = _uiState.value.copy(
+            isLoading = true
+        )
 
         userService.listenUser(uid) { user ->
 
-            if (user != null) {
+            val score = calculateTrustScore(user)
 
-                val score = calculateTrustScore(user)
+            // Save role locally
+            prefs.saveUserRole(user.role.name)
 
-                // 🔥 giữ nguyên logic cũ
-                prefs.saveUserRole(user.role.name)
+            _uiState.value = _uiState.value.copy(
 
-                _uiState.value = _uiState.value.copy(
-                    name = user.name,
-                    email = user.email,
-                    role = user.role,
-                    trustScore = score,
-                    isStudentVerified = user.isStudentVerified,
-                    isPhoneVerified = user.isPhoneVerified,
-                    isEmailVerified = user.isEmailVerified,
-                    isLoading = false
-                )
+                // ===== SYSTEM =====
+                isLoading = false,
 
-            } else {
-                _uiState.value = _uiState.value.copy(isLoading = false)
-            }
+                // ===== ROLE =====
+                role = user.role,
+
+                // ===== BASIC =====
+                name = user.name,
+                email = user.email,
+                avatarUrl = user.avatarUrl ?: "",
+
+                // ===== VERIFICATION =====
+                isStudentVerified = user.isStudentVerified,
+                isPhoneVerified = user.isPhoneVerified,
+                isEmailVerified = user.isEmailVerified,
+                isStudentEmailVerified = user.isStudentEmailVerified,
+                isBusinessVerified = user.isBusinessVerified,
+
+                // ===== OCR =====
+                extractedName = user.extractedName ?: "",
+                studentId = user.studentId ?: "",
+                school = user.school ?: "",
+                dateOfBirth = user.dateOfBirth ?: "",
+
+                // ===== CONTACT =====
+                phone = user.phoneNumber ?: "",
+                studentEmail = user.studentEmail ?: "",
+
+                // ===== PROFILE =====
+                bio = user.bio ?: "",
+                major = user.major ?: "",
+
+                // ===== SKILLS =====
+                skills = user.skills,
+
+                // ===== TRUST =====
+                trustScore = score
+            )
         }
     }
 }
