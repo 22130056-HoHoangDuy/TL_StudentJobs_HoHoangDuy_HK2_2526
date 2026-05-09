@@ -2,23 +2,23 @@ package com.studentjobs.app.feature.profile
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.studentjobs.app.firebase.firestore.UserService
 import com.studentjobs.app.utils.AppPreferences
 import com.studentjobs.app.utils.calculateTrustScore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
     private val userService = UserService()
+
     private val prefs = AppPreferences(application)
 
     private val _uiState = MutableStateFlow(ProfileUiState())
+
     val uiState: StateFlow<ProfileUiState> = _uiState
 
     init {
@@ -26,37 +26,72 @@ class ProfileViewModel(
     }
 
     private fun loadUser() {
-        viewModelScope.launch {
 
-            _uiState.value = _uiState.value.copy(isLoading = true)
+        val uid = FirebaseAuth
+            .getInstance()
+            .currentUser
+            ?.uid
 
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid == null) {
 
-            if (uid == null) {
-                _uiState.value = _uiState.value.copy(isLoading = false)
-                return@launch
-            }
+            _uiState.value = _uiState.value.copy(
+                isLoading = false
+            )
 
-            val user = userService.getUser(uid)
+            return
+        }
 
-            if (user != null) {
+        _uiState.value = _uiState.value.copy(
+            isLoading = true
+        )
 
-                val score = calculateTrustScore(user)
+        userService.listenUser(uid) { user ->
 
-                // 🔥 SYNC ROLE VỀ LOCAL (RẤT QUAN TRỌNG)
-                prefs.saveUserRole(user.role.name)
+            val score = calculateTrustScore(user)
 
-                _uiState.value = _uiState.value.copy(
-                    name = user.name,
-                    email = user.email,
-                    role = user.role,
-                    trustScore = score,
-                    isLoading = false
-                )
+            // Save role locally
+            prefs.saveUserRole(user.role.name)
 
-            } else {
-                _uiState.value = _uiState.value.copy(isLoading = false)
-            }
+            _uiState.value = _uiState.value.copy(
+
+                // ===== SYSTEM =====
+                isLoading = false,
+
+                // ===== ROLE =====
+                role = user.role,
+
+                // ===== BASIC =====
+                name = user.name,
+                email = user.email,
+                avatarUrl = user.avatarUrl ?: "",
+
+                // ===== VERIFICATION =====
+                isStudentVerified = user.isStudentVerified,
+                isPhoneVerified = user.isPhoneVerified,
+                isEmailVerified = user.isEmailVerified,
+                isStudentEmailVerified = user.isStudentEmailVerified,
+                isBusinessVerified = user.isBusinessVerified,
+
+                // ===== OCR =====
+                extractedName = user.extractedName ?: "",
+                studentId = user.studentId ?: "",
+                school = user.school ?: "",
+                dateOfBirth = user.dateOfBirth ?: "",
+
+                // ===== CONTACT =====
+                phone = user.phoneNumber ?: "",
+                studentEmail = user.studentEmail ?: "",
+
+                // ===== PROFILE =====
+                bio = user.bio ?: "",
+                major = user.major ?: "",
+
+                // ===== SKILLS =====
+                skills = user.skills,
+
+                // ===== TRUST =====
+                trustScore = score
+            )
         }
     }
 }

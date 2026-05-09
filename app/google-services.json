@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "500650348653",
-    "project_id": "studentjobs-8551f",
-    "storage_bucket": "studentjobs-8551f.firebasestorage.app"
+    "project_number": "1073151173148",
+    "project_id": "studentjobs-50af3",
+    "storage_bucket": "studentjobs-50af3.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:500650348653:android:c292bf4dbf3b3859da2f64",
+        "mobilesdk_app_id": "1:1073151173148:android:c877105e0a7b6fe2a6f5d9",
         "android_client_info": {
           "package_name": "com.studentjobs.app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDNF0NIYYvjIpppNvWqaO0iBd4A5ksTMOs"
+          "current_key": "AIzaSyAr25plJz5trmRDjs0nhbTkl_WaooMlJMg"
         }
       ],
       "services": {
