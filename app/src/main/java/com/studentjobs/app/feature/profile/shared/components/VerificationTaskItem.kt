@@ -1,4 +1,4 @@
-package com.studentjobs.app.feature.profile.verification
+package com.studentjobs.app.feature.profile.shared.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

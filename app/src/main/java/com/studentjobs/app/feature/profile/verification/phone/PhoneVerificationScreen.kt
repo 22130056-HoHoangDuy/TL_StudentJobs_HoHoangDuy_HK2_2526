@@ -119,7 +119,7 @@ fun PhoneVerificationScreen(
                                 ) {
 
                                     auth.currentUser
-                                        ?.linkWithCredential(credential)
+                                        ?.updatePhoneNumber(credential)
                                         ?.addOnCompleteListener {
 
                                             val uid = auth.currentUser?.uid
@@ -233,7 +233,7 @@ fun PhoneVerificationScreen(
                     )
 
                     auth.currentUser
-                        ?.linkWithCredential(credential)
+                        ?.updatePhoneNumber(credential)
                         ?.addOnCompleteListener { task ->
 
                             val success =

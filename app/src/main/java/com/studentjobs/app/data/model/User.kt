@@ -33,5 +33,18 @@ data class User(
     val skills: List<String> = emptyList(),
 
     // ===== SYSTEM =====
-    val trustScore: Int = 0
+    val trustScore: Int = 0,
+    // ===== EMPLOYER =====
+    val businessName: String? = null,
+    val businessAddress: String? = null,
+    val businessCategory: String? = null,
+    val businessLicenseUrl: String? = null,
+    val storeFrontImageUrl: String? = null,
+    val verificationStatus: String = "UNVERIFIED",
+
+    // ==== INFORMATION FROM EMPLOYER ==== //
+    val businessLatitude: Double? = null,
+    val businessLongitude: Double? = null,
+    val googleMapsUrl: String? = null,
+    val businessDescription: String? = null,
 )

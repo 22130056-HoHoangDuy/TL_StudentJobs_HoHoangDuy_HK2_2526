@@ -18,13 +18,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.studentjobs.app.data.model.UserRole
+import com.studentjobs.app.feature.profile.employer.EmployerVerificationScreen
+import com.studentjobs.app.feature.profile.employer.components.VerifiedEmployerProfile
 import com.studentjobs.app.feature.profile.student.components.ProfileCompletionSection
 import com.studentjobs.app.feature.profile.student.components.VerifiedStudentProfile
 
 @Composable
 fun ProfileScreen(
-    navController: NavController,
-    viewModel: ProfileViewModel = viewModel()
+    navController: NavController, viewModel: ProfileViewModel = viewModel()
 ) {
 
     val state by viewModel.uiState.collectAsState()
@@ -33,29 +34,13 @@ fun ProfileScreen(
     if (state.isLoading) {
 
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
         }
 
         return
     }
-
-    // Dynamic email verification state
-    val emailVerified =
-        if (state.role == UserRole.STUDENT)
-            state.isStudentEmailVerified
-        else
-            state.isEmailVerified
-
-    // FULL VERIFIED
-    val fullyVerified =
-        state.isStudentVerified &&
-                state.isPhoneVerified &&
-                state.isStudentEmailVerified
-
-    // Main UI
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,64 +49,80 @@ fun ProfileScreen(
             .padding(16.dp)
     ) {
 
-        // VERIFIED PROFILE
-        if (
-            state.role == UserRole.STUDENT &&
-            fullyVerified
-        ) {
+        when (state.role) {
+            // STUDENT FLOW
+            UserRole.STUDENT -> {
 
-            VerifiedStudentProfile(
-                state = state
-            )
+                val fullyVerified =
+                    state.isStudentVerified && state.isPhoneVerified && state.isStudentEmailVerified
 
-        } else {
+                if (fullyVerified) {
 
-            // PROFILE COMPLETION
-            ProfileCompletionSection(
+                    VerifiedStudentProfile(
+                        state = state
+                    )
 
-                isStudentVerified = state.isStudentVerified,
+                } else {
 
-                isPhoneVerified = state.isPhoneVerified,
+                    ProfileCompletionSection(
 
-                isEmailVerified = emailVerified,
+                        isStudentVerified = state.isStudentVerified,
 
-                isStudentEmailVerified = state.isStudentEmailVerified,
+                        isPhoneVerified = state.isPhoneVerified,
 
-                // Student verification
-                onStudentClick = {
+                        isEmailVerified = state.isStudentEmailVerified,
 
-                    if (!state.isStudentVerified) {
+                        isStudentEmailVerified = state.isStudentEmailVerified,
 
-                        navController.navigate(
-                            "student_verification"
-                        ) {
-                            launchSingleTop = true
-                        }
-                    }
-                },
+                        // Student verification
+                        onStudentClick = {
 
-                // Phone verification
-                onPhoneClick = {
+                            if (!state.isStudentVerified) {
 
-                    if (!state.isPhoneVerified) {
+                                navController.navigate(
+                                    "student_verification"
+                                ) {
+                                    launchSingleTop = true
+                                }
+                            }
+                        },
 
-                        navController.navigate(
-                            "phone_verification"
-                        )
-                    }
-                },
+                        // Phone verification
+                        onPhoneClick = {
 
-                // Email verification
-                onEmailClick = {
+                            if (!state.isPhoneVerified) {
 
-                    if (!emailVerified) {
+                                navController.navigate(
+                                    "phone_verification"
+                                )
+                            }
+                        },
 
-                        navController.navigate(
-                            "email_verification/${state.role.name}"
-                        )
-                    }
+                        // Email verification
+                        onEmailClick = {
+
+                            if (!state.isStudentEmailVerified) {
+
+                                navController.navigate(
+                                    "email_verification/STUDENT"
+                                )
+                            }
+                        })
                 }
-            )
+            }
+            // EMPLOYER FLOW
+            UserRole.EMPLOYER -> {
+
+                if (state.isBusinessVerified) {
+
+                    VerifiedEmployerProfile(
+                        state = state
+                    )
+
+                } else {
+                    EmployerVerificationScreen(navController)
+                }
+            }
         }
     }
 }

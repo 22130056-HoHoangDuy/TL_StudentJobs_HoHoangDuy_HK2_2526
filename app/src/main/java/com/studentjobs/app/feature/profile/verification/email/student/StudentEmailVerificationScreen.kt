@@ -165,7 +165,7 @@ fun StudentEmailVerificationScreen(
                             )
 
                             functions
-                                .getHttpsCallable("sendStudentOtp")
+                                .getHttpsCallable("sendVerificationOtp")
                                 .call(data)
                                 .await()
 

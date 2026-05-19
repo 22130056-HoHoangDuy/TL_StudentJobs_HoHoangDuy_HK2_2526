@@ -90,7 +90,15 @@ class ProfileViewModel(
                 skills = user.skills,
 
                 // ===== TRUST =====
-                trustScore = score
+                trustScore = score,
+                businessName = user.businessName ?: "",
+                businessCategory = user.businessCategory ?: "",
+                businessAddress = user.businessAddress ?: "",
+                businessDescription = user.businessDescription ?: "",
+                googleMapsUrl = user.googleMapsUrl ?: "",
+
+                businessLicenseUrl = user.businessLicenseUrl ?: "",
+                storeFrontImageUrl = user.storeFrontImageUrl ?: "",
             )
         }
     }

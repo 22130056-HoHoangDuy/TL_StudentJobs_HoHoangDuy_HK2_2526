@@ -11,7 +11,7 @@ import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
 import com.studentjobs.app.feature.profile.verification.email.EmailVerificationScreen
 import com.studentjobs.app.feature.profile.verification.phone.PhoneVerificationScreen
-import com.studentjobs.app.feature.profile.verification.student.StudentVerificationScreen
+import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
 
 @Composable
 fun MainNavGraph(

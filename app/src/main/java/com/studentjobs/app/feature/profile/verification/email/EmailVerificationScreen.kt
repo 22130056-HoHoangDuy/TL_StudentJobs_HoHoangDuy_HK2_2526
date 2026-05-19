@@ -8,8 +8,7 @@ import com.studentjobs.app.feature.profile.verification.email.student.StudentEma
 
 @Composable
 fun EmailVerificationScreen(
-    role: UserRole,
-    navController: NavController
+    role: UserRole, navController: NavController
 ) {
 
     when (role) {

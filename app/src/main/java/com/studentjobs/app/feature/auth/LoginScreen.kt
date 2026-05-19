@@ -32,14 +32,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.studentjobs.app.data.model.User
+import com.studentjobs.app.data.model.user.UserCore
 import com.studentjobs.app.utils.UiState
-import com.studentjobs.app.feature.auth.AuthViewModel
 
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel,
-    onLoginSuccess: (User) -> Unit,
+    onLoginSuccess: (UserCore) -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
@@ -121,12 +120,20 @@ fun LoginScreen(
                         s.message,
                         color = MaterialTheme.colorScheme.error
                     )
+
                     is UiState.Success<*> -> {
-                        val user = s.data as User
-                        LaunchedEffect(user.uid) {
-                            onLoginSuccess(user)
+
+                        val user =
+                            s.data as? UserCore
+
+                        if (user != null) {
+
+                            LaunchedEffect(user.uid) {
+                                onLoginSuccess(user)
+                            }
                         }
                     }
+
                     else -> {}
                 }
             }

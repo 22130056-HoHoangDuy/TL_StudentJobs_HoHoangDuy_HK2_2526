@@ -26,36 +26,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 enum class VerificationStatus {
-    VERIFIED,
-    NOT_VERIFIED,
-    PENDING
+    VERIFIED, NOT_VERIFIED, PENDING
 }
 
 @Composable
 fun VerificationCard(
-    title: String,
-    description: String,
-    status: VerificationStatus,
+    title: String, description: String, status: VerificationStatus,
+
+    enabled: Boolean = true,
+
     onClick: () -> Unit
 ) {
 
     val (icon, color, statusText) = when (status) {
         VerificationStatus.VERIFIED -> Triple(
-            Icons.Default.CheckCircle,
-            MaterialTheme.colorScheme.primary,
-            "Verified"
+            Icons.Default.CheckCircle, MaterialTheme.colorScheme.primary, "Verified"
         )
 
         VerificationStatus.NOT_VERIFIED -> Triple(
-            Icons.Default.Warning,
-            MaterialTheme.colorScheme.error,
-            "Not verified"
+            Icons.Default.Warning, MaterialTheme.colorScheme.error, "Not verified"
         )
 
         VerificationStatus.PENDING -> Triple(
-            Icons.Default.HourglassBottom,
-            MaterialTheme.colorScheme.tertiary,
-            "Pending"
+            Icons.Default.HourglassBottom, MaterialTheme.colorScheme.tertiary, "Pending"
         )
     }
 
@@ -65,14 +58,11 @@ fun VerificationCard(
             .padding(vertical = 6.dp)
             .clickable(enabled = status != VerificationStatus.PENDING) {
                 onClick()
-            },
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(2.dp)
+            }, shape = RoundedCornerShape(16.dp), elevation = CardDefaults.cardElevation(2.dp)
     ) {
 
         Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
 
             Icon(
@@ -89,8 +79,7 @@ fun VerificationCard(
             ) {
 
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium
+                    text = title, style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
@@ -102,15 +91,16 @@ fun VerificationCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = statusText,
-                    color = color,
-                    style = MaterialTheme.typography.labelMedium
+                    text = statusText, color = color, style = MaterialTheme.typography.labelMedium
                 )
             }
-
             Button(
                 onClick = onClick,
-                enabled = status != VerificationStatus.PENDING,
+
+                enabled =
+                    enabled &&
+                            status != VerificationStatus.PENDING,
+
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -123,4 +113,5 @@ fun VerificationCard(
             }
         }
     }
+
 }

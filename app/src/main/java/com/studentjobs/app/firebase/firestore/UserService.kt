@@ -98,10 +98,10 @@ class UserService {
         return try {
 
             db.collection("users").document(uid).update(
-                    mapOf(
-                        "studentCardFront" to frontUrl, "studentCardBack" to backUrl
-                    )
-                ).await()
+                mapOf(
+                    "studentCardFront" to frontUrl, "studentCardBack" to backUrl
+                )
+            ).await()
 
             Result.success(Unit)
 
@@ -120,54 +120,64 @@ class UserService {
 
         db.collection("users").document(uid).addSnapshotListener { snapshot, error ->
 
-                if (error != null) {
-                    Log.e("FIRESTORE", "Listen failed", error)
-                    return@addSnapshotListener
-                }
-
-                if (snapshot == null || !snapshot.exists()) {
-                    return@addSnapshotListener
-                }
-
-                val role = try {
-                    UserRole.valueOf(
-                        snapshot.getString("role")?.uppercase() ?: "STUDENT"
-                    )
-                } catch (e: Exception) {
-                    UserRole.STUDENT
-                }
-
-                val user = User(
-                    uid = snapshot.id,
-                    name = snapshot.getString("name") ?: "",
-                    email = snapshot.getString("email") ?: "",
-                    role = role,
-
-                    isEmailVerified = snapshot.getBoolean("isEmailVerified") ?: false,
-
-                    isPhoneVerified = snapshot.getBoolean("isPhoneVerified") ?: false,
-
-                    isStudentVerified = snapshot.getBoolean("isStudentVerified") ?: false,
-
-                    isBusinessVerified = snapshot.getBoolean("isBusinessVerified") ?: false,
-
-                    isStudentEmailVerified = snapshot.getBoolean("isStudentEmailVerified") ?: false,
-
-                    extractedName = snapshot.getString("extractedName"),
-                    studentId = snapshot.getString("studentId"),
-                    school = snapshot.getString("school"),
-                    dateOfBirth = snapshot.getString("dateOfBirth"),
-                    avatarUrl = snapshot.getString("avatarUrl"),
-                    phoneNumber = snapshot.getString("phoneNumber"),
-                    bio = snapshot.getString("bio"),
-                    major = snapshot.getString("major"),
-                    skills = snapshot.get("skills") as? List<String> ?: emptyList()
-                )
-
-                Log.d("LISTENER", "User updated: $user")
-
-                onChange(user)
+            if (error != null) {
+                Log.e("FIRESTORE", "Listen failed", error)
+                return@addSnapshotListener
             }
+
+            if (snapshot == null || !snapshot.exists()) {
+                return@addSnapshotListener
+            }
+
+            val role = try {
+                UserRole.valueOf(
+                    snapshot.getString("role")?.uppercase() ?: "STUDENT"
+                )
+            } catch (e: Exception) {
+                UserRole.STUDENT
+            }
+
+            val user = User(
+                uid = snapshot.id,
+                name = snapshot.getString("name") ?: "",
+                email = snapshot.getString("email") ?: "",
+                role = role,
+
+                isEmailVerified = snapshot.getBoolean("isEmailVerified") ?: false,
+
+                isPhoneVerified = snapshot.getBoolean("isPhoneVerified") ?: false,
+
+                isStudentVerified = snapshot.getBoolean("isStudentVerified") ?: false,
+
+                isBusinessVerified = snapshot.getBoolean("isBusinessVerified") ?: false,
+
+                isStudentEmailVerified = snapshot.getBoolean("isStudentEmailVerified") ?: false,
+
+                extractedName = snapshot.getString("extractedName"),
+                studentId = snapshot.getString("studentId"),
+                school = snapshot.getString("school"),
+                dateOfBirth = snapshot.getString("dateOfBirth"),
+                avatarUrl = snapshot.getString("avatarUrl"),
+                phoneNumber = snapshot.getString("phoneNumber"),
+                bio = snapshot.getString("bio"),
+                major = snapshot.getString("major"),
+
+                // ===== EMPLOYER =====
+                businessName = snapshot.getString("businessName"),
+                businessCategory = snapshot.getString("businessCategory"),
+                businessAddress = snapshot.getString("businessAddress"),
+                businessDescription = snapshot.getString("businessDescription"),
+                googleMapsUrl = snapshot.getString("googleMapsUrl"),
+
+                businessLicenseUrl = snapshot.getString("businessLicenseUrl"),
+                storeFrontImageUrl = snapshot.getString("storeFrontImageUrl"),
+
+                skills = snapshot.get("skills") as? List<String> ?: emptyList()
+            )
+            Log.d("LISTENER", "User updated: $user")
+
+            onChange(user)
+        }
     }
 
     suspend fun uploadStudentCard(
@@ -210,19 +220,74 @@ class UserService {
         val ref = FirebaseStorage.getInstance().reference.child("avatars/$uid.jpg")
 
         ref.putFile(imageUri).continueWithTask {
-                ref.downloadUrl
-            }.addOnSuccessListener { downloadUri ->
+            ref.downloadUrl
+        }.addOnSuccessListener { downloadUri ->
 
-                db.collection("users").document(uid).update(
-                        mapOf(
-                            "avatarUrl" to downloadUri.toString()
-                        )
-                    ).addOnSuccessListener {
-                        onSuccess(downloadUri.toString())
-                    }
-            }.addOnFailureListener {
-                onError(it.message ?: "Upload failed")
+            db.collection("users").document(uid).update(
+                mapOf(
+                    "avatarUrl" to downloadUri.toString()
+                )
+            ).addOnSuccessListener {
+                onSuccess(downloadUri.toString())
             }
+        }.addOnFailureListener {
+            onError(it.message ?: "Upload failed")
+        }
     }
 
+    suspend fun submitEmployerVerification(
+        uid: String,
+
+        businessName: String,
+        businessCategory: String,
+        businessAddress: String,
+        businessDescription: String,
+        googleMapsUrl: String,
+
+        businessLicenseUrl: String?,
+        storeFrontImageUrl: String?
+    ) {
+
+        // ===== UPDATE USER SUMMARY =====
+
+        db.collection("users").document(uid).update(
+            mapOf(
+                "verificationStatus" to "PENDING",
+                "isBusinessVerified" to false,
+
+                // save summary directly in user
+                "businessName" to businessName,
+                "businessCategory" to businessCategory,
+                "businessAddress" to businessAddress,
+                "businessDescription" to businessDescription,
+                "googleMapsUrl" to googleMapsUrl,
+
+                "businessLicenseUrl" to businessLicenseUrl,
+                "storeFrontImageUrl" to storeFrontImageUrl
+            )
+        ).await()
+
+        // ===== CREATE EMPLOYER VERIFICATION =====
+
+        db.collection("employer_verifications").document(uid).set(
+            mapOf(
+                "uid" to uid,
+
+                "businessName" to businessName,
+                "businessCategory" to businessCategory,
+                "businessAddress" to businessAddress,
+                "businessDescription" to businessDescription,
+
+                "googleMapsUrl" to googleMapsUrl,
+
+                "businessLicenseUrl" to businessLicenseUrl,
+                "storeFrontImageUrl" to storeFrontImageUrl,
+
+                "status" to "PENDING",
+
+                "submittedAt" to System.currentTimeMillis()
+            )
+        ).await()
+    }
 }
+

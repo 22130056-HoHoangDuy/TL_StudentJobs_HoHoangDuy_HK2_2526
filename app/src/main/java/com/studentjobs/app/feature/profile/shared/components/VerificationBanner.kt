@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun VerificationBanner() {
+fun VerificationBanner(title: String, subtitle: String) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),

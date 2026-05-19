@@ -25,9 +25,7 @@ import coil.compose.AsyncImage
 
 @Composable
 fun UploadCard(
-    title: String,
-    imageUri: Uri?,
-    onClick: () -> Unit
+    title: String, imageUri: Uri?, onClick: () -> Unit, enabled: Boolean = true
 ) {
     Card(
         modifier = Modifier
@@ -36,8 +34,7 @@ fun UploadCard(
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Text(title, style = MaterialTheme.typography.titleMedium)
@@ -48,8 +45,7 @@ fun UploadCard(
                 modifier = Modifier
                     .size(160.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color.LightGray),
-                contentAlignment = Alignment.Center
+                    .background(Color.LightGray), contentAlignment = Alignment.Center
             ) {
                 if (imageUri != null) {
                     AsyncImage(
@@ -64,7 +60,10 @@ fun UploadCard(
 
             Spacer(Modifier.height(12.dp))
 
-            Button(onClick = onClick) {
+            Button(
+                onClick = onClick, enabled = enabled
+            ) {
+
                 Text("Choose Image")
             }
         }

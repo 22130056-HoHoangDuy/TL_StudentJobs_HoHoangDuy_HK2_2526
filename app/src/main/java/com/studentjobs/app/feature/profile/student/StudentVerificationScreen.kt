@@ -1,4 +1,4 @@
-package com.studentjobs.app.feature.profile.verification.student
+package com.studentjobs.app.feature.profile.student
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.studentjobs.app.data.model.User
 import com.studentjobs.app.feature.profile.shared.components.UploadCard
 import com.studentjobs.app.firebase.firestore.UserService
 import kotlinx.coroutines.delay
@@ -38,51 +39,82 @@ import kotlinx.coroutines.launch
 fun StudentVerificationScreen(
     navController: NavController
 ) {
+
     val userService = remember { UserService() }
-    val uid = FirebaseAuth.getInstance().currentUser?.uid
 
-    var user by remember { mutableStateOf<com.studentjobs.app.data.model.User?>(null) }
+    val uid = FirebaseAuth.getInstance()
+        .currentUser
+        ?.uid
 
-    var frontImage by remember { mutableStateOf<Uri?>(null) }
-    var backImage by remember { mutableStateOf<Uri?>(null) }
+    var user by remember {
+        mutableStateOf<User?>(null)
+    }
 
-    var isUploading by remember { mutableStateOf(false) }
+    var frontImage by remember {
+        mutableStateOf<Uri?>(null)
+    }
 
-    // 📡 realtime user listener
+    var backImage by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    var isUploading by remember {
+        mutableStateOf(false)
+    }
+
+    // 🔥 disable edit after verified
+    val isEnabled =
+        user?.isStudentVerified != true
+
+    // 📡 realtime listener
     LaunchedEffect(uid) {
+
         if (uid != null) {
+
             userService.listenUser(uid) {
                 user = it
             }
         }
     }
 
-    // 🔥 auto back khi verify xong
-    LaunchedEffect(user?.isStudentVerified) {
-        if (user?.isStudentVerified == true) {
-            delay(800)
-            navController.popBackStack()
+    // 🔥 auto back
+//    LaunchedEffect(user?.isStudentVerified) {
+//
+//        if (user?.isStudentVerified == true) {
+//
+//            delay(800)
+//
+//            navController.popBackStack()
+//        }
+//    }
+
+    // 📷 FRONT PICKER
+    val frontPicker =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
+
+            frontImage = uri
         }
-    }
 
-    // 📷 picker
-    val frontPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri ->
-        frontImage = uri
-    }
+    // 📷 BACK PICKER
+    val backPicker =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) { uri ->
 
-    val backPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri ->
-        backImage = uri
-    }
+            backImage = uri
+        }
+
+    val scope = rememberCoroutineScope()
 
     // 🎨 UI
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(
+                rememberScrollState()
+            )
             .padding(16.dp)
     ) {
 
@@ -91,83 +123,125 @@ fun StudentVerificationScreen(
             style = MaterialTheme.typography.titleLarge
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(
+            Modifier.height(16.dp)
+        )
 
         // 🧾 FRONT
         UploadCard(
             title = "Student Card - Front",
             imageUri = frontImage,
-            onClick = { frontPicker.launch("image/*") }
+            onClick = {
+                frontPicker.launch("image/*")
+            },
+            enabled = isEnabled
         )
 
         // 🧾 BACK
         UploadCard(
             title = "Student Card - Back",
             imageUri = backImage,
-            onClick = { backPicker.launch("image/*") }
+            onClick = {
+                backPicker.launch("image/*")
+            },
+            enabled = isEnabled
         )
 
-        Spacer(Modifier.height(16.dp))
-
-        val scope = rememberCoroutineScope() // 👈 đặt ở đầu Composable
+        Spacer(
+            Modifier.height(16.dp)
+        )
 
         Button(
             onClick = {
+
                 scope.launch {
+
                     if (uid == null) return@launch
 
                     isUploading = true
 
-                    val result = userService.uploadStudentCard(
-                        uid = uid,
-                        frontUri = frontImage!!,
-                        backUri = backImage!!
-                    )
+                    val result =
+                        userService.uploadStudentCard(
+                            uid = uid,
+                            frontUri = frontImage!!,
+                            backUri = backImage!!
+                        )
 
                     isUploading = false
 
                     if (result.isFailure) {
-                        // TODO: show error
+
+                        // TODO show error
                     }
                 }
             },
+
             modifier = Modifier.fillMaxWidth(),
-            enabled = frontImage != null && backImage != null && !isUploading
+
+            enabled =
+                frontImage != null &&
+                        backImage != null &&
+                        !isUploading &&
+                        isEnabled
         ) {
+
             if (isUploading) {
+
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp
                 )
+
             } else {
+
                 Text("Upload & Verify")
             }
         }
-        Spacer(Modifier.height(16.dp))
+
+        Spacer(
+            Modifier.height(16.dp)
+        )
 
         // 📄 RESULT
         user?.let {
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
 
-                    Text("Extracted Info", style = MaterialTheme.typography.titleMedium)
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
 
-                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Extracted Info",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Spacer(
+                        Modifier.height(8.dp)
+                    )
 
                     Text("Name: ${it.extractedName ?: "..."}")
                     Text("School: ${it.school ?: "..."}")
                     Text("DOB: ${it.dateOfBirth ?: "..."}")
                     Text("Student ID: ${it.studentId ?: "..."}")
 
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(
+                        Modifier.height(8.dp)
+                    )
 
                     if (it.isStudentVerified) {
-                        Text("✅ Verified", color = MaterialTheme.colorScheme.primary)
+
+                        Text(
+                            " Verified",
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
                     } else {
-                        Text("⏳ Processing OCR...")
+
+                        Text(" Processing OCR...")
                     }
                 }
             }

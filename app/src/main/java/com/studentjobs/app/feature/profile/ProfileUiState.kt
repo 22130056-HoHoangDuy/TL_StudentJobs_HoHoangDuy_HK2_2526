@@ -40,5 +40,15 @@ data class ProfileUiState(
     val skills: List<String> = emptyList(),
 
     // ===== TRUST =====
-    val trustScore: Int = 0
+    val trustScore: Int = 0,
+
+    // ===== EMPLOYER =====
+    val businessName: String = "",
+    val businessCategory: String = "",
+    val businessAddress: String = "",
+    val businessDescription: String = "",
+    val googleMapsUrl: String = "",
+
+    val businessLicenseUrl: String = "",
+    val storeFrontImageUrl: String = ""
 )
