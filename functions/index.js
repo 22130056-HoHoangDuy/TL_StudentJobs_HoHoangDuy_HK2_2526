@@ -160,7 +160,7 @@ exports.processStudentCard = onObjectFinalized(
     }
   }
 );
-exports.sendStudentOtp = onCall(
+exports.sendVerificationOtp = onCall(
   {
     region: "us-east1",
   },
