@@ -1,34 +1,29 @@
 package com.studentjobs.app.data.model.user
 
-import com.studentjobs.app.data.model.UserRole
-
 data class UserCore(
 
-    // ===== IDENTITY =====
+    // identity
     val uid: String = "",
-    val role: com.studentjobs.app.data.model.user.UserRole = UserRole.STUDENT,
+    val role: UserRole = UserRole.STUDENT,
 
-    // ===== AUTH =====
-    val email: String = "",
+    // auth
+    val loginEmail: String = "",
     val phoneNumber: String? = null,
 
-    // ===== VERIFY =====
-    val isEmailVerified: Boolean = false,
-    val isPhoneVerified: Boolean = false,
+    // default state of user before verified is FALSE
+    val userVerified: Boolean = false,
 
-    // ===== ACCOUNT =====
+    // status of user account
     val status: UserStatus = UserStatus.ACTIVE,
 
-    // ===== TRUST =====
+    // user trust score
     val trustScore: Int = 0,
 
-    // ===== SUBSCRIPTION =====
-    val subscriptionPlan: SubscriptionPlan =
-        SubscriptionPlan.FREE,
-
+    // subscription FREE / PLUS, default is FREE
+    val subscriptionPlan: SubscriptionPlan = SubscriptionPlan.FREE,
     val subscriptionExpiredAt: Long? = null,
 
-    // ===== SYSTEM =====
+    // system log
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
 )

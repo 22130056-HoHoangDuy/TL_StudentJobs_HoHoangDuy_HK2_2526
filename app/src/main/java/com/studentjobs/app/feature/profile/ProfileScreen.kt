@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -17,7 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.studentjobs.app.data.model.UserRole
+import com.studentjobs.app.data.model.status.VerificationStatus
+import com.studentjobs.app.data.model.user.UserRole
 import com.studentjobs.app.feature.profile.employer.EmployerVerificationScreen
 import com.studentjobs.app.feature.profile.employer.components.VerifiedEmployerProfile
 import com.studentjobs.app.feature.profile.student.components.ProfileCompletionSection
@@ -25,36 +27,70 @@ import com.studentjobs.app.feature.profile.student.components.VerifiedStudentPro
 
 @Composable
 fun ProfileScreen(
-    navController: NavController, viewModel: ProfileViewModel = viewModel()
+
+    navController: NavController,
+
+    viewModel: ProfileViewModel = viewModel()
+
 ) {
 
     val state by viewModel.uiState.collectAsState()
 
-    // Loading
+    // ========================================
+    // LOADING
+    // ========================================
+
     if (state.isLoading) {
 
         Box(
             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
+
             CircularProgressIndicator()
         }
 
         return
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
+            .background(
+                MaterialTheme.colorScheme.background
+            )
+            .verticalScroll(
+                rememberScrollState()
+            )
             .padding(16.dp)
     ) {
 
         when (state.role) {
+
+            // ========================================
             // STUDENT FLOW
+            // ========================================
+
             UserRole.STUDENT -> {
 
+                val verification = state.studentVerification
+
                 val fullyVerified =
-                    state.isStudentVerified && state.isPhoneVerified && state.isStudentEmailVerified
+
+                    verification?.studentCardVerified ==
+
+                            VerificationStatus.VERIFIED
+
+                            &&
+
+                            verification.studentPhoneVerified ==
+
+                            VerificationStatus.VERIFIED
+
+                            &&
+
+                            verification.studentEmailVerified ==
+
+                            VerificationStatus.VERIFIED
 
                 if (fullyVerified) {
 
@@ -66,42 +102,90 @@ fun ProfileScreen(
 
                     ProfileCompletionSection(
 
-                        isStudentVerified = state.isStudentVerified,
+                        // ========================================
+                        // VERIFY STATE
+                        // ========================================
 
-                        isPhoneVerified = state.isPhoneVerified,
+                        isStudentVerified =
 
-                        isEmailVerified = state.isStudentEmailVerified,
+                            verification?.studentCardVerified ==
 
-                        isStudentEmailVerified = state.isStudentEmailVerified,
+                                    VerificationStatus.VERIFIED,
 
-                        // Student verification
+                        isPhoneVerified =
+
+                            verification?.studentPhoneVerified ==
+
+                                    VerificationStatus.VERIFIED,
+
+                        isEmailVerified =
+
+                            verification?.studentEmailVerified ==
+
+                                    VerificationStatus.VERIFIED,
+
+                        isStudentEmailVerified =
+
+                            verification?.studentEmailVerified ==
+
+                                    VerificationStatus.VERIFIED,
+
+                        // ========================================
+                        // STUDENT VERIFY
+                        // ========================================
+
                         onStudentClick = {
 
-                            if (!state.isStudentVerified) {
+                            if (
+
+                                verification?.studentCardVerified !=
+
+                                VerificationStatus.VERIFIED
+
+                            ) {
 
                                 navController.navigate(
                                     "student_verification"
                                 ) {
+
                                     launchSingleTop = true
                                 }
                             }
                         },
 
-                        // Phone verification
+                        // ========================================
+                        // PHONE VERIFY
+                        // ========================================
+
                         onPhoneClick = {
 
-                            if (!state.isPhoneVerified) {
+                            if (
+
+                                verification?.studentPhoneVerified !=
+
+                                VerificationStatus.VERIFIED
+
+                            ) {
 
                                 navController.navigate(
-                                    "phone_verification"
+                                    "phone_verification/STUDENT"
                                 )
                             }
                         },
 
-                        // Email verification
+                        // ========================================
+                        // EMAIL VERIFY
+                        // ========================================
+
                         onEmailClick = {
 
-                            if (!state.isStudentEmailVerified) {
+                            if (
+
+                                verification?.studentEmailVerified !=
+
+                                VerificationStatus.VERIFIED
+
+                            ) {
 
                                 navController.navigate(
                                     "email_verification/STUDENT"
@@ -110,17 +194,32 @@ fun ProfileScreen(
                         })
                 }
             }
+
+            // ========================================
             // EMPLOYER FLOW
+            // ========================================
+
             UserRole.EMPLOYER -> {
 
-                if (state.isBusinessVerified) {
+                val verification = state.employerVerification
+
+                val fullyVerified =
+
+                    verification?.submissionStatus ==
+
+                            VerificationStatus.VERIFIED
+
+                if (fullyVerified) {
 
                     VerifiedEmployerProfile(
                         state = state
                     )
 
                 } else {
-                    EmployerVerificationScreen(navController)
+
+                    EmployerVerificationScreen(
+                        navController
+                    )
                 }
             }
         }

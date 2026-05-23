@@ -2,30 +2,56 @@ package com.studentjobs.app.feature.profile
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.studentjobs.app.firebase.firestore.UserService
-import com.studentjobs.app.utils.AppPreferences
-import com.studentjobs.app.utils.calculateTrustScore
+import com.studentjobs.app.data.model.user.UserRole
+import com.studentjobs.app.data.repository.profile.ProfileRepository
+import com.studentjobs.app.firebase.firestore.EmployerService
+import com.studentjobs.app.firebase.firestore.StudentService
+import com.studentjobs.app.firebase.firestore.UserServiceNew
+import com.studentjobs.app.firebase.firestore.VerificationService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
-    private val userService = UserService()
+    // ========================================
+    // SERVICES
+    // ========================================
+    private val repository = ProfileRepository(
 
-    private val prefs = AppPreferences(application)
+        userService = UserServiceNew(),
 
-    private val _uiState = MutableStateFlow(ProfileUiState())
+        studentService = StudentService(),
 
-    val uiState: StateFlow<ProfileUiState> = _uiState
+        employerService = EmployerService(),
 
+        verificationService = VerificationService()
+    )
+
+    // ========================================
+    // UI STATE
+    // ========================================
+    private val _uiState =
+        MutableStateFlow(ProfileUiState())
+
+    val uiState: StateFlow<ProfileUiState> =
+        _uiState
+
+    // ========================================
+    // INIT
+    // ========================================
     init {
-        loadUser()
+        loadProfile()
     }
 
-    private fun loadUser() {
+    // ========================================
+    // LOAD PROFILE
+    // ========================================
+    fun loadProfile() {
 
         val uid = FirebaseAuth
             .getInstance()
@@ -34,72 +60,128 @@ class ProfileViewModel(
 
         if (uid == null) {
 
-            _uiState.value = _uiState.value.copy(
-                isLoading = false
-            )
+            _uiState.value =
+                _uiState.value.copy(
+                    isLoading = false
+                )
 
             return
         }
 
-        _uiState.value = _uiState.value.copy(
-            isLoading = true
-        )
+        viewModelScope.launch {
 
-        userService.listenUser(uid) { user ->
+            try {
 
-            val score = calculateTrustScore(user)
+                // ========================================
+                // USER CORE
+                // ========================================
+                val userCore =
+                    repository.getUserCore(uid)
 
-            // Save role locally
-            prefs.saveUserRole(user.role.name)
+                if (userCore == null) {
 
-            _uiState.value = _uiState.value.copy(
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isLoading = false
+                        )
 
-                // ===== SYSTEM =====
-                isLoading = false,
+                    return@launch
+                }
 
-                // ===== ROLE =====
-                role = user.role,
+                // ========================================
+                // STUDENT FLOW
+                // ========================================
+                if (userCore.role == UserRole.STUDENT) {
 
-                // ===== BASIC =====
-                name = user.name,
-                email = user.email,
-                avatarUrl = user.avatarUrl ?: "",
+                    val studentProfile =
+                        repository.getStudentProfile(uid)
 
-                // ===== VERIFICATION =====
-                isStudentVerified = user.isStudentVerified,
-                isPhoneVerified = user.isPhoneVerified,
-                isEmailVerified = user.isEmailVerified,
-                isStudentEmailVerified = user.isStudentEmailVerified,
-                isBusinessVerified = user.isBusinessVerified,
+                    val studentVerification =
+                        repository.getStudentVerification(uid)
 
-                // ===== OCR =====
-                extractedName = user.extractedName ?: "",
-                studentId = user.studentId ?: "",
-                school = user.school ?: "",
-                dateOfBirth = user.dateOfBirth ?: "",
+                    // INITIAL STATE
+                    _uiState.value =
+                        _uiState.value.copy(
 
-                // ===== CONTACT =====
-                phone = user.phoneNumber ?: "",
-                studentEmail = user.studentEmail ?: "",
+                            // SYSTEM
+                            isLoading = false,
 
-                // ===== PROFILE =====
-                bio = user.bio ?: "",
-                major = user.major ?: "",
+                            // USER
+                            userCore = userCore,
 
-                // ===== SKILLS =====
-                skills = user.skills,
+                            // ROLE
+                            role = userCore.role,
 
-                // ===== TRUST =====
-                trustScore = score,
-                businessName = user.businessName ?: "",
-                businessCategory = user.businessCategory ?: "",
-                businessAddress = user.businessAddress ?: "",
-                businessDescription = user.businessDescription ?: "",
-                googleMapsUrl = user.googleMapsUrl ?: "",
+                            // STUDENT
+                            studentProfile = studentProfile,
 
-                businessLicenseUrl = user.businessLicenseUrl ?: "",
-                storeFrontImageUrl = user.storeFrontImageUrl ?: "",
-            )
+                            studentVerification =
+                                studentVerification
+                        )
+
+                    // REALTIME LISTENER
+                    repository.listenStudentVerification(uid) {
+
+                            updatedVerification ->
+
+                        _uiState.value =
+                            _uiState.value.copy(
+
+                                studentVerification =
+                                    updatedVerification
+                            )
+                    }
+                }
+                // ========================================
+                // EMPLOYER FLOW
+                // ========================================
+                else {
+
+                    val employerProfile =
+                        repository.getEmployerProfile(uid)
+
+                    val employerVerification =
+                        repository.getEmployerVerification(uid)
+
+                    _uiState.value =
+                        _uiState.value.copy(
+
+                            // SYSTEM
+                            isLoading = false,
+
+                            // USER
+                            userCore = userCore,
+
+                            // ROLE
+                            role = userCore.role,
+
+                            // EMPLOYER
+                            employerProfile =
+                                employerProfile,
+
+                            employerVerification =
+                                employerVerification
+                        )
+                }
+
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        isLoading = false
+                    )
+            }
+        }
+        repository.listenUserCore(uid) {
+
+                userCore ->
+
+            _uiState.value =
+                _uiState.value.copy(
+                    userCore = userCore
+                )
         }
     }
 }

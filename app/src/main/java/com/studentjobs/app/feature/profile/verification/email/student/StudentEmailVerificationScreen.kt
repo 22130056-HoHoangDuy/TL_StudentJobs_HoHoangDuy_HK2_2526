@@ -12,7 +12,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -20,8 +25,9 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.functions.FirebaseFunctions
-import com.studentjobs.app.data.model.User
-import com.studentjobs.app.data.model.UserRole
+import com.studentjobs.app.data.model.status.VerificationStatus
+import com.studentjobs.app.data.model.student.StudentVerification
+import com.studentjobs.app.data.model.user.UserCore
 import com.studentjobs.app.firebase.firestore.SchoolDomainService
 import com.studentjobs.app.utils.calculateTrustScore
 import kotlinx.coroutines.launch
@@ -46,7 +52,7 @@ fun StudentEmailVerificationScreen(
         SchoolDomainService()
     }
 
-    var email by remember {
+    var studentEmail by remember {
         mutableStateOf("")
     }
 
@@ -73,22 +79,18 @@ fun StudentEmailVerificationScreen(
     ) {
 
         Text(
-            text = "Student Email Verification",
-            style = MaterialTheme.typography.headlineSmall
+            text = "Student Email Verification", style = MaterialTheme.typography.headlineSmall
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
         // EMAIL
         OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-            },
-            label = {
-                Text("Student Email")
-            },
-            modifier = Modifier.fillMaxWidth()
+            value = studentEmail, onValueChange = {
+            studentEmail = it
+        }, label = {
+            Text("Student Email")
+        }, modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -97,14 +99,11 @@ fun StudentEmailVerificationScreen(
         if (isOtpSent) {
 
             OutlinedTextField(
-                value = otp,
-                onValueChange = {
-                    otp = it
-                },
-                label = {
-                    Text("OTP Code")
-                },
-                modifier = Modifier.fillMaxWidth()
+                value = otp, onValueChange = {
+                otp = it
+            }, label = {
+                Text("OTP Code")
+            }, modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -122,21 +121,18 @@ fun StudentEmailVerificationScreen(
 
                             error = ""
 
-                            if (!email.contains("@")) {
+                            if (!studentEmail.contains("@")) {
 
                                 error = "Invalid email"
 
                                 return@launch
                             }
 
-                            val domain =
-                                email.substringAfter("@")
+                            val domain = studentEmail.substringAfter("@")
 
                             isLoading = true
 
-                            val isValid =
-                                schoolDomainService
-                                    .isValidStudentDomain(domain)
+                            val isValid = schoolDomainService.isValidStudentDomain(domain)
 
                             if (!isValid) {
 
@@ -160,36 +156,27 @@ fun StudentEmailVerificationScreen(
 
                             // CALL CLOUD FUNCTION
                             val data = hashMapOf(
-                                "email" to email,
-                                "uid" to user.uid
+                                "email" to studentEmail, "uid" to user.uid
                             )
 
-                            functions
-                                .getHttpsCallable("sendVerificationOtp")
-                                .call(data)
-                                .await()
+                            functions.getHttpsCallable("sendVerificationOtp").call(data).await()
 
                             isLoading = false
 
                             isOtpSent = true
 
                             Toast.makeText(
-                                context,
-                                "OTP sent to email",
-                                Toast.LENGTH_SHORT
+                                context, "OTP sent to email", Toast.LENGTH_SHORT
                             ).show()
 
                         } catch (e: Exception) {
 
                             isLoading = false
 
-                            error =
-                                e.message ?: "Failed to send OTP"
+                            error = e.message ?: "Failed to send OTP"
                         }
                     }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                }, modifier = Modifier.fillMaxWidth(), enabled = !isLoading
             ) {
 
                 if (isLoading) {
@@ -204,7 +191,10 @@ fun StudentEmailVerificationScreen(
 
         } else {
 
-            // VERIFY OTP
+            // ========================================
+// VERIFY OTP
+// ========================================
+
             Button(
                 onClick = {
 
@@ -225,51 +215,118 @@ fun StudentEmailVerificationScreen(
                                 return@launch
                             }
 
-                            // GET OTP FROM FIRESTORE
+                            // ========================================
+                            // GET OTP
+                            // ========================================
+
                             val otpDoc =
-                                firestore.collection("email_otps")
-                                    .document(user.uid)
-                                    .get()
-                                    .await()
+                                firestore.collection("email_otps").document(user.uid).get().await()
 
-                            val savedOtp =
-                                otpDoc.getString("otp")
+                            val savedOtp = otpDoc.getString("otp")
 
-                            val savedEmail =
-                                otpDoc.getString("email")
+                            val savedEmail = otpDoc.getString("email")
 
                             if (
+
                                 savedOtp == otp &&
-                                savedEmail == email
+
+                                savedEmail == studentEmail
+
                             ) {
 
-                                val trustScore =
-                                    calculateTrustScore(
-                                        User(
-                                            role = UserRole.STUDENT,
-                                            isStudentVerified = true,
-                                            isPhoneVerified = true,
-                                            isEmailVerified = true
-                                        )
-                                    )
+                                // ========================================
+                                // UPDATE STUDENT VERIFICATION
+                                // ========================================
 
-                                firestore.collection("users")
-                                    .document(user.uid)
+                                firestore.collection("student_verifications").document(user.uid)
                                     .update(
                                         mapOf(
-                                            "studentEmail" to email,
-                                            "isStudentEmailVerified" to true,
-                                            "trustScore" to trustScore
+
+                                            "studentEmailVerified" to VerificationStatus.VERIFIED
+
                                         )
+                                    ).await()
+
+                                // ========================================
+                                // UPDATE STUDENT PROFILE
+                                // ========================================
+
+                                firestore.collection("students").document(user.uid).update(
+                                        mapOf(
+                                            "studentEmail" to studentEmail
+                                        )
+                                    ).await()
+
+                                // ========================================
+                                // LOAD FULL STATE
+                                // ========================================
+
+                                val userCore =
+
+                                    firestore.collection("users").document(user.uid).get().await()
+                                        .toObject(
+                                            UserCore::class.java
+                                        )
+
+                                val studentVerification =
+
+                                    firestore.collection("student_verifications").document(user.uid)
+                                        .get().await().toObject(
+                                            StudentVerification::class.java
+                                        )
+
+                                // ========================================
+                                // RECALCULATE TRUST SCORE
+                                // ========================================
+
+                                val trustScore =
+
+                                    calculateTrustScore(
+
+                                        user = userCore!!,
+
+                                        studentVerification = studentVerification
                                     )
-                                    .await()
+
+                                // ========================================
+                                // CHECK FINAL VERIFIED
+                                // ========================================
+
+                                val userVerified =
+
+                                    studentVerification?.studentEmailVerified ==
+
+                                            VerificationStatus.VERIFIED
+
+                                            &&
+
+                                            studentVerification.studentPhoneVerified ==
+
+                                            VerificationStatus.VERIFIED
+
+                                            &&
+
+                                            studentVerification.studentCardVerified ==
+
+                                            VerificationStatus.VERIFIED
+
+                                // ========================================
+                                // UPDATE USER CORE
+                                // ========================================
+
+                                firestore.collection("users").document(user.uid).update(
+                                        mapOf(
+
+                                            "trustScore" to trustScore,
+
+                                            "userVerified" to userVerified
+                                        )
+                                    ).await()
 
                                 isLoading = false
 
                                 Toast.makeText(
-                                    context,
-                                    "Student email verified",
-                                    Toast.LENGTH_SHORT
+                                    context, "Student email verified", Toast.LENGTH_SHORT
                                 ).show()
 
                                 navController.popBackStack()
@@ -285,13 +342,10 @@ fun StudentEmailVerificationScreen(
 
                             isLoading = false
 
-                            error =
-                                e.message ?: "Verification failed"
+                            error = e.message ?: "Verification failed"
                         }
                     }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                }, modifier = Modifier.fillMaxWidth(), enabled = !isLoading
             ) {
 
                 if (isLoading) {
@@ -303,16 +357,14 @@ fun StudentEmailVerificationScreen(
                     Text("Verify OTP")
                 }
             }
-        }
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+            if (error.isNotEmpty()) {
 
-        if (error.isNotEmpty()) {
-
-            Text(
-                text = error,
-                color = MaterialTheme.colorScheme.error
-            )
+                Text(
+                    text = error, color = MaterialTheme.colorScheme.error
+                )
+            }
         }
     }
 }

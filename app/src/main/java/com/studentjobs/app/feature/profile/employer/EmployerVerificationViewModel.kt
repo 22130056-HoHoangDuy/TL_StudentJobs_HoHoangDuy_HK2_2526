@@ -10,82 +10,111 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
-import com.studentjobs.app.firebase.firestore.UserService
+import com.studentjobs.app.data.model.status.VerificationStatus
+import com.studentjobs.app.firebase.firestore.UserServiceNew
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class EmployerVerificationViewModel : ViewModel() {
-    private var verificationListener: ListenerRegistration? = null
-    private val userService = UserService()
-    private var userListener: ListenerRegistration? = null
 
-    var uiState by mutableStateOf(EmployerVerificationUiState())
+    // ========================================
+    // FIREBASE
+    // ========================================
+
+    private var verificationListener: ListenerRegistration? = null
+
+    private val userService = UserServiceNew()
+
+    // ========================================
+    // UI STATE
+    // ========================================
+
+    var uiState by mutableStateOf(
+        EmployerVerificationUiState()
+    )
         private set
 
-    // ===== BUSINESS INFO =====
+    // ========================================
+    // BUSINESS INFO
+    // ========================================
 
-    fun onBusinessNameChange(value: String) {
+    fun onBusinessNameChange(
+        value: String
+    ) {
+
         uiState = uiState.copy(
+
             businessName = value
         )
     }
 
-    fun onBusinessCategoryChange(value: String) {
+    fun onBusinessCategoryChange(
+        value: String
+    ) {
+
         uiState = uiState.copy(
+
             businessCategory = value
         )
     }
 
-    fun onBusinessAddressChange(value: String) {
+    fun onBusinessAddressChange(
+        value: String
+    ) {
+
         uiState = uiState.copy(
-            businessAddress = value
+
+            businessAddressText = value
         )
     }
 
-    fun onBusinessDescriptionChange(value: String) {
+    fun onBusinessDescriptionChange(
+        value: String
+    ) {
+
         uiState = uiState.copy(
+
             businessDescription = value
         )
     }
 
-    fun onGoogleMapsUrlChange(value: String) {
+    fun onGoogleMapsUrlChange(
+        value: String
+    ) {
+
         uiState = uiState.copy(
-            googleMapsUrl = value
+
+            businessLocationUrl = value
         )
     }
 
-    // ===== DOCUMENTS =====
+    // ========================================
+    // DOCUMENTS
+    // ========================================
 
-    fun onBusinessLicenseUploaded(uri: Uri) {
+    fun onBusinessLicenseUploaded(
+        uri: Uri
+    ) {
+
         uiState = uiState.copy(
+
             businessLicenseUri = uri
         )
     }
 
-    fun onStorefrontUploaded(uri: Uri) {
+    fun onStorefrontUploaded(
+        uri: Uri
+    ) {
+
         uiState = uiState.copy(
-            storeFrontUri = uri
+
+            businessStoreFrontUri = uri
         )
     }
 
-    // ===== STORAGE =====
-
-    private suspend fun uploadImage(
-        uri: Uri, folder: String
-    ): String {
-
-        val uid =
-            FirebaseAuth.getInstance().currentUser?.uid ?: throw Exception("User not logged in")
-
-        val ref =
-            FirebaseStorage.getInstance().reference.child("employer_verification/$uid/$folder")
-
-        ref.putFile(uri).await()
-
-        return ref.downloadUrl.await().toString()
-    }
-
-    // ===== SUBMIT =====
+    // ========================================
+    // SUBMIT VERIFICATION
+    // ========================================
 
     fun submitVerification() {
 
@@ -94,63 +123,121 @@ class EmployerVerificationViewModel : ViewModel() {
             try {
 
                 uiState = uiState.copy(
-                    isLoading = true, errorMessage = null
+
+                    isLoading = true,
+
+                    errorMessage = null
                 )
 
-                val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+                val uid =
 
-                // ===== STORAGE =====
+                    FirebaseAuth.getInstance().currentUser?.uid
+
+                        ?: return@launch
+
+                // ========================================
+                // VALIDATION
+                // ========================================
+
+                val licenseUri =
+
+                    uiState.businessLicenseUri
+
+                        ?: throw Exception(
+                            "Business license required"
+                        )
+
+                val storefrontUri =
+
+                    uiState.businessStoreFrontUri
+
+                        ?: throw Exception(
+                            "Storefront image required"
+                        )
+
+                // ========================================
+                // STORAGE
+                // ========================================
 
                 val storage = FirebaseStorage.getInstance()
 
-                // ===== UPLOAD LICENSE =====
+                // ========================================
+                // UPLOAD LICENSE
+                // ========================================
 
-                val licenseUri =
-                    uiState.businessLicenseUri ?: throw Exception("Business license required")
+                val licenseRef =
 
-                val licenseRef = storage.reference.child("business_licenses/$uid.jpg")
+                    storage.reference.child(
+
+                        "business_licenses/$uid.jpg"
+                    )
 
                 licenseRef.putFile(licenseUri).await()
 
-                val businessLicenseUrl = licenseRef.downloadUrl.await().toString()
+                val businessLicenseUrl =
 
-                // ===== UPLOAD STOREFRONT =====
+                    licenseRef.downloadUrl.await().toString()
 
-                val storefrontUri =
-                    uiState.storeFrontUri ?: throw Exception("Storefront image required")
+                // ========================================
+                // UPLOAD STOREFRONT
+                // ========================================
 
-                val storefrontRef = storage.reference.child("storefronts/$uid.jpg")
+                val storefrontRef =
+
+                    storage.reference.child(
+
+                        "storefronts/$uid.jpg"
+                    )
 
                 storefrontRef.putFile(storefrontUri).await()
 
-                val storefrontUrl = storefrontRef.downloadUrl.await().toString()
-                //
+                val storefrontUrl =
+
+                    storefrontRef.downloadUrl.await().toString()
+
+                // ========================================
+                // SUBMIT
+                // ========================================
+
                 userService.submitEmployerVerification(
-                    uid = uid,
 
-                    businessName = uiState.businessName,
+                        uid = uid,
 
-                    businessCategory = uiState.businessCategory,
+                        businessName = uiState.businessName,
 
-                    businessAddress = uiState.businessAddress,
+                        businessCategory = uiState.businessCategory,
 
-                    businessDescription = uiState.businessDescription,
+                        businessAddress = uiState.businessAddressText,
 
-                    googleMapsUrl = uiState.googleMapsUrl,
+                        businessDescription = uiState.businessDescription,
 
-                    businessLicenseUrl = businessLicenseUrl,
+                        businessLocationUrl = uiState.businessLocationUrl,
 
-                    storeFrontImageUrl = storefrontUrl
-                )
+                        businessLicenseUrl = businessLicenseUrl,
+
+                        businessStoreFrontImageUrl = storefrontUrl
+                    )
+
+                // ========================================
+                // UPDATE UI
+                // ========================================
 
                 uiState = uiState.copy(
-                    verificationStatus = "PENDING", isLoading = false
+
+                    submissionStatus = VerificationStatus.PENDING,
+
+                    verificationSubmitted = true,
+
+                    isLoading = false
                 )
 
             } catch (e: Exception) {
 
                 uiState = uiState.copy(
-                    isLoading = false, errorMessage = e.message
+
+                    isLoading = false,
+
+                    errorMessage = e.message
                 )
 
                 e.printStackTrace()
@@ -158,54 +245,162 @@ class EmployerVerificationViewModel : ViewModel() {
         }
     }
 
+    // ========================================
+    // INIT
+    // ========================================
+
     init {
 
         observeVerificationStatus()
-
-        observeUserVerification()
     }
+
+    // ========================================
+    // OBSERVE VERIFICATION
+    // ========================================
 
     private fun observeVerificationStatus() {
 
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val uid =
+
+            FirebaseAuth.getInstance().currentUser?.uid
+
+                ?: return
 
         verificationListener =
-            FirebaseFirestore.getInstance().collection("employer_verifications").document(uid)
-                .addSnapshotListener { snapshot, _ ->
 
-                    if (snapshot != null && snapshot.exists()) {
+            FirebaseFirestore.getInstance()
 
-                        val status = snapshot.getString("status")
+                .collection(
+                    "employer_verifications"
+                )
 
-                        uiState = uiState.copy(
-                            verificationStatus = status ?: "PENDING", verificationSubmitted = true
-                        )
+                .document(uid)
+
+                .addSnapshotListener {
+
+                        snapshot, _ ->
+
+                    if (
+
+                        snapshot != null &&
+
+                        snapshot.exists()
+
+                    ) {
+
+                        try {
+
+                            // =====================
+                            // LICENSE STATUS
+                            // =====================
+
+                            val licenseStatus =
+
+                                VerificationStatus.valueOf(
+
+                                        snapshot.getString(
+
+                                            "businessLicenseVerified"
+
+                                        )
+
+                                            ?: "UNVERIFIED"
+                                    )
+
+                            // =====================
+                            // EMAIL STATUS
+                            // =====================
+
+                            val emailStatus =
+
+                                VerificationStatus.valueOf(
+
+                                        snapshot.getString(
+
+                                            "businessEmailVerified"
+
+                                        )
+
+                                            ?: "UNVERIFIED"
+                                    )
+
+                            // =====================
+                            // PHONE STATUS
+                            // =====================
+
+                            val phoneStatus =
+
+                                VerificationStatus.valueOf(
+
+                                        snapshot.getString(
+
+                                            "businessPhoneVerified"
+
+                                        )
+
+                                            ?: "UNVERIFIED"
+                                    )
+
+                            // =====================
+                            // SUBMISSION STATUS
+                            // =====================
+
+                            val submissionStatus =
+
+                                VerificationStatus.valueOf(
+
+                                        snapshot.getString(
+
+                                            "submissionStatus"
+
+                                        )
+
+                                            ?: "UNVERIFIED"
+                                    )
+
+                            // =====================
+                            // UPDATE UI
+                            // =====================
+
+                            uiState = uiState.copy(
+
+                                businessLicenseVerified = licenseStatus,
+
+                                businessEmailVerified = emailStatus,
+
+                                businessPhoneVerified = phoneStatus,
+
+                                submissionStatus = submissionStatus,
+
+                                verificationSubmitted =
+
+                                    submissionStatus ==
+
+                                            VerificationStatus.PENDING
+
+                                            ||
+
+                                            submissionStatus ==
+
+                                            VerificationStatus.VERIFIED
+                            )
+
+                        } catch (e: Exception) {
+
+                            e.printStackTrace()
+                        }
                     }
                 }
     }
 
-    private fun observeUserVerification() {
+    // ========================================
+    // CLEAR
+    // ========================================
 
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-
-        userListener = FirebaseFirestore.getInstance().collection("users").document(uid)
-            .addSnapshotListener { snapshot, _ ->
-
-                if (snapshot != null && snapshot.exists()) {
-
-                    uiState = uiState.copy(
-
-                        isEmailVerified = snapshot.getBoolean("isEmailVerified") ?: false,
-
-                        isPhoneVerified = snapshot.getBoolean("isPhoneVerified") ?: false
-                    )
-                }
-            }
-    }
-
-
-    // Not leak memory
     override fun onCleared() {
-        userListener?.remove()
+
+        verificationListener?.remove()
+
+        super.onCleared()
     }
 }

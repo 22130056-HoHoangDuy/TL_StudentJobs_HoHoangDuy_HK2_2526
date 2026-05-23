@@ -29,67 +29,96 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.studentjobs.app.data.model.User
-import com.studentjobs.app.feature.profile.shared.components.UploadCard
-import com.studentjobs.app.firebase.firestore.UserService
-import kotlinx.coroutines.delay
+import com.studentjobs.app.data.model.status.VerificationStatus
+import com.studentjobs.app.data.model.student.StudentVerification
+import com.studentjobs.app.firebase.firestore.VerificationService
 import kotlinx.coroutines.launch
 
 @Composable
 fun StudentVerificationScreen(
+
     navController: NavController
+
 ) {
 
-    val userService = remember { UserService() }
+    val verificationService = remember {
 
-    val uid = FirebaseAuth.getInstance()
-        .currentUser
-        ?.uid
+        VerificationService()
+    }
 
-    var user by remember {
-        mutableStateOf<User?>(null)
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+    var verification by remember {
+
+        mutableStateOf<StudentVerification?>(null)
     }
 
     var frontImage by remember {
+
         mutableStateOf<Uri?>(null)
     }
 
     var backImage by remember {
+
         mutableStateOf<Uri?>(null)
     }
 
     var isUploading by remember {
+
         mutableStateOf(false)
     }
 
-    // 🔥 disable edit after verified
-    val isEnabled =
-        user?.isStudentVerified != true
+    // ====================================
+    // LOAD VERIFICATION
+    // ====================================
 
-    // 📡 realtime listener
     LaunchedEffect(uid) {
 
         if (uid != null) {
 
-            userService.listenUser(uid) {
-                user = it
-            }
+            verificationService.listenStudentVerification(uid) {
+
+                    verification = it
+                }
         }
     }
 
-    // 🔥 auto back
-//    LaunchedEffect(user?.isStudentVerified) {
-//
-//        if (user?.isStudentVerified == true) {
-//
-//            delay(800)
-//
-//            navController.popBackStack()
-//        }
-//    }
+    // ====================================
+    // AUTO CLOSE
+    // ====================================
 
-    // 📷 FRONT PICKER
+    LaunchedEffect(
+        verification?.studentCardVerified
+    ) {
+
+        if (
+
+            verification?.studentCardVerified ==
+
+            VerificationStatus.VERIFIED
+
+        ) {
+
+            navController.popBackStack()
+        }
+    }
+
+    // ====================================
+    // VERIFIED STATE
+    // ====================================
+
+    val isEnabled =
+
+        verification?.studentCardVerified !=
+
+                VerificationStatus.VERIFIED
+
+    // ====================================
+    // IMAGE PICKER
+    // ====================================
+
     val frontPicker =
+
         rememberLauncherForActivityResult(
             ActivityResultContracts.GetContent()
         ) { uri ->
@@ -97,8 +126,8 @@ fun StudentVerificationScreen(
             frontImage = uri
         }
 
-    // 📷 BACK PICKER
     val backPicker =
+
         rememberLauncherForActivityResult(
             ActivityResultContracts.GetContent()
         ) { uri ->
@@ -108,7 +137,10 @@ fun StudentVerificationScreen(
 
     val scope = rememberCoroutineScope()
 
-    // 🎨 UI
+    // ====================================
+    // UI
+    // ====================================
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -120,6 +152,7 @@ fun StudentVerificationScreen(
 
         Text(
             text = "Student Verification",
+
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -127,51 +160,166 @@ fun StudentVerificationScreen(
             Modifier.height(16.dp)
         )
 
-        // 🧾 FRONT
-        UploadCard(
-            title = "Student Card - Front",
-            imageUri = frontImage,
-            onClick = {
-                frontPicker.launch("image/*")
-            },
-            enabled = isEnabled
-        )
-
-        // 🧾 BACK
-        UploadCard(
-            title = "Student Card - Back",
-            imageUri = backImage,
-            onClick = {
-                backPicker.launch("image/*")
-            },
-            enabled = isEnabled
-        )
-
-        Spacer(
-            Modifier.height(16.dp)
-        )
+        // ====================================
+        // FRONT IMAGE
+        // ====================================
 
         Button(
+
+            onClick = {
+
+                frontPicker.launch("image/*")
+            },
+
+            enabled = isEnabled,
+
+            modifier = Modifier.fillMaxWidth()
+
+        ) {
+
+            Text(
+
+                if (frontImage == null)
+
+                    "Choose Front Card Image"
+                else
+
+                    "Front Image Selected"
+            )
+        }
+
+        Spacer(
+            Modifier.height(12.dp)
+        )
+
+        // ====================================
+        // BACK IMAGE
+        // ====================================
+
+        Button(
+
+            onClick = {
+
+                backPicker.launch("image/*")
+            },
+
+            enabled = isEnabled,
+
+            modifier = Modifier.fillMaxWidth()
+
+        ) {
+
+            Text(
+
+                if (backImage == null)
+
+                    "Choose Back Card Image"
+                else
+
+                    "Back Image Selected"
+            )
+        }
+
+        Spacer(
+            Modifier.height(20.dp)
+        )
+
+        // ====================================
+        // UPLOAD BUTTON
+        // ====================================
+
+        Button(
+
             onClick = {
 
                 scope.launch {
 
                     if (uid == null) return@launch
 
+                    if (frontImage == null || backImage == null) {
+                        return@launch
+                    }
+
+                    val safeUid = uid
+
                     isUploading = true
 
-                    val result =
-                        userService.uploadStudentCard(
-                            uid = uid,
-                            frontUri = frontImage!!,
-                            backUri = backImage!!
-                        )
+                    try {
 
-                    isUploading = false
+                        // ====================================
+                        // UPLOAD FRONT
+                        // ====================================
 
-                    if (result.isFailure) {
+                        val frontUpload =
 
-                        // TODO show error
+                            verificationService.uploadStudentCardImage(
+
+                                    uid = safeUid,
+
+                                    imageUri = frontImage!!,
+
+                                    isFront = true
+                                )
+
+                        // ====================================
+                        // UPLOAD BACK
+                        // ====================================
+
+                        val backUpload =
+
+                            verificationService.uploadStudentCardImage(
+
+                                    uid = safeUid,
+
+                                    imageUri = backImage!!,
+
+                                    isFront = false
+                                )
+
+                        if (
+
+                            frontUpload.isFailure ||
+
+                            backUpload.isFailure
+
+                        ) {
+
+                            isUploading = false
+
+                            return@launch
+                        }
+
+                        val frontUrl = frontUpload.getOrNull()
+
+                        val backUrl = backUpload.getOrNull()
+
+                        // ====================================
+                        // UPDATE FIRESTORE
+                        // ====================================
+
+                        verificationService.updateStudentVerificationFields(
+
+                                uid = safeUid,
+
+                                fields = mapOf(
+
+                                    "studentCardFrontUrl" to frontUrl!!,
+
+                                    "studentCardBackUrl" to backUrl!!,
+
+                                    "studentCardVerified" to VerificationStatus.PENDING.name,
+
+                                    "updatedAt" to System.currentTimeMillis()
+                                )
+                            )
+
+                    } catch (e: Exception) {
+
+                        e.printStackTrace()
+
+                    } finally {
+
+                        isUploading = false
                     }
                 }
             },
@@ -179,9 +327,13 @@ fun StudentVerificationScreen(
             modifier = Modifier.fillMaxWidth(),
 
             enabled =
+
                 frontImage != null &&
+
                         backImage != null &&
+
                         !isUploading &&
+
                         isEnabled
         ) {
 
@@ -189,12 +341,15 @@ fun StudentVerificationScreen(
 
                 CircularProgressIndicator(
                     modifier = Modifier.size(20.dp),
+
                     strokeWidth = 2.dp
                 )
 
             } else {
 
-                Text("Upload & Verify")
+                Text(
+                    "Upload & Verify"
+                )
             }
         }
 
@@ -202,12 +357,18 @@ fun StudentVerificationScreen(
             Modifier.height(16.dp)
         )
 
-        // 📄 RESULT
-        user?.let {
+        // ====================================
+        // RESULT
+        // ====================================
+
+        verification?.let {
 
             Card(
+
                 modifier = Modifier.fillMaxWidth(),
+
                 shape = RoundedCornerShape(16.dp)
+
             ) {
 
                 Column(
@@ -215,7 +376,9 @@ fun StudentVerificationScreen(
                 ) {
 
                     Text(
-                        "Extracted Info",
+
+                        "Verification Result",
+
                         style = MaterialTheme.typography.titleMedium
                     )
 
@@ -223,25 +386,47 @@ fun StudentVerificationScreen(
                         Modifier.height(8.dp)
                     )
 
-                    Text("Name: ${it.extractedName ?: "..."}")
-                    Text("School: ${it.school ?: "..."}")
-                    Text("DOB: ${it.dateOfBirth ?: "..."}")
-                    Text("Student ID: ${it.studentId ?: "..."}")
+                    Text(
+                        "Status: ${
+                            it.studentCardVerified
+                        }"
+                    )
 
                     Spacer(
                         Modifier.height(8.dp)
                     )
 
-                    if (it.isStudentVerified) {
+                    when (it.studentCardVerified) {
 
-                        Text(
-                            " Verified",
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        VerificationStatus.VERIFIED -> {
 
-                    } else {
+                            Text(
+                                "Verified",
 
-                        Text(" Processing OCR...")
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        VerificationStatus.PENDING -> {
+
+                            Text(
+                                "Pending OCR Processing..."
+                            )
+                        }
+
+                        VerificationStatus.REJECTED -> {
+
+                            Text(
+                                "Verification Rejected"
+                            )
+                        }
+
+                        else -> {
+
+                            Text(
+                                "Not Verified"
+                            )
+                        }
                     }
                 }
             }

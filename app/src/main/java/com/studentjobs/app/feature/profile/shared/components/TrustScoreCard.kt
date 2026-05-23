@@ -31,6 +31,9 @@ fun TrustScoreCard(
     state: ProfileUiState
 ) {
 
+    val trustScore =
+        state.userCore?.trustScore ?: 0
+
     val gradient = Brush.linearGradient(
         colors = listOf(
             Color(0xFF1E293B),
@@ -40,10 +43,10 @@ fun TrustScoreCard(
 
     val level = when {
 
-        state.trustScore >= 60 ->
+        trustScore >= 60 ->
             "Trusted Candidate"
 
-        state.trustScore >= 40 ->
+        trustScore >= 40 ->
             "Verified Student"
 
         else ->
@@ -51,12 +54,14 @@ fun TrustScoreCard(
     }
 
     val progress =
-        (state.trustScore / 100f)
+        (trustScore / 100f)
             .coerceIn(0f, 1f)
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
+
         shape = RoundedCornerShape(28.dp),
+
         color = Color.Transparent
     ) {
 
@@ -67,67 +72,113 @@ fun TrustScoreCard(
         ) {
 
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment =
+                    Alignment.CenterVertically,
+
+                horizontalArrangement =
+                    Arrangement.SpaceBetween,
+
+                modifier =
+                    Modifier.fillMaxWidth()
             ) {
 
                 Column {
 
                     Text(
                         text = "Trust Level",
-                        color = Color.White.copy(alpha = 0.7f),
-                        style = MaterialTheme.typography.bodyMedium
+
+                        color =
+                            Color.White.copy(alpha = 0.7f),
+
+                        style =
+                            MaterialTheme.typography.bodyMedium
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(
+                        modifier =
+                            Modifier.height(6.dp)
+                    )
 
                     Text(
                         text = level,
+
                         color = Color.White,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+
+                        style =
+                            MaterialTheme.typography.titleLarge,
+
+                        fontWeight =
+                            FontWeight.Bold
                     )
                 }
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment =
+                        Alignment.CenterVertically
                 ) {
 
                     Icon(
-                        imageVector = Icons.Default.EmojiEvents,
+                        imageVector =
+                            Icons.Default.EmojiEvents,
+
                         contentDescription = null,
-                        tint = Color(0xFFFACC15)
+
+                        tint =
+                            Color(0xFFFACC15)
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(
+                        modifier =
+                            Modifier.width(8.dp)
+                    )
 
                     Text(
-                        text = "${state.trustScore}",
+                        text = "$trustScore",
+
                         color = Color.White,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+
+                        style =
+                            MaterialTheme.typography.headlineSmall,
+
+                        fontWeight =
+                            FontWeight.Bold
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(
+                modifier =
+                    Modifier.height(20.dp)
+            )
 
             LinearProgressIndicator(
                 progress = { progress },
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(10.dp),
-                trackColor = Color.White.copy(alpha = 0.15f),
-                color = Color(0xFF8B5CF6)
+
+                trackColor =
+                    Color.White.copy(alpha = 0.15f),
+
+                color =
+                    Color(0xFF8B5CF6)
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(
+                modifier =
+                    Modifier.height(10.dp)
+            )
 
             Text(
-                text = "Complete verification steps to increase trust score",
-                color = Color.White.copy(alpha = 0.65f),
-                style = MaterialTheme.typography.bodySmall
+                text =
+                    "Complete verification steps to increase trust score",
+
+                color =
+                    Color.White.copy(alpha = 0.65f),
+
+                style =
+                    MaterialTheme.typography.bodySmall
             )
         }
     }

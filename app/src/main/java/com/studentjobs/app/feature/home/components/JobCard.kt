@@ -6,10 +6,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.studentjobs.app.data.model.Job
+import com.studentjobs.app.data.model.job.JobEntity
 
 @Composable
-fun JobCard(job: Job) {
+fun JobCard(job: JobEntity) {
 
     Card(
         modifier = Modifier
@@ -30,14 +30,14 @@ fun JobCard(job: Job) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = job.company,
+                text = job.title,
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "${job.salary} • ${job.location}",
+                text = "${job.salaryMin} • ${job.locationText}",
                 style = MaterialTheme.typography.bodySmall
             )
         }

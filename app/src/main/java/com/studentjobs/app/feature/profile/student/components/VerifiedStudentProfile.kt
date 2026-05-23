@@ -19,29 +19,70 @@ fun VerifiedStudentProfile(
 
     Column {
 
-        GradientHeader(state)
+        // ===== HEADER =====
 
-        Spacer(modifier = Modifier.height(20.dp))
+        GradientHeader(
+            state = state
+        )
 
-        TrustScoreCard(state)
+        Spacer(
+            modifier =
+                Modifier.height(20.dp)
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // ===== TRUST SCORE =====
 
-        VerificationStatusCard(state)
+        TrustScoreCard(
+            state = state
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(
+            modifier =
+                Modifier.height(16.dp)
+        )
 
-        AcademicInfoCard(state)
+        // ===== VERIFICATION =====
 
-        Spacer(modifier = Modifier.height(16.dp))
+        VerificationStatusCard(
+            state = state
+        )
 
-        ContactInfoCard(state)
+        Spacer(
+            modifier =
+                Modifier.height(16.dp)
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        // ===== ACADEMIC =====
 
-        SkillsCard(state)
+        AcademicInfoCard(
+            state = state
+        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(
+            modifier =
+                Modifier.height(16.dp)
+        )
 
+        // ===== CONTACT =====
+
+        ContactInfoCard(
+            state = state
+        )
+
+        Spacer(
+            modifier =
+                Modifier.height(16.dp)
+        )
+
+        // ===== SKILLS =====
+
+        SkillsCard(
+            state = state
+        )
+
+        Spacer(
+            modifier =
+                Modifier.height(16.dp)
+        )
     }
 }

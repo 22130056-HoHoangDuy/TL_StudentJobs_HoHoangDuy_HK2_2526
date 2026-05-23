@@ -2,44 +2,39 @@ package com.studentjobs.app.data.model.student
 
 data class StudentProfile(
 
-    // ===== ID =====
+    // uid
     val uid: String = "",
 
-    // ===== BASIC PROFILE =====
+    // basic information
     val fullName: String = "",
-
     val avatarUrl: String? = null,
-
+    val gender: String? = null,
     val bio: String? = null,
 
-    // ===== ACADEMIC =====
-    val school: String? = null,
-
+    // academic information
+    val schoolName: String? = null,
     val major: String? = null,
 
+    val studentId: String? = null,
+
+    val dateOfBirth: String? = null,
+
+    // student email
     val studentEmail: String? = null,
 
-    // ===== SKILLS =====
+    // skill
     val skills: List<String> = emptyList(),
 
-    // ===== LOCATION =====
-    val latitude: Double? = null,
+    // student location
+    val studentLatitude: Double? = null,
+    val studentLongitude: Double? = null,
+    val studentLocationUrl: String? = null,
 
-    val longitude: Double? = null,
-
-    val address: String? = null,
-
-    // ===== JOB PREFERENCE =====
-    val preferredJobCategories: List<String> =
-        emptyList(),
-
+    // job reference
+    val preferredJobCategories: List<String> = emptyList(),
     val preferredSalaryMin: Double? = null,
 
-    // ===== PROFILE STATUS =====
-    val profileCompleted: Boolean = false,
-
-    // ===== SYSTEM =====
+    // system log
     val createdAt: Long = 0L,
-
     val updatedAt: Long = 0L
 )

@@ -1,7 +1,7 @@
 package com.studentjobs.app.firebase.firestore
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserCore
 import com.studentjobs.app.data.model.user.UserRole
@@ -15,6 +15,7 @@ class UserServiceNew {
     // =========================
     // CREATE USER CORE
     // =========================
+
     suspend fun createUserCore(
         user: UserCore
     ): Result<Unit> {
@@ -24,41 +25,45 @@ class UserServiceNew {
             val userMap = mapOf(
 
                 // ===== IDENTITY =====
+
                 "uid" to user.uid,
 
                 // ===== ROLE =====
+
                 "role" to user.role.name,
 
                 // ===== AUTH =====
-                "email" to user.email,
+
+                "email" to user.loginEmail,
+
                 "phoneNumber" to user.phoneNumber,
 
                 // ===== VERIFY =====
-                "isEmailVerified" to user.isEmailVerified,
-                "isPhoneVerified" to user.isPhoneVerified,
+
+                "userVerified" to user.userVerified,
 
                 // ===== TRUST =====
+
                 "trustScore" to user.trustScore,
 
                 // ===== SUBSCRIPTION =====
-                "subscriptionPlan" to
-                        user.subscriptionPlan.name,
 
-                "subscriptionExpiredAt" to
-                        user.subscriptionExpiredAt,
+                "subscriptionPlan" to user.subscriptionPlan.name,
+
+                "subscriptionExpiredAt" to user.subscriptionExpiredAt,
 
                 // ===== STATUS =====
+
                 "status" to user.status.name,
 
                 // ===== SYSTEM =====
+
                 "createdAt" to user.createdAt,
+
                 "updatedAt" to user.updatedAt
             )
 
-            db.collection("users")
-                .document(user.uid)
-                .set(userMap)
-                .await()
+            db.collection("users").document(user.uid).set(userMap).await()
 
             Result.success(Unit)
 
@@ -73,16 +78,14 @@ class UserServiceNew {
     // =========================
     // GET USER CORE
     // =========================
+
     suspend fun getUserCore(
         uid: String
     ): UserCore? {
 
         return try {
 
-            val doc = db.collection("users")
-                .document(uid)
-                .get()
-                .await()
+            val doc = db.collection("users").document(uid).get().await()
 
             if (!doc.exists()) {
                 return null
@@ -93,59 +96,58 @@ class UserServiceNew {
                 uid = doc.getString("uid") ?: "",
 
                 role = try {
+
                     UserRole.valueOf(
-                        doc.getString("role")
-                            ?: "STUDENT"
+
+                        doc.getString("role") ?: "STUDENT"
                     )
+
                 } catch (e: Exception) {
+
                     UserRole.STUDENT
                 },
 
-                email = doc.getString("email") ?: "",
+                loginEmail = doc.getString("email") ?: "",
 
-                phoneNumber =
-                    doc.getString("phoneNumber"),
+                phoneNumber = doc.getString("phoneNumber"),
 
-                isEmailVerified =
-                    doc.getBoolean("isEmailVerified")
-                        ?: false,
+                userVerified = doc.getBoolean("userVerified") ?: false,
 
-                isPhoneVerified =
-                    doc.getBoolean("isPhoneVerified")
-                        ?: false,
-
-                trustScore =
-                    (doc.getLong("trustScore")
-                        ?: 0L).toInt(),
+                trustScore = (doc.getLong("trustScore") ?: 0L).toInt(),
 
                 subscriptionPlan = try {
+
                     SubscriptionPlan.valueOf(
-                        doc.getString("subscriptionPlan")
-                            ?: "FREE"
+
+                        doc.getString(
+                            "subscriptionPlan"
+                        ) ?: "FREE"
                     )
+
                 } catch (e: Exception) {
+
                     SubscriptionPlan.FREE
                 },
 
-                subscriptionExpiredAt =
-                    doc.getLong("subscriptionExpiredAt"),
+                subscriptionExpiredAt = doc.getLong(
+                    "subscriptionExpiredAt"
+                ),
 
                 status = try {
+
                     UserStatus.valueOf(
-                        doc.getString("status")
-                            ?: "ACTIVE"
+
+                        doc.getString("status") ?: "ACTIVE"
                     )
+
                 } catch (e: Exception) {
+
                     UserStatus.ACTIVE
                 },
 
-                createdAt =
-                    doc.getLong("createdAt")
-                        ?: 0L,
+                createdAt = doc.getLong("createdAt") ?: 0L,
 
-                updatedAt =
-                    doc.getLong("updatedAt")
-                        ?: 0L
+                updatedAt = doc.getLong("updatedAt") ?: 0L
             )
 
         } catch (e: Exception) {
@@ -156,108 +158,148 @@ class UserServiceNew {
         }
     }
 
-    // =========================
-    // REALTIME LISTENER
-    // =========================
+    // ========================================
+    // UPDATE USER VERIFIED
+    // ========================================
+
+    suspend fun updateStudentVerificationStatus(
+
+        uid: String,
+
+        verified: Boolean
+
+    ): Result<Unit> {
+
+        return try {
+
+            db.collection("users").document(uid).update(
+
+                    mapOf(
+
+                        "userVerified" to verified,
+
+                        "updatedAt" to System.currentTimeMillis()
+                    )
+                ).await()
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
+    }
+
+    // ========================================
+    // LISTEN USER CORE
+    // ========================================
+
     fun listenUserCore(
 
         uid: String,
 
-        onChange: (UserCore) -> Unit
+        onChange: (UserCore?) -> Unit
 
     ) {
 
-        db.collection("users")
-            .document(uid)
-            .addSnapshotListener { snapshot, error ->
+        db.collection("users").document(uid).addSnapshotListener { snapshot, _ ->
 
-                if (error != null) {
+                val user =
 
-                    Log.e(
-                        "USER_CORE",
-                        "Listen failed",
-                        error
+                    snapshot?.toObject(
+                        UserCore::class.java
                     )
-
-                    return@addSnapshotListener
-                }
-
-                if (snapshot == null ||
-                    !snapshot.exists()
-                ) {
-                    return@addSnapshotListener
-                }
-
-                val user = UserCore(
-
-                    uid =
-                        snapshot.getString("uid") ?: "",
-
-                    role = try {
-                        UserRole.valueOf(
-                            snapshot.getString("role")
-                                ?: "STUDENT"
-                        )
-                    } catch (e: Exception) {
-                        UserRole.STUDENT
-                    },
-
-                    email =
-                        snapshot.getString("email")
-                            ?: "",
-
-                    phoneNumber =
-                        snapshot.getString("phoneNumber"),
-
-                    isEmailVerified =
-                        snapshot.getBoolean(
-                            "isEmailVerified"
-                        ) ?: false,
-
-                    isPhoneVerified =
-                        snapshot.getBoolean(
-                            "isPhoneVerified"
-                        ) ?: false,
-
-                    trustScore =
-                        (snapshot.getLong(
-                            "trustScore"
-                        ) ?: 0L).toInt(),
-
-                    subscriptionPlan = try {
-                        SubscriptionPlan.valueOf(
-                            snapshot.getString(
-                                "subscriptionPlan"
-                            ) ?: "FREE"
-                        )
-                    } catch (e: Exception) {
-                        SubscriptionPlan.FREE
-                    },
-
-                    subscriptionExpiredAt =
-                        snapshot.getLong(
-                            "subscriptionExpiredAt"
-                        ),
-
-                    status = try {
-                        UserStatus.valueOf(
-                            snapshot.getString("status")
-                                ?: "ACTIVE"
-                        )
-                    } catch (e: Exception) {
-                        UserStatus.ACTIVE
-                    },
-
-                    createdAt =
-                        snapshot.getLong("createdAt")
-                            ?: 0L,
-
-                    updatedAt =
-                        snapshot.getLong("updatedAt")
-                            ?: 0L
-                )
 
                 onChange(user)
             }
+    }
+
+    // ========================================
+    // EMPLOYER VERIFICATION
+    // ========================================
+
+    suspend fun submitEmployerVerification(
+        uid: String,
+        businessName: String,
+        businessCategory: String,
+        businessAddress: String,
+        businessDescription: String,
+        businessLocationUrl: String,
+        businessLicenseUrl: String,
+        businessStoreFrontImageUrl: String
+    ): Result<Unit> {
+        return try {
+            val now = System.currentTimeMillis()
+
+            db.collection("employer_verifications").document(uid).set(
+                    mapOf(
+                        "uid" to uid,
+                        "businessName" to businessName,
+                        "businessCategory" to businessCategory,
+                        "businessDescription" to businessDescription,
+                        "businessAddressText" to businessAddress,
+                        "businessLocationUrl" to businessLocationUrl,
+                        "businessLicenseUrl" to businessLicenseUrl,
+                        "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
+                        "submissionStatus" to "PENDING",
+                        "submittedAt" to now,
+                        "updatedAt" to now
+                    ), SetOptions.merge()
+                ).await()
+
+            db.collection("employers").document(uid).set(
+                    mapOf(
+                        "uid" to uid,
+                        "businessName" to businessName,
+                        "businessCategory" to businessCategory,
+                        "businessDescription" to businessDescription,
+                        "businessAddressText" to businessAddress,
+                        "businessLocationUrl" to businessLocationUrl,
+                        "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
+                        "updatedAt" to now
+                    ), SetOptions.merge()
+                ).await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+    // UPDATE EMPLOYER VERIFIED
+    suspend fun updateEmployerVerificationStatus(
+
+        uid: String,
+
+        verified: Boolean
+
+    ): Result<Unit> {
+
+        return try {
+
+            db.collection("users").document(uid).set(
+
+                    mapOf(
+
+                        "userVerified" to verified,
+
+                        "updatedAt" to System.currentTimeMillis()
+
+                    ),
+
+                    SetOptions.merge()
+                ).await()
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
     }
 }

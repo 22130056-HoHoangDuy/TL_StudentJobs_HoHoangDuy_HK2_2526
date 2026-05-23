@@ -31,6 +31,12 @@ fun AcademicInfoCard(
     state: ProfileUiState
 ) {
 
+    val studentProfile =
+        state.studentProfile
+
+    val studentVerification =
+        state.studentVerification
+
     val gradient = Brush.linearGradient(
         colors = listOf(
             Color(0xFF0F172A),
@@ -40,7 +46,9 @@ fun AcademicInfoCard(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
+
         shape = RoundedCornerShape(28.dp),
+
         color = Color.Transparent
     ) {
 
@@ -50,85 +58,156 @@ fun AcademicInfoCard(
                 .padding(22.dp)
         ) {
 
-            // Header
+            // ====================================
+            // HEADER
+            // ====================================
+
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment =
+                    Alignment.CenterVertically
             ) {
 
                 Icon(
-                    imageVector = Icons.Default.School,
+                    imageVector =
+                        Icons.Default.School,
+
                     contentDescription = null,
-                    tint = Color(0xFF60A5FA)
+
+                    tint =
+                        Color(0xFF60A5FA)
                 )
 
-                Spacer(modifier = Modifier.height(0.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(0.dp)
+                )
 
                 Text(
                     text = " Academic Information",
+
                     color = Color.White,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+
+                    style =
+                        MaterialTheme.typography.titleLarge,
+
+                    fontWeight =
+                        FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            AcademicItem(
-                label = "Full Name",
-                value = state.extractedName.ifEmpty {
-                    state.name
-                }
+            Spacer(
+                modifier =
+                    Modifier.height(24.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(
+                modifier =
+                    Modifier.height(16.dp)
+            )
 
+            // STUDENT ID
             AcademicItem(
                 label = "Student ID",
-                value = state.studentId
+
+                value =
+                    studentVerification
+                        ?.extractedStudentId
+                        ?: ""
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(
+                modifier =
+                    Modifier.height(16.dp)
+            )
+
+// ====================================
+// UNIVERSITY
+// ====================================
 
             AcademicItem(
                 label = "University",
-                value = state.school
+
+                value =
+                    studentVerification
+                        ?.extractedStudentSchoolName
+                        ?: ""
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(
+                modifier =
+                    Modifier.height(16.dp)
+            )
+
+// ====================================
+// STUDENT EMAIL
+// ====================================
 
             AcademicItem(
                 label = "Student Email",
-                value = state.studentEmail
+
+                value =
+                    studentProfile
+                        ?.studentEmail
+                        ?: ""
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(
+                modifier =
+                    Modifier.height(16.dp)
+            )
+
+// ====================================
+// DATE OF BIRTH
+// ====================================
 
             AcademicItem(
                 label = "Date Of Birth",
-                value = state.dateOfBirth
+
+                value =
+                    studentVerification
+                        ?.extractedStudentDob
+                        ?: ""
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // ====================================
+            // VERIFIED FOOTER
+            // ====================================
 
-            // Verified footer
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment =
+                    Alignment.CenterVertically,
+
+                horizontalArrangement =
+                    Arrangement.Center,
+
+                modifier =
+                    Modifier.fillMaxWidth()
             ) {
 
                 Icon(
-                    imageVector = Icons.Default.Verified,
+                    imageVector =
+                        Icons.Default.Verified,
+
                     contentDescription = null,
-                    tint = Color(0xFF4ADE80)
+
+                    tint =
+                        Color(0xFF4ADE80)
                 )
 
-                Spacer(modifier = Modifier.height(0.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(0.dp)
+                )
 
                 Text(
-                    text = " OCR Verified Student Identity",
-                    color = Color(0xFF4ADE80),
-                    fontWeight = FontWeight.SemiBold
+                    text =
+                        " OCR Verified Student Identity",
+
+                    color =
+                        Color(0xFF4ADE80),
+
+                    fontWeight =
+                        FontWeight.SemiBold
                 )
             }
         }
@@ -137,37 +216,64 @@ fun AcademicInfoCard(
 
 @Composable
 private fun AcademicItem(
+
     label: String,
+
     value: String
+
 ) {
 
     Column {
 
         Text(
             text = label,
-            color = Color.White.copy(alpha = 0.6f),
-            style = MaterialTheme.typography.bodySmall
+
+            color =
+                Color.White.copy(alpha = 0.6f),
+
+            style =
+                MaterialTheme.typography.bodySmall
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(
+            modifier =
+                Modifier.height(6.dp)
+        )
 
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment =
+                Alignment.CenterVertically
         ) {
 
             Icon(
-                imageVector = Icons.Default.Badge,
+                imageVector =
+                    Icons.Default.Badge,
+
                 contentDescription = null,
-                tint = Color(0xFF8B5CF6)
+
+                tint =
+                    Color(0xFF8B5CF6)
             )
 
-            Spacer(modifier = Modifier.height(0.dp))
+            Spacer(
+                modifier =
+                    Modifier.height(0.dp)
+            )
 
             Text(
-                text = value.ifEmpty { "Not Available" },
+                text =
+                    if (value.isBlank())
+                        "Not Available"
+                    else
+                        value,
+
                 color = Color.White,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+
+                style =
+                    MaterialTheme.typography.bodyLarge,
+
+                fontWeight =
+                    FontWeight.Medium
             )
         }
     }

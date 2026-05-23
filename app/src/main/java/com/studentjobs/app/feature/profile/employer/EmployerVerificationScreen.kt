@@ -18,128 +18,156 @@ import com.studentjobs.app.feature.profile.employer.components.BusinessDocumentS
 import com.studentjobs.app.feature.profile.employer.components.BusinessInfoSection
 import com.studentjobs.app.feature.profile.shared.components.VerificationBanner
 import com.studentjobs.app.feature.profile.shared.components.VerificationCard
-import com.studentjobs.app.feature.profile.shared.components.VerificationStatus
 
 @Composable
 fun EmployerVerificationScreen(
+
     navController: NavController,
+
     viewModel: EmployerVerificationViewModel = viewModel()
+
 ) {
 
     val state = viewModel.uiState
 
-    // ===== LICENSE PICKER =====
+    // ========================================
+    // LICENSE PICKER
+    // ========================================
 
     val businessLicensePicker =
+
         rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
+
+            contract =
+                ActivityResultContracts.GetContent()
+
         ) { uri: Uri? ->
 
             uri?.let {
-                viewModel.onBusinessLicenseUploaded(it)
+
+                viewModel
+                    .onBusinessLicenseUploaded(it)
             }
         }
 
-    // ===== STOREFRONT PICKER =====
+    // ========================================
+    // STOREFRONT PICKER
+    // ========================================
 
     val storefrontPicker =
+
         rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent()
+
+            contract =
+                ActivityResultContracts.GetContent()
+
         ) { uri: Uri? ->
 
             uri?.let {
-                viewModel.onStorefrontUploaded(it)
+
+                viewModel
+                    .onStorefrontUploaded(it)
             }
         }
 
     Column(
+
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
 
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement =
+            Arrangement.spacedBy(16.dp)
+
     ) {
 
-        // ===== TOP BANNER =====
+        // ========================================
+        // TOP BANNER
+        // ========================================
 
         if (state.verificationSubmitted) {
 
             VerificationBanner(
-                title = "Verification Submitted",
-                subtitle = "Your business verification is under manual review"
+
+                title =
+                    "Verification Submitted",
+
+                subtitle =
+                    "Your business verification is under manual review"
             )
 
         } else {
 
             VerificationBanner(
-                title = "Complete verification",
-                subtitle = "Complete verification to increase your trust score"
+
+                title =
+                    "Complete verification",
+
+                subtitle =
+                    "Complete verification to increase your trust score"
             )
         }
 
-        // ===== EMAIL =====
+        // ========================================
+        // EMAIL
+        // ========================================
 
         VerificationCard(
+
             title = "Verify Email",
 
-            description = "Confirm your business email",
+            description =
+                "Confirm your business email",
 
-            status = when {
+            status =
+                state.businessEmailVerified,
 
-                state.isEmailVerified ->
-                    VerificationStatus.VERIFIED
-
-                state.verificationStatus == "PENDING" ->
-                    VerificationStatus.PENDING
-
-                else ->
-                    VerificationStatus.NOT_VERIFIED
-            },
-
-            enabled = !state.verificationSubmitted,
+            enabled =
+                !state.verificationSubmitted,
 
             onClick = {
 
                 navController.navigate(
+
                     "email_verification/EMPLOYER"
                 )
             }
         )
 
-        // ===== PHONE =====
+        // ========================================
+        // PHONE
+        // ========================================
 
         VerificationCard(
-            title = "Verify Phone Number",
 
-            description = "Confirm your business phone number",
+            title =
+                "Verify Phone Number",
 
-            status = when {
+            description =
+                "Confirm your business phone number",
 
-                state.isPhoneVerified ->
-                    VerificationStatus.VERIFIED
+            status =
+                state.businessPhoneVerified,
 
-                state.verificationStatus == "PENDING" ->
-                    VerificationStatus.PENDING
-
-                else ->
-                    VerificationStatus.NOT_VERIFIED
-            },
-
-            enabled = !state.verificationSubmitted,
+            enabled =
+                !state.verificationSubmitted,
 
             onClick = {
 
                 navController.navigate(
-                    "phone_verification"
+                    "phone_verification/EMPLOYER"
                 )
             }
         )
 
-        // ===== BUSINESS INFO =====
+        // ========================================
+        // BUSINESS INFO
+        // ========================================
 
         BusinessInfoSection(
 
-            enabled = !state.verificationSubmitted,
+            enabled =
+                !state.verificationSubmitted,
 
             state = state,
 
@@ -159,48 +187,62 @@ fun EmployerVerificationScreen(
                 viewModel::onGoogleMapsUrlChange
         )
 
-        // ===== DOCUMENTS =====
+        // ========================================
+        // DOCUMENTS
+        // ========================================
 
         BusinessDocumentSection(
 
-            enabled = !state.verificationSubmitted,
+            enabled =
+                !state.verificationSubmitted,
 
             businessLicenseUri =
                 state.businessLicenseUri,
 
             storefrontUri =
-                state.storeFrontUri,
+                state.businessStoreFrontUri,
 
             onUploadBusinessLicense = {
 
-                businessLicensePicker.launch("image/*")
+                businessLicensePicker
+                    .launch("image/*")
             },
 
             onUploadStorefront = {
 
-                storefrontPicker.launch("image/*")
+                storefrontPicker
+                    .launch("image/*")
             }
         )
 
-        // ===== SUBMIT =====
+        // ========================================
+        // SUBMIT
+        // ========================================
 
         Button(
+
             onClick = {
 
                 viewModel.submitVerification()
             },
 
             enabled =
+
                 !state.isLoading &&
+
                         !state.verificationSubmitted
+
         ) {
 
             Text(
 
                 text =
+
                     if (state.isLoading)
+
                         "Submitting..."
                     else
+
                         "Submit Verification Request"
             )
         }

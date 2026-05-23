@@ -19,8 +19,11 @@ class StorageService {
             val uid = FirebaseAuth.getInstance().currentUser?.uid
                 ?: return Result.failure(Exception("User not logged in"))
 
-            // 🔥 tránh overwrite + dễ debug
-            val fileName = "${type}_${UUID.randomUUID()}.jpg"
+            val fileName =
+                if (type == "front")
+                    "front.jpg"
+                else
+                    "back.jpg"
 
             val ref = storage.reference.child("student_cards/$uid/$fileName")
 

@@ -2,35 +2,25 @@ package com.studentjobs.app.data.model.employer
 
 data class EmployerProfile(
 
-    // ===== ID =====
+    // uid
     val uid: String = "",
 
-    // ===== BUSINESS =====
+    // business information
     val businessName: String = "",
-
     val businessCategory: String? = null,
-
     val businessDescription: String? = null,
 
-    // ===== LOCATION =====
-    val businessAddress: String? = null,
+    // location
+    val businessAddressText: String? = null,
+    val businessLocationUrl: String? = null,
+    val businessLatitude: Double? = null,
+    val businessLongitude: Double? = null,
 
-    val latitude: Double? = null,
+    // media
+    val businessLogoUrl: String? = null,
+    val businessStoreFrontImageUrl: String? = null,
 
-    val longitude: Double? = null,
-
-    val googleMapsUrl: String? = null,
-
-    // ===== MEDIA =====
-    val logoUrl: String? = null,
-
-    val storeFrontImageUrl: String? = null,
-
-    // ===== PROFILE STATUS =====
-    val profileCompleted: Boolean = false,
-
-    // ===== SYSTEM =====
+    // system log
     val createdAt: Long = 0L,
-
     val updatedAt: Long = 0L
 )

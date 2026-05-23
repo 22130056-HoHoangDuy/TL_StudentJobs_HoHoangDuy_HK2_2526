@@ -31,6 +31,7 @@ class AuthRepository(
     // ========================================
     // REGISTER
     // ========================================
+
     suspend fun register(
 
         email: String,
@@ -47,13 +48,23 @@ class AuthRepository(
             // FIREBASE AUTH
             // =========================
 
-            val result = authService
-                .register(email, password)
+            val result =
+                authService.register(
+                    email,
+                    password
+                )
 
             val uid = result.user?.uid
+
                 ?: return Result.failure(
-                    Exception("User ID is null")
+
+                    Exception(
+                        "User ID is null"
+                    )
                 )
+
+            val currentTime =
+                System.currentTimeMillis()
 
             // =========================
             // CREATE USER CORE
@@ -65,11 +76,11 @@ class AuthRepository(
 
                 role = role,
 
-                email = email,
+                loginEmail = email,
 
-                isEmailVerified = false,
+                phoneNumber = null,
 
-                isPhoneVerified = false,
+                userVerified = false,
 
                 trustScore = 0,
 
@@ -80,19 +91,22 @@ class AuthRepository(
                     UserStatus.ACTIVE,
 
                 createdAt =
-                    System.currentTimeMillis(),
+                    currentTime,
 
                 updatedAt =
-                    System.currentTimeMillis()
+                    currentTime
             )
 
             val userResult =
-                userService.createUserCore(userCore)
+                userService
+                    .createUserCore(userCore)
 
             if (userResult.isFailure) {
 
                 return Result.failure(
+
                     userResult.exceptionOrNull()
+
                         ?: Exception(
                             "Failed to create user"
                         )
@@ -106,6 +120,7 @@ class AuthRepository(
             if (role == UserRole.STUDENT) {
 
                 val studentProfile =
+
                     StudentProfile(
 
                         uid = uid,
@@ -113,21 +128,23 @@ class AuthRepository(
                         studentEmail = email,
 
                         createdAt =
-                            System.currentTimeMillis(),
+                            currentTime,
 
                         updatedAt =
-                            System.currentTimeMillis()
+                            currentTime
                     )
 
                 val studentVerification =
+
                     StudentVerification(
 
                         uid = uid,
 
-                        studentEmail = email,
+                        createdAt =
+                            currentTime,
 
-                        submittedAt =
-                            System.currentTimeMillis()
+                        updatedAt =
+                            currentTime
                     )
 
                 studentService
@@ -148,24 +165,29 @@ class AuthRepository(
             if (role == UserRole.EMPLOYER) {
 
                 val employerProfile =
+
                     EmployerProfile(
 
                         uid = uid,
 
                         createdAt =
-                            System.currentTimeMillis(),
+                            currentTime,
 
                         updatedAt =
-                            System.currentTimeMillis()
+                            currentTime
                     )
 
                 val employerVerification =
+
                     EmployerVerification(
 
                         uid = uid,
 
                         submittedAt =
-                            System.currentTimeMillis()
+                            currentTime,
+
+                        reviewedAt =
+                            currentTime
                     )
 
                 employerService
@@ -192,6 +214,7 @@ class AuthRepository(
     // ========================================
     // LOGIN
     // ========================================
+
     suspend fun login(
 
         email: String,
@@ -202,18 +225,27 @@ class AuthRepository(
 
         return try {
 
-            val result = authService
-                .login(email, password)
+            val result =
+                authService.login(
+                    email,
+                    password
+                )
 
             val uid = result.user?.uid
+
                 ?: return Result.failure(
-                    Exception("User ID is null")
+
+                    Exception(
+                        "User ID is null"
+                    )
                 )
 
             val userCore =
+
                 userService.getUserCore(uid)
 
                     ?: return Result.failure(
+
                         Exception(
                             "User not found"
                         )

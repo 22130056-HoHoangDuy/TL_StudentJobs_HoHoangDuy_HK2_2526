@@ -26,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.functions.FirebaseFunctions
+import com.studentjobs.app.data.model.status.VerificationStatus
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -229,11 +231,25 @@ fun EmployerEmailVerificationScreen(
 
                             if (savedOtp == otp && savedEmail == email) {
 
-                                firestore.collection("users").document(user.uid).update(
+                                firestore.collection("employer_verifications")
+                                    .document(user.uid)
+                                    .set(
                                         mapOf(
-                                            "isEmailVerified" to true, "verifiedEmail" to email
-                                        )
-                                    ).await()
+
+                                            "businessEmailVerified"
+                                                    to VerificationStatus
+                                                .VERIFIED
+                                                .name,
+
+                                            "updatedAt"
+                                                    to System.currentTimeMillis()
+
+                                        ),
+
+                                        SetOptions.merge()
+
+                                    )
+                                    .await()
 
                                 isLoading = false
 

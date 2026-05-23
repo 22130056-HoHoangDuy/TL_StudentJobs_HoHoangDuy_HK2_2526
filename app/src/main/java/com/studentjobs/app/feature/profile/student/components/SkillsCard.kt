@@ -73,7 +73,7 @@ fun SkillsCard(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Empty State
-            if (state.skills.isEmpty()) {
+            if (state.studentProfile?.skills?.isEmpty() ?: true) {
 
                 Text(
                     text = "Add your skills to build your student profile 🚀",
@@ -88,7 +88,7 @@ fun SkillsCard(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
 
-                    state.skills.forEach { skill ->
+                    state.studentProfile?.skills?.forEach { skill ->
 
                         SkillChip(skill)
                     }

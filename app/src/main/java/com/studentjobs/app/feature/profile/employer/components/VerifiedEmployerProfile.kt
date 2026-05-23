@@ -20,85 +20,147 @@ fun VerifiedEmployerProfile(
     state: ProfileUiState
 ) {
 
+    val profile =
+        state.employerProfile
+
+    val verification =
+        state.employerVerification
+
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement =
+            Arrangement.spacedBy(16.dp)
     ) {
 
         // ===== HEADER =====
 
         Text(
             text =
-                if (state.businessName.isBlank())
+                if (
+                    profile?.businessName.isNullOrBlank()
+                )
                     "Employer Profile"
                 else
-                    state.businessName,
+                    profile?.businessName ?: "",
 
-            style = MaterialTheme.typography.headlineMedium
+            style =
+                MaterialTheme.typography.headlineMedium
         )
 
         Text(
             text = "Verified Business Account",
-            style = MaterialTheme.typography.bodyLarge
+
+            style =
+                MaterialTheme.typography.bodyLarge
         )
 
         // ===== BUSINESS INFO =====
 
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier =
+                Modifier.fillMaxWidth()
         ) {
 
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier =
+                    Modifier.padding(16.dp)
             ) {
 
                 Text(
                     text = "Business Information",
-                    style = MaterialTheme.typography.titleLarge
+
+                    style =
+                        MaterialTheme.typography.titleLarge
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(12.dp)
+                )
 
-                Text("Business Name: ${state.businessName}")
+                Text(
+                    "Business Name: ${
+                        profile?.businessName ?: ""
+                    }"
+                )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(8.dp)
+                )
 
-                Text("Category: ${state.businessCategory}")
+                Text(
+                    "Category: ${
+                        profile?.businessCategory ?: ""
+                    }"
+                )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(8.dp)
+                )
 
-                Text("Address: ${state.businessAddress}")
+                Text(
+                    "Address: ${
+                        profile?.businessAddressText ?: ""
+                    }"
+                )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(8.dp)
+                )
 
-                Text("Description: ${state.businessDescription}")
+                Text(
+                    "Description: ${
+                        profile?.businessDescription ?: ""
+                    }"
+                )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(8.dp)
+                )
 
-                Text("Google Maps: ${state.googleMapsUrl}")
+                Text(
+                    "Google Maps: ${
+                        profile?.businessLocationUrl ?: ""
+                    }"
+                )
             }
         }
 
         // ===== BUSINESS LICENSE =====
 
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier =
+                Modifier.fillMaxWidth()
         ) {
 
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier =
+                    Modifier.padding(16.dp)
             ) {
 
                 Text(
                     text = "Business License",
-                    style = MaterialTheme.typography.titleMedium
+
+                    style =
+                        MaterialTheme.typography.titleMedium
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(12.dp)
+                )
 
                 AsyncImage(
-                    model = state.businessLicenseUrl,
+                    model =
+                        verification?.businessLicenseUrl,
+
                     contentDescription = null,
-                    modifier = Modifier.fillMaxWidth()
+
+                    modifier =
+                        Modifier.fillMaxWidth()
                 )
             }
         }
@@ -106,24 +168,35 @@ fun VerifiedEmployerProfile(
         // ===== STOREFRONT =====
 
         Card(
-            modifier = Modifier.fillMaxWidth()
+            modifier =
+                Modifier.fillMaxWidth()
         ) {
 
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier =
+                    Modifier.padding(16.dp)
             ) {
 
                 Text(
                     text = "Storefront Image",
-                    style = MaterialTheme.typography.titleMedium
+
+                    style =
+                        MaterialTheme.typography.titleMedium
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(
+                    modifier =
+                        Modifier.height(12.dp)
+                )
 
                 AsyncImage(
-                    model = state.storeFrontImageUrl,
+                    model =
+                        verification?.businessStoreFrontImageUrl,
+
                     contentDescription = null,
-                    modifier = Modifier.fillMaxWidth()
+
+                    modifier =
+                        Modifier.fillMaxWidth()
                 )
             }
         }

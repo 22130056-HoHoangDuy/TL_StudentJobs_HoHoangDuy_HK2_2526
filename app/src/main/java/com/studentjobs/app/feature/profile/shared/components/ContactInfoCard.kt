@@ -32,16 +32,21 @@ fun ContactInfoCard(
     state: ProfileUiState
 ) {
 
+    val userCore = state.userCore
+
+    val studentVerification = state.studentVerification
+
     val gradient = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF111827),
-            Color(0xFF1E293B)
+            Color(0xFF111827), Color(0xFF1E293B)
         )
     )
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
+
         shape = RoundedCornerShape(28.dp),
+
         color = Color.Transparent
     ) {
 
@@ -51,67 +56,102 @@ fun ContactInfoCard(
                 .padding(22.dp)
         ) {
 
-            // Header
+            // ===== HEADER =====
+
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Icon(
                     imageVector = Icons.Default.Call,
+
                     contentDescription = null,
+
                     tint = Color(0xFF22D3EE)
                 )
 
-                Spacer(modifier = Modifier.height(0.dp))
+                Spacer(
+                    modifier = Modifier.height(0.dp)
+                )
 
                 Text(
                     text = " Contact Information",
+
                     color = Color.White,
+
                     style = MaterialTheme.typography.titleLarge,
+
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
+
+            // ===== PHONE =====
 
             ContactItem(
                 icon = {
+
                     Icon(
                         imageVector = Icons.Default.PhoneAndroid,
+
                         contentDescription = null,
+
                         tint = Color(0xFF8B5CF6)
                     )
                 },
+
                 label = "Phone Number",
-                value = state.phone
+
+                value = userCore?.phoneNumber
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
+            // ===== STUDENT EMAIL =====
 
             ContactItem(
                 icon = {
+
                     Icon(
                         imageVector = Icons.Default.Email,
+
                         contentDescription = null,
+
                         tint = Color(0xFF60A5FA)
                     )
                 },
+
                 label = "Student Email",
-                value = state.studentEmail
+
+                value = state.studentProfile?.studentEmail
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(
+                modifier = Modifier.height(18.dp)
+            )
+
+            // ===== LOGIN EMAIL =====
 
             ContactItem(
                 icon = {
+
                     Icon(
                         imageVector = Icons.Default.Public,
+
                         contentDescription = null,
+
                         tint = Color(0xFF22C55E)
                     )
                 },
+
                 label = "Login Email",
-                value = state.email
+
+                value = userCore?.loginEmail
             )
         }
     }
@@ -119,34 +159,48 @@ fun ContactInfoCard(
 
 @Composable
 private fun ContactItem(
+
     icon: @Composable () -> Unit,
+
     label: String,
-    value: String
+
+    value: String?
+
 ) {
 
     Column {
 
         Text(
             text = label,
+
             color = Color.White.copy(alpha = 0.6f),
+
             style = MaterialTheme.typography.bodySmall
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(
+            modifier = Modifier.height(6.dp)
+        )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
+
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
             icon()
 
             Text(
-                text = value.ifEmpty { "Not Available" },
+                text = if (value.isNullOrBlank()) "Not Available"
+                else value,
+
                 color = Color.White,
+
                 style = MaterialTheme.typography.bodyLarge,
+
                 fontWeight = FontWeight.Medium
             )
         }
     }
 }
+

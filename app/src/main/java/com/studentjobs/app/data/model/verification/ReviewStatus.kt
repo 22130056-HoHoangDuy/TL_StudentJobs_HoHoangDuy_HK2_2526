@@ -1,6 +1,6 @@
 package com.studentjobs.app.data.model.verification
 
-enum class VerificationStatus {
+enum class ReviewStatus {
     PENDING,
     APPROVED,
     REJECTED

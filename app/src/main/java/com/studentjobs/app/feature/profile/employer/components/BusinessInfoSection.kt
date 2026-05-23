@@ -57,7 +57,7 @@ fun BusinessInfoSection(
             )
 
             OutlinedTextField(
-                value = state.businessAddress,
+                value = state.businessAddressText,
                 onValueChange = onBusinessAddressChange,
                 label = { Text("Business Address") },
                 modifier = Modifier.fillMaxWidth(),
@@ -65,7 +65,7 @@ fun BusinessInfoSection(
             )
 
             OutlinedTextField(
-                value = state.googleMapsUrl,
+                value = state.businessLocationUrl,
                 onValueChange = onGoogleMapsUrlChange,
                 label = { Text("Google Maps URL") },
                 modifier = Modifier.fillMaxWidth(),

@@ -1,161 +1,390 @@
 require("dotenv").config();
+const nodemailer =
+  require("nodemailer");
+const { onObjectFinalized } =
+  require("firebase-functions/v2/storage");
 
-const { onObjectFinalized } = require("firebase-functions/v2/storage");
+const {
+  onCall,
+  HttpsError
+} = require(
+  "firebase-functions/v2/https"
+);
+
 const admin = require("firebase-admin");
+
 const vision = require("@google-cloud/vision");
-const { onCall } = require("firebase-functions/v2/https");
-const nodemailer = require("nodemailer");
+const client = new vision.ImageAnnotatorClient();
+
+const path = require("path");
+
+const os = require("os");
+const transporter =
+  nodemailer.createTransport({
+
+    service: "gmail",
+
+    auth: {
+      user: process.env.GMAIL_EMAIL,
+      pass: process.env.GMAIL_PASSWORD,
+    },
+});
 
 admin.initializeApp();
 
-console.log("EMAIL:", process.env.GMAIL_EMAIL);
-console.log("PASS:", process.env.GMAIL_PASSWORD);
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_EMAIL,
-    pass: process.env.GMAIL_PASSWORD,
-  },
-});
-
-const client = new vision.ImageAnnotatorClient();
-
-exports.processStudentCard = onObjectFinalized(
+exports.processStudentCardV2 = onObjectFinalized(
   {
     region: "us-east1",
   },
   async (event) => {
     try {
+
+      // ======================================
+      // FILE INFO
+      // ======================================
+
       const file = event.data;
 
       const filePath = file.name;
-      const bucket = file.bucket;
 
-      console.log("File uploaded:", filePath);
+      const bucketName = file.bucket;
 
-      // =======================
-      // 🔥 VALIDATE PATH
-      // =======================
-      if (!filePath || !filePath.startsWith("student_cards/")) return;
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "FUNCTION_TRIGGERED",
+          filePath: filePath,
+          bucketName: bucketName,
+          createdAt: Date.now(),
+        });
 
-      // 🔥 CHỈ OCR ẢNH FRONT
-      if (!filePath.includes("front")) {
-        console.log("Skip back image");
+      // ======================================
+      // VALIDATE
+      // ======================================
+
+      if (!filePath) {
+
+        await admin.firestore()
+          .collection("debug_logs")
+          .add({
+            step: "NO_FILE_PATH",
+            createdAt: Date.now(),
+          });
+
         return;
       }
 
-      // =======================
-      // 🔥 OCR
-      // =======================
-      const [result] = await client.textDetection(
-        `gs://${bucket}/${filePath}`
+      if (!filePath.startsWith("student_cards/")) {
+
+        await admin.firestore()
+          .collection("debug_logs")
+          .add({
+            step: "INVALID_FOLDER",
+            filePath: filePath,
+            createdAt: Date.now(),
+          });
+
+        return;
+      }
+
+      // ONLY OCR FRONT IMAGE
+      if (!filePath.toLowerCase().includes("front")) {
+
+        await admin.firestore()
+          .collection("debug_logs")
+          .add({
+            step: "SKIP_BACK_IMAGE",
+            filePath: filePath,
+            createdAt: Date.now(),
+          });
+
+        return;
+      }
+
+      // ======================================
+      // DOWNLOAD FILE
+      // ======================================
+
+      const bucket =
+        admin.storage().bucket(bucketName);
+
+      const tempFilePath = path.join(
+        os.tmpdir(),
+        path.basename(filePath)
       );
 
-      const text = result.fullTextAnnotation?.text || "";
+      await bucket.file(filePath).download({
+        destination: tempFilePath,
+      });
 
-      console.log("OCR TEXT:\n", text);
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "FILE_DOWNLOADED",
+          tempFilePath: tempFilePath,
+          createdAt: Date.now(),
+        });
+
+      // ======================================
+      // OCR
+      // ======================================
+
+      const [result] =
+        await client.textDetection(
+          tempFilePath
+        );
+
+      const text =
+        result.fullTextAnnotation?.text || "";
+
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "OCR_DONE",
+          textLength: text.length,
+          preview: text.substring(0, 300),
+          createdAt: Date.now(),
+        });
 
       const lines = text
         .split("\n")
         .map((l) => l.trim())
         .filter((l) => l.length > 0);
 
-      console.log("LINES:", lines);
+      // ======================================
+      // PARSE DATA
+      // ======================================
 
       let name = "";
       let studentId = "";
       let school = "";
       let dob = "";
 
-      // =======================
-      // 🔥 SCHOOL
-      // =======================
+      // SCHOOL
       for (const line of lines) {
+
         if (line.includes("ĐẠI HỌC")) {
-          school = line.replace("BIDV", "").trim();
+
+          school =
+            line.replace("BIDV", "").trim();
+
           break;
         }
       }
 
-      // =======================
-      // 🔥 NAME
-      // =======================
+      // NAME
       for (const line of lines) {
+
         if (
-          line.match(/^[A-ZÀ-Ỹ][a-zà-ỹ]+(\s[A-ZÀ-Ỹ][a-zà-ỹ]+)+$/) &&
+          line.match(
+            /^[A-ZÀ-Ỹ][a-zà-ỹ]+(\s[A-ZÀ-Ỹ][a-zà-ỹ]+)+$/
+          ) &&
           !line.includes("MSSV") &&
           !line.includes("Ngày sinh") &&
           !line.includes("Ngành")
         ) {
+
           name = line;
+
           break;
         }
       }
 
-      // =======================
-      // 🔥 MSSV
-      // =======================
+      // MSSV
       for (const line of lines) {
+
         if (line.includes("MSSV")) {
+
           const match = line.match(/\d+/);
+
           if (match) {
+
             studentId = match[0];
+
             break;
           }
         }
       }
 
-      // =======================
-      // 🔥 DATE OF BIRTH
-      // =======================
+      // DOB
       for (const line of lines) {
+
         if (line.includes("Ngày sinh")) {
-          const match = line.match(/\d{2}\/\d{2}\/\d{4}/);
+
+          const match =
+            line.match(/\d{2}\/\d{2}\/\d{4}/);
+
           if (match) {
+
             dob = match[0];
+
             break;
           }
         }
       }
+    // MAJOR
+    let major = "";
 
-      // =======================
-      // 🔥 UID
-      // =======================
+    for (const line of lines) {
+
+      if (line.includes("Ngành")) {
+
+        major =
+          line.replace("Ngành", "")
+              .replace(":", "")
+              .trim();
+
+        break;
+      }
+    }
+      // ======================================
+      // UID
+      // ======================================
+
       const parts = filePath.split("/");
+
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "PATH_SPLIT",
+          parts: parts,
+          createdAt: Date.now(),
+        });
+
       if (parts.length < 2) {
-        console.log("Invalid file path");
+
+        await admin.firestore()
+          .collection("debug_logs")
+          .add({
+            step: "INVALID_UID",
+            filePath: filePath,
+            createdAt: Date.now(),
+          });
+
         return;
       }
 
       const uid = parts[1];
 
-      // =======================
-      // 🔥 AVATAR URL (chưa dùng)
-      // =======================
-      const avatarUrl = `https://storage.googleapis.com/${bucket}/${filePath}`;
-      console.log("Parsed:", {
-        name,
-        studentId,
-        school,
-        dob,
-        uid,
-        avatarUrl,
-      });
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "UID_PARSED",
+          uid: uid,
+          createdAt: Date.now(),
+        });
 
-      // =======================
-      // 🔥 UPDATE FIRESTORE
-      // =======================
-      await admin.firestore().collection("users").doc(uid).update({
-        extractedName: name,
-        studentId: studentId,
-        school: school,
-        dateOfBirth: dob,
-        isStudentVerified: true,
-      });
+      // ======================================
+      // PARSED RESULT
+      // ======================================
 
-      console.log("Firestore updated");
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "PARSED_RESULT",
+          uid: uid,
+          name: name,
+          studentId: studentId,
+          school: school,
+          major: major,
+          dob: dob,
+          createdAt: Date.now(),
+        });
+
+      // ======================================
+      // UPDATE STUDENT VERIFICATION
+      // ======================================
+
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "BEFORE_VERIFICATION_UPDATE",
+          uid: uid,
+          createdAt: Date.now(),
+        });
+
+      await admin
+        .firestore()
+        .collection("student_verifications")
+        .doc(uid)
+        .set(
+          {
+            extractedStudentName: name,
+            extractedStudentId: studentId,
+            extractedStudentMajor: major,
+            extractedStudentSchoolName: school,
+            extractedStudentDob: dob,
+            studentCardVerified: "VERIFIED",
+            updatedAt: Date.now(),
+
+             // cleanup old legacy fields
+                isCardVerified:
+                    admin.firestore.FieldValue.delete(),
+
+                  verificationStatus:
+                    admin.firestore.FieldValue.delete(),
+
+                  cardVerified:
+                    admin.firestore.FieldValue.delete(),
+            verificationStatus:
+              "PENDING, WAIT ANOTHER VERIFICATION FLOW...",
+          },
+          { merge: true }
+        );
+
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "AFTER_VERIFICATION_UPDATE",
+          uid: uid,
+          createdAt: Date.now(),
+        });
+
+      // ======================================
+      // UPDATE STUDENT PROFILE
+      // ======================================
+
+      await admin.firestore()
+        .collection("students")
+        .doc(uid)
+        .set(
+          {
+            fullName: name,
+
+            major: major,
+
+            studentId: studentId,
+
+            schoolName: school,
+
+            dateOfBirth: dob,
+
+                // cleanup old field
+                  school:
+                    admin.firestore.FieldValue.delete(),
+          },
+          { merge: true }
+        );
+
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "AFTER_PROFILE_UPDATE",
+          uid: uid,
+          createdAt: Date.now(),
+        });
+
     } catch (err) {
+
+      await admin.firestore()
+        .collection("debug_logs")
+        .add({
+          step: "ERROR",
+          error: err.toString(),
+          stack: err.stack || "",
+          createdAt: Date.now(),
+        });
+
       console.error("ERROR:", err);
     }
   }
@@ -168,36 +397,38 @@ exports.sendVerificationOtp = onCall(
 
     try {
 
-      const { email, uid } = request.data;
+      const data = request.data;
+
+      const email = data.email;
+      const uid = data.uid;
 
       if (!email || !uid) {
         throw new Error("Missing email or uid");
       }
 
-      // 🔥 Generate OTP
-      const otp = Math.floor(
-        100000 + Math.random() * 900000
-      ).toString();
+      // GENERATE OTP
+      const otp =
+        Math.floor(
+          100000 + Math.random() * 900000
+        ).toString();
 
-      // 🔥 Save Firestore
+      // SAVE OTP
       await admin.firestore()
         .collection("email_otps")
         .doc(uid)
         .set({
-          email,
-          otp,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          email: email,
+          otp: otp,
+          createdAt: Date.now(),
         });
 
-      // 🔥 Send Email
+      // SEND EMAIL
       await transporter.sendMail({
         from: process.env.GMAIL_EMAIL,
         to: email,
-        subject: "StudentJobs Verification Code",
-        text: `Your OTP is: ${otp}`,
+        subject: "StudentJobs Verification OTP",
+        text: `Your OTP code is: ${otp}`,
       });
-
-      console.log("OTP sent:", otp);
 
       return {
         success: true,
@@ -205,9 +436,12 @@ exports.sendVerificationOtp = onCall(
 
     } catch (err) {
 
-      console.error(err);
+        console.error("OTP ERROR:", err);
 
-      throw new Error(err.message);
-    }
+        throw new HttpsError(
+          "internal",
+          err.message || "OTP send failed"
+        );
+      }
   }
 );
