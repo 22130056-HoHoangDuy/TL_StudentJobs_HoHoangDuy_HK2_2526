@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.studentjobs.app.data.model.UserRole
+import com.studentjobs.app.data.model.user.UserRole
 import com.studentjobs.app.feature.role.components.RoleCard
 import com.studentjobs.app.utils.AppPreferences
 

@@ -1,7 +1,6 @@
 package com.studentjobs.app.data.datasource
 
 import com.studentjobs.app.R
-import com.studentjobs.app.data.model.OnBoardingPage
 
 val onboardingPages = listOf(
     OnBoardingPage(

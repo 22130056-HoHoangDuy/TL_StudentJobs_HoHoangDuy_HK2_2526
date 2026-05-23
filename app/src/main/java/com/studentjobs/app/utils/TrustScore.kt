@@ -1,46 +1,74 @@
 package com.studentjobs.app.utils
 
-import com.studentjobs.app.data.model.User
-import com.studentjobs.app.data.model.UserRole
+import com.studentjobs.app.data.model.employer.EmployerVerification
+import com.studentjobs.app.data.model.status.VerificationStatus
+import com.studentjobs.app.data.model.student.StudentVerification
+import com.studentjobs.app.data.model.user.UserCore
+import com.studentjobs.app.data.model.user.UserRole
 
-fun calculateTrustScore(user: User): Int {
-
-    var score = 0
-
-    // ===== LOGIN EMAIL =====
-    if (user.isEmailVerified) {
-        score += 20
-    }
-
-    // ===== PHONE =====
-    if (user.isPhoneVerified) {
-        score += 10
-    }
-
+fun calculateTrustScore(
+    user: UserCore,
+    studentVerification: StudentVerification? = null,
+    employerVerification: EmployerVerification? = null
+): Int {
+    var trustScore = 0
+    // calculate trust score by role
     when (user.role) {
-
-        // ===== STUDENT =====
+        // by role = STUDENT
         UserRole.STUDENT -> {
-
-            // OCR student card
-            if (user.isStudentVerified) {
-                score += 20
+            // done verified school email
+            if (
+                studentVerification
+                    ?.studentEmailVerified == VerificationStatus.VERIFIED
+            ) {
+                trustScore += 15
             }
 
-            // Student domain email
-            if (user.isStudentEmailVerified) {
-                score += 20
+            // done verified student card
+            if (
+                studentVerification
+                    ?.studentCardVerified == VerificationStatus.VERIFIED
+            ) {
+                trustScore += 20
+            }
+
+            // done verified student phone
+            if (studentVerification
+                    ?.studentPhoneVerified == VerificationStatus.VERIFIED
+            ) {
+                trustScore += 15
             }
         }
 
-        // ===== EMPLOYER =====
+        // by role = EMPLOYER
         UserRole.EMPLOYER -> {
+            // done verified license
+            if (
+                employerVerification
+                    ?.businessLicenseVerified == VerificationStatus.VERIFIED
+            ) {
 
-            if (user.isBusinessVerified) {
-                score += 20
+                trustScore += 20
+            }
+
+            // done verified phone
+            if (
+                employerVerification
+                    ?.businessPhoneVerified == VerificationStatus.VERIFIED
+            ) {
+
+                trustScore += 15
+            }
+
+            // done verified email
+            if (
+                employerVerification
+                    ?.businessEmailVerified == VerificationStatus.VERIFIED
+            ) {
+
+                trustScore += 15
             }
         }
     }
-
-    return score
+    return trustScore
 }

@@ -12,28 +12,27 @@ class StorageService {
     private val storage = FirebaseStorage.getInstance()
 
     suspend fun uploadStudentCard(
-        uri: Uri,
-        type: String // "front" | "back"
+        uri: Uri, type: String // "front" | "back"
     ): Result<String> {
         return try {
 
             val uid = FirebaseAuth.getInstance().currentUser?.uid
                 ?: return Result.failure(Exception("User not logged in"))
 
-            // 🔥 tránh overwrite + dễ debug
-            val fileName = "${type}_${UUID.randomUUID()}.jpg"
+            val fileName =
+                if (type == "front")
+                    "front.jpg"
+                else
+                    "back.jpg"
 
-            val ref = storage.reference
-                .child("student_cards/$uid/$fileName")
+            val ref = storage.reference.child("student_cards/$uid/$fileName")
 
-            // 🔥 metadata (optional nhưng nên có)
-            val metadata = StorageMetadata.Builder()
-                .setContentType("image/jpeg")
-                .setCustomMetadata("uid", uid)
-                .setCustomMetadata("type", type)
-                .build()
+            // metadata (optional nhưng nên có)
+            val metadata =
+                StorageMetadata.Builder().setContentType("image/jpeg").setCustomMetadata("uid", uid)
+                    .setCustomMetadata("type", type).build()
 
-            // 🚀 upload
+            // upload
             ref.putFile(uri, metadata).await()
 
             val downloadUrl = ref.downloadUrl.await().toString()
@@ -44,5 +43,17 @@ class StorageService {
             e.printStackTrace()
             Result.failure(e)
         }
+    }
+
+    suspend fun uploadEmployerImage(
+        uid: String, uri: Uri, folder: String
+    ): String {
+
+        val storageRef =
+            FirebaseStorage.getInstance().reference.child("employer_verification/$uid/$folder")
+
+        storageRef.putFile(uri).await()
+
+        return storageRef.downloadUrl.await().toString()
     }
 }
