@@ -14,6 +14,7 @@ import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
 import com.studentjobs.app.feature.profile.verification.email.EmailVerificationScreen
 import com.studentjobs.app.feature.profile.verification.phone.employer.EmployerPhoneVerificationScreen
 import com.studentjobs.app.feature.profile.verification.phone.student.StudentPhoneVerificationScreen
+import com.studentjobs.app.feature.subscription.SubscriptionRequestScreen
 import com.studentjobs.app.feature.subscription.SubscriptionScreen
 
 @Composable
@@ -52,28 +53,73 @@ fun MainNavGraph(
 
             ProfileScreen(navController)
         }
-        composable("subscription") {
+
+        // ========================================
+        // SUBSCRIPTION
+        // ========================================
+
+        composable(
+            "subscription/{role}"
+        ) { backStackEntry ->
+
+            val role = UserRole.valueOf(
+
+                backStackEntry
+                    .arguments
+                    ?.getString("role")
+
+                    ?: "STUDENT"
+            )
 
             SubscriptionScreen(
 
-                role = when {
-
-                    // TEMP TEST
-                    true -> UserRole.STUDENT
-
-                    else -> UserRole.EMPLOYER
-                },
+                role = role,
 
                 currentPlan =
                     SubscriptionPlan.FREE,
 
-                onUpgradeClick = {
+                onUpgradePlusClick = {
 
-                    // TODO:
-                    // navigate request screen
+                    navController.navigate(
+
+                        "subscription_request/${role.name}"
+                    )
                 },
 
                 onBackClick = {
+
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // ========================================
+        // SUBSCRIPTION REQUEST
+        // ========================================
+
+        composable(
+            "subscription_request/{role}"
+        ) { backStackEntry ->
+
+            val role = UserRole.valueOf(
+
+                backStackEntry
+                    .arguments
+                    ?.getString("role")
+
+                    ?: "STUDENT"
+            )
+
+            SubscriptionRequestScreen(
+
+                role = role,
+
+                onBackClick = {
+
+                    navController.popBackStack()
+                },
+
+                onRequestSuccess = {
 
                     navController.popBackStack()
                 }

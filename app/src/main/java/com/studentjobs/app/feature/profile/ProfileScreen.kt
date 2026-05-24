@@ -98,7 +98,7 @@ fun ProfileScreen(
                         onUpgradePlusClick = {
 
                             navController.navigate(
-                                "subscription"
+                                "subscription/STUDENT"
                             )
                         }
                     )
@@ -221,7 +221,7 @@ fun ProfileScreen(
                         onUpgradePlusClick = {
 
                             navController.navigate(
-                                "subscription"
+                                "subscription/EMPLOYER"
                             )
                         }
                     )

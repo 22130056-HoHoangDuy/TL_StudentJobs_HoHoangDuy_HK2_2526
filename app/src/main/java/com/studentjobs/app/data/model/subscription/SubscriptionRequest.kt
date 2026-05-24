@@ -21,6 +21,10 @@ data class SubscriptionRequest(
 
     val paymentProofUrl: String? = null,
 
+    val paymentAmount: Int = 0,
+
+    val paymentContent: String = "",
+
     // status
     val status: SubscriptionRequestStatus = SubscriptionRequestStatus.PENDING,
 

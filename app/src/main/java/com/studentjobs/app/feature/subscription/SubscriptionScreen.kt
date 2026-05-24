@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Stars
-
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,21 +23,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
 import androidx.lifecycle.viewmodel.compose.viewModel
-
+import com.google.firebase.auth.FirebaseAuth
 import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserRole
-
 import com.studentjobs.app.feature.subscription.components.AlreadyPlusBadge
 import com.studentjobs.app.feature.subscription.components.SubscriptionHeader
 import com.studentjobs.app.feature.subscription.components.SubscriptionTopBar
@@ -47,11 +43,11 @@ import com.studentjobs.app.feature.subscription.components.SubscriptionTopBar
 @Composable
 fun SubscriptionScreen(
 
-    role: com.studentjobs.app.data.model.user.UserRole,
+    role: UserRole,
 
     currentPlan: SubscriptionPlan,
 
-    onUpgradeClick: () -> Unit,
+    onUpgradePlusClick: () -> Unit,
 
     onBackClick: () -> Unit,
 
@@ -59,7 +55,20 @@ fun SubscriptionScreen(
         viewModel()
 
 ) {
+    val uiState = viewModel.uiState.collectAsState()
 
+    val uid = FirebaseAuth
+        .getInstance()
+        .currentUser
+        ?.uid
+
+    LaunchedEffect(Unit) {
+
+        uid?.let {
+
+            viewModel.checkPendingRequest(it)
+        }
+    }
     val features = remember(role) {
 
         when (role) {
@@ -139,6 +148,7 @@ fun SubscriptionScreen(
 
             horizontalAlignment =
                 Alignment.CenterHorizontally
+
         ) {
 
             item {
@@ -248,37 +258,77 @@ fun SubscriptionScreen(
                     SubscriptionPlan.FREE
                 ) {
 
-                    Button(
+                    when {
 
-                        onClick = onUpgradeClick,
+                        uiState.value.currentPlan ==
+                                SubscriptionPlan.PLUS -> {
 
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
+                            AlreadyPlusBadge()
+                        }
 
-                        colors =
-                            ButtonDefaults.buttonColors(
+                        uiState.value.hasPendingRequest -> {
 
-                                containerColor =
-                                    Color(0xFFFFB300)
-                            )
-                    ) {
+                            Button(
 
-                        Text(
+                                onClick = {},
 
-                            text =
-                                "Nâng cấp PLUS",
+                                enabled = false,
 
-                            color = Color.White,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
 
-                            fontWeight =
-                                FontWeight.Bold
-                        )
+                                colors =
+                                    ButtonDefaults.buttonColors(
+
+                                        disabledContainerColor =
+                                            Color.Gray
+                                    )
+                            ) {
+
+                                Text(
+
+                                    text = "Đang chờ duyệt",
+
+                                    color = Color.White,
+
+                                    fontWeight =
+                                        FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        else -> {
+
+                            Button(
+
+                                onClick = onUpgradePlusClick,
+
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+
+                                colors =
+                                    ButtonDefaults.buttonColors(
+
+                                        containerColor =
+                                            Color(0xFFFFB300)
+                                    )
+                            ) {
+
+                                Text(
+
+                                    text =
+                                        "Nâng cấp PLUS",
+
+                                    color = Color.White,
+
+                                    fontWeight =
+                                        FontWeight.Bold
+                                )
+                            }
+                        }
                     }
-
-                } else {
-
-                    AlreadyPlusBadge()
                 }
             }
         }

@@ -6,18 +6,41 @@ import com.studentjobs.app.data.model.user.UserRole
 
 data class SubscriptionUiState(
 
+    // ====================================
+    // SYSTEM
+    // ====================================
+
     val isLoading: Boolean = false,
 
-    val currentPlan: SubscriptionPlan =
-        SubscriptionPlan.FREE,
+    val successMessage: String? = null,
+
+    val errorMessage: String? = null,
+
+    // ====================================
+    // USER
+    // ====================================
 
     val currentRole: UserRole =
         UserRole.STUDENT,
 
+    // ====================================
+    // SUBSCRIPTION
+    // ====================================
+
+    val currentPlan: SubscriptionPlan =
+        SubscriptionPlan.FREE,
+
+    val subscriptionExpiredAt: Long? = null,
+
+    // ====================================
+    // REQUEST
+    // ====================================
+
+    val hasPendingRequest: Boolean = false,
+
+    val latestPendingRequest:
+    SubscriptionRequest? = null,
+
     val pendingRequests:
-    List<SubscriptionRequest> = emptyList(),
-
-    val successMessage: String? = null,
-
-    val errorMessage: String? = null
+    List<SubscriptionRequest> = emptyList()
 )

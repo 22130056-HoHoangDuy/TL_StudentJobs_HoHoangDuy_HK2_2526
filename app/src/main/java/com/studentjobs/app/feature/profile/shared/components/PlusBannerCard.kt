@@ -1,7 +1,7 @@
 package com.studentjobs.app.feature.profile.shared.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -48,9 +47,9 @@ fun PlusBannerCard(
 
         colors = listOf(
 
-            Color(0xFF6A11CB),
+            Color(0xFF7B2FF7),
 
-            Color(0xFF2575FC)
+            Color(0xFF3A7BFD)
         )
     )
 
@@ -69,158 +68,171 @@ fun PlusBannerCard(
 
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp),
+            .padding(vertical = 12.dp),
 
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(26.dp),
+
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 10.dp
+        ),
 
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
-        ),
-
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
         )
     ) {
 
-        Box(
+        Column(
 
             modifier = Modifier
+                .fillMaxWidth()
                 .background(gradient)
-                .padding(24.dp)
+                .padding(
+                    horizontal = 20.dp,
+                    vertical = 22.dp
+                )
         ) {
 
-            Column {
+            // ====================================
+            // TOP
+            // ====================================
 
-                // ====================================
-                // TOP ROW
-                // ====================================
+            Row(
 
-                Row(
+                verticalAlignment =
+                    Alignment.CenterVertically,
 
-                    verticalAlignment =
-                        Alignment.CenterVertically
-                ) {
+                horizontalArrangement =
+                    Arrangement.spacedBy(10.dp)
+            ) {
 
-                    Icon(
+                Icon(
 
-                        imageVector =
-                            Icons.Default.AutoAwesome,
+                    imageVector =
+                        Icons.Default.AutoAwesome,
 
-                        contentDescription = null,
+                    contentDescription = null,
 
-                        tint = Color(0xFFFFD54F),
+                    tint = Color(0xFFFFD54F),
 
-                        modifier = Modifier.size(32.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Column {
-
-                        Text(
-
-                            text = "StudentJobs PLUS",
-
-                            style =
-                                MaterialTheme.typography.titleLarge,
-
-                            color = Color.White,
-
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Text(
-
-                            text =
-                                "Unlock smart recruitment system",
-
-                            color =
-                                Color.White.copy(alpha = 0.85f)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // ====================================
-                // BENEFITS
-                // ====================================
-
-                Text(
-
-                    text = benefits,
-
-                    color = Color.White,
-
-                    style =
-                        MaterialTheme.typography.bodyMedium
+                    modifier = Modifier.size(28.dp)
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Column {
 
-                // ====================================
-                // STATUS / BUTTON
-                // ====================================
+                    Text(
 
-                if (currentPlan == SubscriptionPlan.PLUS) {
+                        text = "StudentJobs PLUS",
 
-                    AssistChip(
+                        style =
+                            MaterialTheme.typography.titleLarge,
 
-                        onClick = {},
+                        color = Color.White,
 
-                        label = {
-
-                            Text(
-                                text = "PLUS Activated"
-                            )
-                        },
-
-                        leadingIcon = {
-
-                            Icon(
-
-                                imageVector =
-                                    Icons.Default.Star,
-
-                                contentDescription = null,
-
-                                tint = Color(0xFFFFD54F)
-                            )
-                        },
-
-                        colors =
-                            AssistChipDefaults.assistChipColors(
-
-                                containerColor =
-                                    Color.White
-                            )
+                        fontWeight = FontWeight.Bold
                     )
 
-                } else {
+                    Text(
 
-                    Button(
+                        text =
+                            "Unlock smart recruitment system",
 
-                        onClick = onUpgradePlusClick,
+                        color =
+                            Color.White.copy(alpha = 0.82f),
 
-                        colors =
-                            ButtonDefaults.buttonColors(
+                        style =
+                            MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
 
-                                containerColor =
-                                    Color(0xFFFFD54F)
-                            ),
+            Spacer(
+                modifier =
+                    Modifier.height(18.dp)
+            )
 
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
+            // ====================================
+            // BENEFITS
+            // ====================================
+
+            Text(
+
+                text = benefits,
+
+                color = Color.White,
+
+                style =
+                    MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(
+                modifier =
+                    Modifier.height(18.dp)
+            )
+
+            // ====================================
+            // BUTTON / STATUS
+            // ====================================
+
+            if (currentPlan == SubscriptionPlan.PLUS) {
+
+                AssistChip(
+
+                    onClick = {},
+
+                    label = {
 
                         Text(
-
-                            text = "Upgrade to PLUS",
-
-                            color = Color.Black,
-
-                            fontWeight = FontWeight.Bold
+                            text = "PLUS Activated"
                         )
-                    }
+                    },
+
+                    leadingIcon = {
+
+                        Icon(
+
+                            imageVector =
+                                Icons.Default.Star,
+
+                            contentDescription = null,
+
+                            tint =
+                                Color(0xFFFFD54F)
+                        )
+                    },
+
+                    colors =
+                        AssistChipDefaults.assistChipColors(
+
+                            containerColor =
+                                Color.White
+                        )
+                )
+
+            } else {
+
+                Button(
+
+                    onClick = onUpgradePlusClick,
+
+                    shape =
+                        RoundedCornerShape(14.dp),
+
+                    colors =
+                        ButtonDefaults.buttonColors(
+
+                            containerColor =
+                                Color(0xFFFFD54F)
+                        )
+                ) {
+
+                    Text(
+
+                        text = "Upgrade to PLUS",
+
+                        color = Color.Black,
+
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
