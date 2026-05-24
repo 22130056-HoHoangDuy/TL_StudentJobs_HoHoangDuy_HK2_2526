@@ -1,31 +1,34 @@
 package com.studentjobs.app.data.model.subscription
 
+import com.studentjobs.app.data.model.user.SubscriptionPlan
+
 data class SubscriptionRequest(
 
-    // ===== ID =====
+    // id
     val requestId: String = "",
 
-    // ===== RELATION =====
+    // id user request
     val userUid: String = "",
 
-    // ===== SUBSCRIPTION =====
-    val requestedPlan: String = "PLUS",
+    // PLUS
+    val requestedPlan: SubscriptionPlan = SubscriptionPlan.PLUS,
 
+    // default plan time for PLUS
     val durationDays: Int = 30,
 
-    // ===== PAYMENT =====
+    // payment method
     val paymentMethod: String = "QR",
 
     val paymentProofUrl: String? = null,
 
-    // ===== STATUS =====
-    val status: String = "PENDING",
+    // status
+    val status: SubscriptionRequestStatus = SubscriptionRequestStatus.PENDING,
 
-    // ===== ADMIN =====
+    // admin review
     val reviewedBy: String? = null,
     val reviewNote: String? = null,
 
-    // ===== SYSTEM =====
+    // system log
     val requestedAt: Long = 0L,
     val reviewedAt: Long? = null
 )

@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserRole
 import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
@@ -13,6 +14,7 @@ import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
 import com.studentjobs.app.feature.profile.verification.email.EmailVerificationScreen
 import com.studentjobs.app.feature.profile.verification.phone.employer.EmployerPhoneVerificationScreen
 import com.studentjobs.app.feature.profile.verification.phone.student.StudentPhoneVerificationScreen
+import com.studentjobs.app.feature.subscription.SubscriptionScreen
 
 @Composable
 fun MainNavGraph(
@@ -49,6 +51,33 @@ fun MainNavGraph(
         composable("profile") {
 
             ProfileScreen(navController)
+        }
+        composable("subscription") {
+
+            SubscriptionScreen(
+
+                role = when {
+
+                    // TEMP TEST
+                    true -> UserRole.STUDENT
+
+                    else -> UserRole.EMPLOYER
+                },
+
+                currentPlan =
+                    SubscriptionPlan.FREE,
+
+                onUpgradeClick = {
+
+                    // TODO:
+                    // navigate request screen
+                },
+
+                onBackClick = {
+
+                    navController.popBackStack()
+                }
+            )
         }
 
         // ========================================

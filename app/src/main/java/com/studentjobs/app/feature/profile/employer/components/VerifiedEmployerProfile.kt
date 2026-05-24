@@ -13,11 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.feature.profile.ProfileUiState
+import com.studentjobs.app.feature.profile.shared.components.PlusBannerCard
 
 @Composable
 fun VerifiedEmployerProfile(
-    state: ProfileUiState
+    state: ProfileUiState,
+    onUpgradePlusClick: () -> Unit
 ) {
 
     val profile =
@@ -40,7 +43,7 @@ fun VerifiedEmployerProfile(
                 )
                     "Employer Profile"
                 else
-                    profile?.businessName ?: "",
+                    profile.businessName ?: "",
 
             style =
                 MaterialTheme.typography.headlineMedium
@@ -51,6 +54,29 @@ fun VerifiedEmployerProfile(
 
             style =
                 MaterialTheme.typography.bodyLarge
+        )
+
+        Spacer(
+            modifier =
+                Modifier.height(20.dp)
+        )
+
+        // ===== PLUS =====
+        PlusBannerCard(
+
+            currentPlan =
+                state.userCore?.subscriptionPlan
+                    ?: SubscriptionPlan.FREE,
+
+            role = state.role,
+
+            onUpgradePlusClick = {
+                onUpgradePlusClick()
+            }
+        )
+        Spacer(
+            modifier =
+                Modifier.height(20.dp)
         )
 
         // ===== BUSINESS INFO =====
