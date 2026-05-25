@@ -23,6 +23,13 @@ const {
   "./otp/sendVerificationOtp"
 );
 
+// ORC Schedule
+const {
+  processStudentSchedule
+} = require(
+  "./schedule/processStudentSchedule"
+);
+
 // ======================================
 // EXPORT
 // ======================================
@@ -32,4 +39,6 @@ module.exports = {
   processStudentCardV2,
 
   sendVerificationOtp,
+
+  processStudentSchedule,
 };

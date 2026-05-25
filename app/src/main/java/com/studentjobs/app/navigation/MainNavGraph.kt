@@ -14,6 +14,8 @@ import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
 import com.studentjobs.app.feature.profile.verification.email.EmailVerificationScreen
 import com.studentjobs.app.feature.profile.verification.phone.employer.EmployerPhoneVerificationScreen
 import com.studentjobs.app.feature.profile.verification.phone.student.StudentPhoneVerificationScreen
+import com.studentjobs.app.feature.schedule.ScheduleScreen
+import com.studentjobs.app.feature.schedule.ScheduleUploadScreen
 import com.studentjobs.app.feature.subscription.SubscriptionRequestScreen
 import com.studentjobs.app.feature.subscription.SubscriptionScreen
 
@@ -206,6 +208,18 @@ fun MainNavGraph(
 
                 navController = navController
             )
+        }
+        composable("schedule") {
+
+            ScheduleScreen(
+                navController = navController,
+                currentPlan = SubscriptionPlan.PLUS
+            )
+        }
+
+        composable("schedule_upload") {
+
+            ScheduleUploadScreen()
         }
     }
 }

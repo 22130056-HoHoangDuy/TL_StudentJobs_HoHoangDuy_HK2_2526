@@ -14,15 +14,23 @@ import com.studentjobs.app.feature.profile.shared.components.PlusBannerCard
 import com.studentjobs.app.feature.profile.shared.components.TrustScoreCard
 import com.studentjobs.app.feature.profile.shared.components.VerificationStatusCard
 
+
 @Composable
 fun VerifiedStudentProfile(
+
     state: ProfileUiState,
-    onUpgradePlusClick: () -> Unit
+
+    onUpgradePlusClick: () -> Unit,
+
+    onScheduleClick: () -> Unit
+
 ) {
 
     Column {
 
-        // ===== HEADER =====
+        // ========================================
+        // HEADER
+        // ========================================
 
         GradientHeader(
             state = state
@@ -33,7 +41,10 @@ fun VerifiedStudentProfile(
                 Modifier.height(20.dp)
         )
 
-        // ===== PLUS =====
+        // ========================================
+        // PLUS
+        // ========================================
+
         PlusBannerCard(
 
             currentPlan =
@@ -43,15 +54,36 @@ fun VerifiedStudentProfile(
             role = state.role,
 
             onUpgradePlusClick = {
+
                 onUpgradePlusClick()
             }
         )
+
         Spacer(
             modifier =
                 Modifier.height(20.dp)
         )
 
-        // ===== TRUST SCORE =====
+        // ========================================
+        // TIMETABLE OCR
+        // ========================================
+
+        ScheduleFeatureCard(
+
+            onClick = {
+
+                onScheduleClick()
+            }
+        )
+
+        Spacer(
+            modifier =
+                Modifier.height(20.dp)
+        )
+
+        // ========================================
+        // TRUST SCORE
+        // ========================================
 
         TrustScoreCard(
             state = state
@@ -62,7 +94,9 @@ fun VerifiedStudentProfile(
                 Modifier.height(16.dp)
         )
 
-        // ===== VERIFICATION =====
+        // ========================================
+        // VERIFICATION
+        // ========================================
 
         VerificationStatusCard(
             state = state
@@ -73,7 +107,9 @@ fun VerifiedStudentProfile(
                 Modifier.height(16.dp)
         )
 
-        // ===== ACADEMIC =====
+        // ========================================
+        // ACADEMIC
+        // ========================================
 
         AcademicInfoCard(
             state = state
@@ -84,7 +120,9 @@ fun VerifiedStudentProfile(
                 Modifier.height(16.dp)
         )
 
-        // ===== CONTACT =====
+        // ========================================
+        // CONTACT
+        // ========================================
 
         ContactInfoCard(
             state = state
@@ -95,7 +133,9 @@ fun VerifiedStudentProfile(
                 Modifier.height(16.dp)
         )
 
-        // ===== SKILLS =====
+        // ========================================
+        // SKILLS
+        // ========================================
 
         SkillsCard(
             state = state
