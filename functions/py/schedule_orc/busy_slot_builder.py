@@ -9,9 +9,14 @@ def build_busy_slots(
 
     busy_slots = []
 
-    for i in range(
-            len(anchors)
-    ):
+    total = min(
+
+        len(anchors),
+
+        len(subjects)
+    )
+
+    for i in range(total):
 
         anchor = anchors[i]
 
