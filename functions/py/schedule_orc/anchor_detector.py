@@ -1,5 +1,5 @@
-import re
-import numpy as np
+from schedule_orc.anchor_detector import re
+from schedule_orc.anchor_detector import numpy as np
 
 
 def detect_anchors(result):

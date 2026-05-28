@@ -1,5 +1,5 @@
-import re
-import numpy as np
+from schedule_orc.subject_extractor import re
+from schedule_orc.subject_extractor import numpy as np
 
 
 # ==========================================
