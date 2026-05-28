@@ -1,7 +1,10 @@
-paddleocr
-paddlepaddle
-opencv-python
-numpy
-matplotlib
 flask
 gunicorn
+opencv-python-headless
+easyocr
+numpy
+matplotlib
+requests
+torch
+torchvision
+
