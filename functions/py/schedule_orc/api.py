@@ -7,11 +7,10 @@ import paddle
 
 from paddleocr import PaddleOCR
 
-from column_detector import detect_columns
-from anchor_detector import detect_anchors
-from subject_extractor import extract_subjects
-from busy_slot_builder import build_busy_slots
-
+from schedule_orc.column_detector import detect_columns
+from schedule_orc.anchor_detector import detect_anchors
+from schedule_orc.subject_extractor import extract_subjects
+from schedule_orc.busy_slot_builder import build_busy_slots
 
 # ==========================================
 # FLASK
