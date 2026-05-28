@@ -29,16 +29,18 @@ paddle.set_flags({
 
     'FLAGS_enable_pir_api': 0
 })
-
 ocr = PaddleOCR(
-
-    use_textline_orientation=True,
 
     lang='en',
 
+    use_doc_orientation_classify=False,
+
+    use_doc_unwarping=False,
+
+    use_textline_orientation=False,
+
     enable_mkldnn=False
 )
-
 # ==========================================
 # OCR ENDPOINT
 # ==========================================
