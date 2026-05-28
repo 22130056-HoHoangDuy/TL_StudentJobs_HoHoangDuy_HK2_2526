@@ -1,6 +1,5 @@
-from schedule_orc.column_detector import re
-from schedule_orc.column_detector import numpy as np
-
+import re
+import numpy as np
 
 def detect_columns(result):
 
