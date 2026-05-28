@@ -1,5 +1,4 @@
-from parser_utils import time_to_minute
-
+from schedule_orc.parser_utils import time_to_minute
 
 def build_busy_slots(
 
