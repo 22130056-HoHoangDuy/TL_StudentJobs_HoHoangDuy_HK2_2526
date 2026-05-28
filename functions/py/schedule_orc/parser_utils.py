@@ -1,4 +1,4 @@
-from schedule_orc.parser_utils import re
+import re
 
 
 def time_to_minute(t):
