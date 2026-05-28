@@ -42,7 +42,7 @@ exports.processStudentSchedulePy =
 
                     await axios.post(
 
-                        "http://127.0.0.1:5000/ocr",
+                        "https://tl-studentjobs-hohoangduy-hk2-2526.onrender.com/ocr",
 
                         {
 

@@ -2,6 +2,9 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 
+import requests
+import tempfile
+
 import cv2
 import paddle
 
@@ -46,11 +49,22 @@ def process_ocr():
 
     try:
 
-        image_path = request.json.get(
+        image_url = request.json.get(
             "imagePath"
         )
 
-        result = ocr.ocr(image_path)
+        response = requests.get(image_url)
+
+        temp_file = tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".jpg"
+        )
+
+        temp_file.write(response.content)
+
+        temp_file.close()
+
+        result = ocr.ocr(temp_file.name)
 
         columns = detect_columns(
             result
