@@ -10,3 +10,8 @@
 .DS_Store
 .env
 firebase-debug.log
+functions/py/venv/
+functions/py/.venv/
+
+__pycache__/
+*.pyc
