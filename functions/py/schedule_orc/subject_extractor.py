@@ -2,91 +2,64 @@ import re
 import numpy as np
 
 
-# ==========================================
-# NORMALIZE SUBJECT NAME
-# ==========================================
+def normalize_subject_name(text):
 
-def normalize_subject_name(name):
+    if text is None:
+        return "N/A"
+
+    text = text.strip()
 
     corrections = {
 
         "Chuyn dê":
             "Chuyên đề",
 
-        "Chuyn dè":
+        "Chuyn de":
             "Chuyên đề",
 
         "Chuyên dè":
             "Chuyên đề",
 
-        "Nhâp môn":
-            "Nhập môn",
-
-        "Nhp mn":
-            "Nhập môn",
-
-        "Lâp trinh":
+        "Låp trinh":
             "Lập trình",
 
-        "Thuong mai din tu":
-            "Thương mại điện tử",
+        "Lap trinh":
+            "Lập trình",
 
-        "Do án chuyn ngành":
-            "Đồ án chuyên ngành"
+        "Thuong mai dien tu":
+            "Thương mại điện tử"
     }
-
-    result = name
 
     for wrong, right in corrections.items():
 
-        result = re.sub(
+        text = re.sub(
 
             re.escape(wrong),
 
             right,
 
-            result,
+            text,
 
             flags=re.IGNORECASE
         )
 
-    # ======================================
-    # REMOVE TRASH TEXT
-    # ======================================
-
-    trash_patterns = [
-
-        r'K\.CNTT',
-
-        r'GV:.*',
-
-        r'Phòng:.*',
-
-        r'Nhóm:.*'
-    ]
-
-    for pattern in trash_patterns:
-
-        result = re.sub(
-
-            pattern,
-
-            '',
-
-            result,
-
-            flags=re.IGNORECASE
-        ).strip()
-
-    return result.strip()
+    return text
 
 
-# ==========================================
-# EXTRACT SUBJECTS
-# ==========================================
+def is_header_text(text):
+
+    return re.search(
+
+        r'(?:Thứ|Thú|Thu|CN)',
+
+        text,
+
+        re.IGNORECASE
+
+    ) is not None
+
 
 def extract_subjects(
-
         result,
         anchors
 ):
@@ -99,6 +72,8 @@ def extract_subjects(
 
     texts = data["rec_texts"]
 
+    print("\n========== SUBJECT DETECTOR ==========")
+
     for anchor in anchors:
 
         anchor_x = anchor["centerX"]
@@ -107,16 +82,18 @@ def extract_subjects(
 
         candidates = []
 
+        print("\n--------------------------------")
+        print("ANCHOR:")
+        print(anchor)
+
         for i in range(len(texts)):
 
-            text = texts[i]
+            text = str(texts[i])
 
-            box = polys[i]
+            poly = polys[i]
 
             coords = np.array(
-
-                box,
-
+                poly,
                 dtype=np.float32
             ).flatten()
 
@@ -128,79 +105,125 @@ def extract_subjects(
                 coords[1::2]
             )
 
-            # ==================================
-            # SAME COLUMN
-            # ==================================
-
             same_column = (
 
                     abs(center_x - anchor_x)
-                    < 160
+                    < 140
             )
-
-            # ==================================
-            # ABOVE ANCHOR
-            # ==================================
 
             upper_area = (
 
                     center_y < anchor_y
             )
 
-            # ==================================
-            # NEAR ANCHOR
-            # ==================================
-
             near_anchor = (
 
                     abs(anchor_y - center_y)
-                    < 250
+                    < 180
             )
 
-            if (
-
+            if not (
                     same_column
                     and upper_area
                     and near_anchor
             ):
+                continue
 
-                # ==================================
-                # SUBJECT CANDIDATE
-                # ==================================
+            # bỏ header ngày
 
-                if "(" in text and "Thứ" not in text:
+            if is_header_text(text):
+                continue
 
-                    candidates.append({
+            # bỏ giờ học
 
-                        "text": text,
+            if re.search(
+                    r'\d{2}:\d{2}',
+                    text):
+                continue
 
-                        "centerY":
-                            center_y
-                    })
+            # bỏ text rác
 
-        # ======================================
-        # PICK TOPMOST
-        # ======================================
+            if re.search(
+                    r'Nhóm',
+                    text,
+                    re.IGNORECASE
+            ):
+                continue
+
+            if re.search(
+                    r'Phòng',
+                    text,
+                    re.IGNORECASE
+            ):
+                continue
+
+            if re.search(
+                    r'GV',
+                    text,
+                    re.IGNORECASE
+            ):
+                continue
+
+            if re.search(
+                    r'K\.CNTT',
+                    text,
+                    re.IGNORECASE
+            ):
+                continue
+
+            candidates.append({
+
+                "text": text,
+
+                "centerY": center_y
+            })
+
+        print("CANDIDATES:")
+        print(candidates)
 
         if candidates:
 
-            candidates = sorted(
-
-                candidates,
+            candidates.sort(
 
                 key=lambda x: x["centerY"]
             )
 
-            subject = candidates[0]["text"]
+            subject_lines = []
+
+            for item in candidates[:2]:
+
+                txt = item["text"].strip()
+
+                if txt:
+
+                    subject_lines.append(
+                        txt
+                    )
+
+            subject = " ".join(
+                subject_lines
+            )
 
             subject = normalize_subject_name(
                 subject
             )
 
-            subjects.append(subject)
+            print("SUBJECT:")
+            print(subject)
+
+            subjects.append(
+                subject
+            )
 
         else:
 
-            subjects.append("N/A")
+            print("SUBJECT: N/A")
+
+            subjects.append(
+                "N/A"
+            )
+
+    print("\nFINAL SUBJECTS:")
+    print(subjects)
 
     return subjects

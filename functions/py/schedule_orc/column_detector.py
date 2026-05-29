@@ -1,6 +1,7 @@
 import re
 import numpy as np
 
+
 def detect_columns(result):
 
     raw_cols = []
@@ -11,9 +12,11 @@ def detect_columns(result):
 
     texts = data["rec_texts"]
 
+    print("\n========== COLUMN DETECTOR ==========")
+
     for i in range(len(texts)):
 
-        text = texts[i]
+        text = str(texts[i])
 
         poly = polys[i]
 
@@ -26,12 +29,13 @@ def detect_columns(result):
             coords[0::2]
         )
 
+        print(
+            f"TEXT: {text} | X={center_x}"
+        )
+
         if re.search(
-
-                r'(?:Thứ|Thú|Chu|CN)',
-
-                text,
-
+                r'^(?:Thứ|Thú|Thu|CN)',
+                text.strip(),
                 re.IGNORECASE
         ):
 
@@ -41,6 +45,9 @@ def detect_columns(result):
 
                 "centerX": center_x
             })
+
+    print("\nRAW COLS:")
+    print(raw_cols)
 
     raw_cols = sorted(
 
@@ -86,7 +93,12 @@ def detect_columns(result):
 
             "dayOfWeek": i + 2,
 
-            "centerX": float(col["centerX"])
+            "centerX": float(
+                col["centerX"]
+            )
         })
+
+    print("\nFINAL COLUMNS:")
+    print(final_columns)
 
     return final_columns

@@ -1,4 +1,4 @@
-from schedule_orc.parser_utils import time_to_minute
+from parser_utils import time_to_minute
 
 def build_busy_slots(
 
@@ -22,8 +22,11 @@ def build_busy_slots(
 
         subject = subjects[i]
 
-        if subject == "N/A":
-            continue
+        if (
+                subject == "N/A"
+                or subject.strip() == ""
+        ):
+                continue
 
         best_day = None
 

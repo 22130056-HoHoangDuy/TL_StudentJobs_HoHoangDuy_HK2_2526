@@ -1,0 +1,255 @@
+ * Serving Flask app 'api'
+ * Debug mode: off
+
+========================
+START OCR REQUEST
+{'imagePath': 'https://firebasestorage.googleapis.com/v0/b/studentjobs-50af3.firebasestorage.app/o/student_schedules%2FoPw01b5a2WNKIpHx7ufZ5fNQKDD2%2Ftimetable.jpg?alt=media&token=f58238a7-0d78-4b24-b29c-d70d92c8edf3'}
+========================
+
+IMAGE URL:
+https://firebasestorage.googleapis.com/v0/b/studentjobs-50af3.firebasestorage.app/o/student_schedules%2FoPw01b5a2WNKIpHx7ufZ5fNQKDD2%2Ftimetable.jpg?alt=media&token=f58238a7-0d78-4b24-b29c-d70d92c8edf3
+
+DOWNLOADING IMAGE...
+STATUS CODE:
+200
+CONTENT TYPE:
+image/jpeg
+CONTENT LENGTH:
+140037
+TEMP FILE:
+C:\Users\MSI\AppData\Local\Temp\tmpmtwuscok.jpg
+
+DOWNLOAD SUCCESS
+
+RUNNING PADDLE OCR...
+
+OCR FINISHED
+OCR RESULT TYPE:
+<class 'list'>
+
+DETECT COLUMNS...
+
+========== COLUMN DETECTOR ==========
+TEXT: Thu2 (25/05) | X=116.0
+TEXT: Thú3 (26/05) | X=338.0
+TEXT: Thú 4 (27/05) | X=558.0
+TEXT: Thú5 (28/05) | X=778.0
+TEXT: Thú 6 (29/05) | X=999.0
+TEXT: Thú7 (30/05) | X=1220.0
+TEXT: Chú Nht (31/05) | X=1448.25
+TEXT: Nhåp môn công nghê phn mm | X=326.0
+TEXT: Chuyên de Java (214286) | X=526.75
+TEXT: (214370) | X=256.5
+TEXT: Nhóm: 02 | X=481.75
+TEXT: Nhóm: 01 | X=258.0
+TEXT: Phòng: RD206-Khu Rang Dông | X=541.25
+TEXT: Phòng: P6-Phòng máy K.CNTT | X=320.0
+TEXT: GV Pham Vn Tinh | X=507.5
+TEXT: GV Nguyn Dúrc Công Song | X=311.75
+TEXT: 07:00 -> 09:30 | X=503.0
+TEXT: 07:00 -> 09:30 | X=280.0
+TEXT: Nhâp mòn công nghê phan mèm | X=100.5
+TEXT: Chuyên dè WEB (214374) | X=745.5
+TEXT: Láp trinh nång cao (214331) | X=977.0
+TEXT: (214370) | X=30.5
+TEXT: Nhóm: 03 | X=701.0
+TEXT: Nhóm: 50 | X=922.5
+TEXT: Nhóm: 01 | X=32.5
+TEXT: Phòng: HD103-Khu Huóng Duong | X=772.5
+TEXT: Phòng: P2-Phòng máy K.CNTT | X=985.0
+TEXT: Phòng: TV103-Khu Turàng Vi | X=90.5
+TEXT: GV: Lé Phi Hung | X=720.5
+TEXT: GV: Lê Công Dièn | X=946.5
+TEXT: GV Nguyên Dúc Công Song | X=89.5
+TEXT: 09:35 -> 12:05 | X=724.5
+TEXT: 09:35 -> 12:05 | X=946.0
+TEXT: 09:35 -> 12:05 | X=57.0
+TEXT: Chuyn dê Java (214286) | X=747.0
+TEXT: Nhóm: 02 | X=700.0
+TEXT: Phòng: P3-Phòng máy K.CNTT | X=762.0
+TEXT: GV: Pham Vn Tính | X=729.0
+TEXT:  12:15 -> 14:45 | X=723.0
+TEXT: Chuyn dê WEB (214374) | X=968.5
+TEXT: Nhóm: 03 | X=922.5
+TEXT: Phòng: P2-Phòng máy K.CNTT | X=985.0
+TEXT: GV: Lé Phi Hung | X=942.5
+TEXT: 14:50 -> 17:20 | X=946.0
+TEXT: Låp trinh nâng cao (214331) | X=306.0
+TEXT: Nhóm: 50 | X=251.5
+TEXT: Phòng: RD106-Khu Rang Dông | X=313.0
+TEXT: GV: Dng Minh Tien | X=281.25
+TEXT:  17:30 -> 20:00 | X=274.5
+TEXT: Thú2 (25/05) | X=115.0
+TEXT: Thúr3 (26/05) | X=335.5
+TEXT: Th 4 (27/05) | X=556.0
+TEXT: Thú5 (28/05) | X=776.5
+TEXT: Thú 6 (29/05) | X=998.0
+TEXT: Thú7 (30/05) | X=1220.0
+TEXT: Chú Nht (31/05) | X=1444.25
+
+RAW COLS:
+[{'text': 'Thu2 (25/05)', 'centerX': np.float32(116.0)}, {'text': 'Thú3 (26/05)', 'centerX': np.float32(338.0)}, {'text': 'Thú 4 (27/05)', 'centerX': np.float32(558.0)}, {'text': 'Thú5 (28/05)', 'centerX': np.float32(778.0)}, {'text': 'Thú 6 (29/05)', 'centerX': np.float32(999.0)}, {'text': 'Thú7 (30/05)', 'centerX': np.float32(1220.0)}, {'text': 'Phòng: P6-Phòng máy K.CNTT', 'centerX': np.float32(320.0)}, {'text': 'Phòng: P2-Phòng máy K.CNTT', 'centerX': np.float32(985.0)}, {'text': 'Phòng: P3-Phòng máy K.CNTT', 'centerX': np.float32(762.0)}, {'text': 'Phòng: P2-Phòng máy K.CNTT', 'centerX': np.float32(985.0)}, {'text': 'Thú2 (25/05)', 'centerX': np.float32(115.0)}, {'text': 'Thúr3 (26/05)', 'centerX': np.float32(335.5)}, {'text': 'Thú5 (28/05)', 'centerX': np.float32(776.5)}, {'text': 'Thú 6 (29/05)', 'centerX': np.float32(998.0)}, {'text': 'Thú7 (30/05)', 'centerX': np.float32(1220.0)}]
+
+FINAL COLUMNS:
+[{'dayOfWeek': 2, 'centerX': 115.0}, {'dayOfWeek': 3, 'centerX': 320.0}, {'dayOfWeek': 4, 'centerX': 558.0}, {'dayOfWeek': 5, 'centerX': 762.0}, {'dayOfWeek': 6, 'centerX': 985.0}, {'dayOfWeek': 7, 'centerX': 1220.0}]
+COLUMNS:
+[{'dayOfWeek': 2, 'centerX': 115.0}, {'dayOfWeek': 3, 'centerX': 320.0}, {'dayOfWeek': 4, 'centerX': 558.0}, {'dayOfWeek': 5, 'centerX': 762.0}, {'dayOfWeek': 6, 'centerX': 985.0}, {'dayOfWeek': 7, 'centerX': 1220.0}]
+
+DETECT ANCHORS...
+
+========== ANCHOR DETECTOR ==========
+OCR TEXT: Thu2 (25/05)
+OCR TEXT: Thú3 (26/05)
+OCR TEXT: Thú 4 (27/05)
+OCR TEXT: Thú5 (28/05)
+OCR TEXT: Thú 6 (29/05)
+OCR TEXT: Thú7 (30/05)
+OCR TEXT: Chú Nht (31/05)
+OCR TEXT: Nhåp môn công nghê phn mm
+OCR TEXT: Chuyên de Java (214286)
+OCR TEXT: (214370)
+OCR TEXT: Nhóm: 02
+OCR TEXT: Nhóm: 01
+OCR TEXT: Phòng: RD206-Khu Rang Dông
+OCR TEXT: Phòng: P6-Phòng máy K.CNTT
+OCR TEXT: GV Pham Vn Tinh
+OCR TEXT: GV Nguyn Dúrc Công Song
+OCR TEXT: 07:00 -> 09:30
+FOUND ANCHOR: {'startTime': '07:00', 'endTime': '09:30', 'centerX': 503.0, 'centerY': 114.0}
+OCR TEXT: 07:00 -> 09:30
+FOUND ANCHOR: {'startTime': '07:00', 'endTime': '09:30', 'centerX': 280.0, 'centerY': 130.75}
+OCR TEXT: Nhâp mòn công nghê phan mèm
+OCR TEXT: Chuyên dè WEB (214374)
+OCR TEXT: Láp trinh nång cao (214331)
+OCR TEXT: (214370)
+OCR TEXT: Nhóm: 03
+OCR TEXT: Nhóm: 50
+OCR TEXT: Nhóm: 01
+OCR TEXT: Phòng: HD103-Khu Huóng Duong
+OCR TEXT: Phòng: P2-Phòng máy K.CNTT
+OCR TEXT: Phòng: TV103-Khu Turàng Vi
+OCR TEXT: GV: Lé Phi Hung
+OCR TEXT: GV: Lê Công Dièn
+OCR TEXT: GV Nguyên Dúc Công Song
+OCR TEXT: 09:35 -> 12:05
+FOUND ANCHOR: {'startTime': '09:35', 'endTime': '12:05', 'centerX': 724.5, 'centerY': 237.0}
+OCR TEXT: 09:35 -> 12:05
+FOUND ANCHOR: {'startTime': '09:35', 'endTime': '12:05', 'centerX': 946.0, 'centerY': 237.0}
+OCR TEXT: 09:35 -> 12:05
+FOUND ANCHOR: {'startTime': '09:35', 'endTime': '12:05', 'centerX': 57.0, 'centerY': 256.0}
+OCR TEXT: Chuyn dê Java (214286)
+OCR TEXT: Nhóm: 02
+OCR TEXT: Phòng: P3-Phòng máy K.CNTT
+OCR TEXT: GV: Pham Vn Tính
+OCR TEXT:  12:15 -> 14:45
+FOUND ANCHOR: {'startTime': '12:15', 'endTime': '14:45', 'centerX': 723.0, 'centerY': 363.0}
+OCR TEXT: Chuyn dê WEB (214374)
+OCR TEXT: Nhóm: 03
+OCR TEXT: Phòng: P2-Phòng máy K.CNTT
+OCR TEXT: GV: Lé Phi Hung
+OCR TEXT: 14:50 -> 17:20
+FOUND ANCHOR: {'startTime': '14:50', 'endTime': '17:20', 'centerX': 946.0, 'centerY': 475.0}
+OCR TEXT: Låp trinh nâng cao (214331)
+OCR TEXT: Nhóm: 50
+OCR TEXT: Phòng: RD106-Khu Rang Dông
+OCR TEXT: GV: Dng Minh Tien
+OCR TEXT:  17:30 -> 20:00
+FOUND ANCHOR: {'startTime': '17:30', 'endTime': '20:00', 'centerX': 274.5, 'centerY': 586.0}
+OCR TEXT: Thú2 (25/05)
+OCR TEXT: Thúr3 (26/05)
+OCR TEXT: Th 4 (27/05)
+OCR TEXT: Thú5 (28/05)
+OCR TEXT: Thú 6 (29/05)
+OCR TEXT: Thú7 (30/05)
+OCR TEXT: Chú Nht (31/05)
+
+ANCHOR COUNT:
+8
+ANCHORS:
+[{'startTime': '07:00', 'endTime': '09:30', 'centerX': 503.0, 'centerY': 114.0}, {'startTime': '07:00', 'endTime': '09:30', 'centerX': 280.0, 'centerY': 130.75}, {'startTime': '09:35', 'endTime': '12:05', 'centerX': 724.5, 'centerY': 237.0}, {'startTime': '09:35', 'endTime': '12:05', 'centerX': 946.0, 'centerY': 237.0}, {'startTime': '09:35', 'endTime': '12:05', 'centerX': 57.0, 'centerY': 256.0}, {'startTime': '12:15', 'endTime': '14:45', 'centerX': 723.0, 'centerY': 363.0}, {'startTime': '14:50', 'endTime': '17:20', 'centerX': 946.0, 'centerY': 475.0}, {'startTime': '17:30', 'endTime': '20:00', 'centerX': 274.5, 'centerY': 586.0}]
+ANCHORS:
+[{'startTime': '07:00', 'endTime': '09:30', 'centerX': 503.0, 'centerY': 114.0}, {'startTime': '07:00', 'endTime': '09:30', 'centerX': 280.0, 'centerY': 130.75}, {'startTime': '09:35', 'endTime': '12:05', 'centerX': 724.5, 'centerY': 237.0}, {'startTime': '09:35', 'endTime': '12:05', 'centerX': 946.0, 'centerY': 237.0}, {'startTime': '09:35', 'endTime': '12:05', 'centerX': 57.0, 'centerY': 256.0}, {'startTime': '12:15', 'endTime': '14:45', 'centerX': 723.0, 'centerY': 363.0}, {'startTime': '14:50', 'endTime': '17:20', 'centerX': 946.0, 'centerY': 475.0}, {'startTime': '17:30', 'endTime': '20:00', 'centerX': 274.5, 'centerY': 586.0}]
+
+EXTRACT SUBJECTS...
+
+========== SUBJECT DETECTOR ==========
+
+ANCHOR => X:503.0 Y:114.0
+CANDIDATE: Thú 4 (27/05)
+CANDIDATE: Chuyên de Java (214286)
+CANDIDATE: Nhóm: 02
+CANDIDATE: Phòng: RD206-Khu Rang Dông
+CANDIDATE: GV Pham Vn Tinh
+SELECTED: Thú 4 (27/05)
+
+ANCHOR => X:280.0 Y:130.75
+CANDIDATE: Thú3 (26/05)
+CANDIDATE: Nhåp môn công nghê phn mm
+CANDIDATE: (214370)
+CANDIDATE: Nhóm: 01
+CANDIDATE: Phòng: P6-Phòng máy K.CNTT
+CANDIDATE: GV Nguyn Dúrc Công Song
+SELECTED: Thú3 (26/05)
+
+ANCHOR => X:724.5 Y:237.0
+CANDIDATE: Thú5 (28/05)
+CANDIDATE: Chuyên dè WEB (214374)
+CANDIDATE: Nhóm: 03
+CANDIDATE: Phòng: HD103-Khu Huóng Duong
+CANDIDATE: GV: Lé Phi Hung
+SELECTED: Thú5 (28/05)
+
+ANCHOR => X:946.0 Y:237.0
+CANDIDATE: Thú 6 (29/05)
+CANDIDATE: Láp trinh nång cao (214331)
+CANDIDATE: Nhóm: 50
+CANDIDATE: Phòng: P2-Phòng máy K.CNTT
+CANDIDATE: GV: Lê Công Dièn
+SELECTED: Thú 6 (29/05)
+
+ANCHOR => X:57.0 Y:256.0
+CANDIDATE: Thu2 (25/05)
+CANDIDATE: Nhâp mòn công nghê phan mèm
+CANDIDATE: (214370)
+CANDIDATE: Nhóm: 01
+CANDIDATE: Phòng: TV103-Khu Turàng Vi
+CANDIDATE: GV Nguyên Dúc Công Song
+SELECTED: Thu2 (25/05)
+
+ANCHOR => X:723.0 Y:363.0
+CANDIDATE: Chuyên dè WEB (214374)
+CANDIDATE: Nhóm: 03
+CANDIDATE: Phòng: HD103-Khu Huóng Duong
+CANDIDATE: GV: Lé Phi Hung
+CANDIDATE: 09:35 -> 12:05
+CANDIDATE: Chuyn dê Java (214286)
+CANDIDATE: Nhóm: 02
+CANDIDATE: Phòng: P3-Phòng máy K.CNTT
+CANDIDATE: GV: Pham Vn Tính
+SELECTED: Chuyên dè WEB (214374)
+
+ANCHOR => X:946.0 Y:475.0
+CANDIDATE: 09:35 -> 12:05
+CANDIDATE: Chuyn dê WEB (214374)
+CANDIDATE: Nhóm: 03
+CANDIDATE: Phòng: P2-Phòng máy K.CNTT
+CANDIDATE: GV: Lé Phi Hung
+SELECTED: Chuyn dê WEB (214374)
+
+ANCHOR => X:274.5 Y:586.0
+CANDIDATE: Låp trinh nâng cao (214331)
+CANDIDATE: Nhóm: 50
+CANDIDATE: Phòng: RD106-Khu Rang Dông
+CANDIDATE: GV: Dng Minh Tien
+SELECTED: Låp trinh nâng cao (214331)
+
+SUBJECTS:
+['Thú 4 (27/05)', 'Thú3 (26/05)', 'Thú5 (28/05)', 'Thú 6 (29/05)', 'Thu2 (25/05)', 'Chuyên dè WEB (214374)', 'Chuyn dê WEB (214374)', 'Låp trinh nâng cao (214331)']
+SUBJECTS:
+['Thú 4 (27/05)', 'Thú3 (26/05)', 'Thú5 (28/05)', 'Thú 6 (29/05)', 'Thu2 (25/05)', 'Chuyên dè WEB (214374)', 'Chuyn dê WEB (214374)', 'Låp trinh nâng cao (214331)']
+
+BUILD BUSY SLOTS...
+BUSY SLOTS:
+[{'dayOfWeek': 4, 'subjectName': 'Thú 4 (27/05)', 'startMinute': 420, 'endMinute': 570}, {'dayOfWeek': 3, 'subjectName': 'Thú3 (26/05)', 'startMinute': 420, 'endMinute': 570}, {'dayOfWeek': 5, 'subjectName': 'Thú5 (28/05)', 'startMinute': 575, 'endMinute': 725}, {'dayOfWeek': 6, 'subjectName': 'Thú 6 (29/05)', 'startMinute': 575, 'endMinute': 725}, {'dayOfWeek': 2, 'subjectName': 'Thu2 (25/05)', 'startMinute': 575, 'endMinute': 725}, {'dayOfWeek': 5, 'subjectName': 'Chuyên dè WEB (214374)', 'startMinute': 735, 'endMinute': 885}, {'dayOfWeek': 6, 'subjectName': 'Chuyn dê WEB (214374)', 'startMinute': 890, 'endMinute': 1040}, {'dayOfWeek': 3, 'subjectName': 'Låp trinh nâng cao (214331)', 'startMinute': 1050, 'endMinute': 1200}]
+DAYS:
+[2, 3, 4, 5, 6]

@@ -6,12 +6,14 @@ import requests
 import tempfile
 
 import cv2
-import easyocr
+import paddle
 
-from schedule_orc.column_detector import detect_columns
-from schedule_orc.anchor_detector import detect_anchors
-from schedule_orc.subject_extractor import extract_subjects
-from schedule_orc.busy_slot_builder import build_busy_slots
+from paddleocr import PaddleOCR
+
+from column_detector import detect_columns
+from anchor_detector import detect_anchors
+from subject_extractor import extract_subjects
+from busy_slot_builder import build_busy_slots
 
 # ==========================================
 # FLASK
@@ -22,31 +24,34 @@ app = Flask(__name__)
 # ==========================================
 # EASY OCR
 # ==========================================
+paddle.set_flags({
 
-reader = easyocr.Reader(
+    'FLAGS_enable_pir_api': 0
+})
 
-    ['en'],
+ocr = PaddleOCR(
 
-    gpu=False
+    use_textline_orientation=True,
+
+    lang='en',
+
+    enable_mkldnn=False
 )
 
 # ==========================================
 # OCR ENDPOINT
 # ==========================================
-
 @app.route("/ocr", methods=["POST"])
-
 def process_ocr():
+
+    print("\n========================")
+    print("START OCR REQUEST")
+    print(request.json)
+    print("========================\n")
 
     try:
 
-        print("\n========================")
-        print("START OCR REQUEST")
-        print("========================")
-
-        image_url = request.json.get(
-            "imagePath"
-        )
+        image_url = request.json.get("imagePath")
 
         print("IMAGE URL:")
         print(image_url)
@@ -57,28 +62,32 @@ def process_ocr():
 
         print("\nDOWNLOADING IMAGE...")
 
-        response = requests.get(image_url)
+        response = requests.get(
+            image_url,
+            timeout=30
+        )
 
         print("STATUS CODE:")
         print(response.status_code)
 
         print("CONTENT TYPE:")
         print(
-
             response.headers.get(
                 "content-type"
             )
         )
 
+        print("CONTENT LENGTH:")
+        print(
+            len(response.content)
+        )
+
         temp_file = tempfile.NamedTemporaryFile(
-
             delete=False,
-
             suffix=".jpg"
         )
 
         temp_file.write(
-
             response.content
         )
 
@@ -87,46 +96,24 @@ def process_ocr():
         print("TEMP FILE:")
         print(temp_file.name)
 
+        # TEST 1
+        print("\nDOWNLOAD SUCCESS")
+
         # ======================================
         # OCR
         # ======================================
 
-        print("\nRUNNING EASY OCR...")
-
-        ocr_result = reader.readtext(
-
+        print("\nRUNNING PADDLE OCR...")
+        result = ocr.ocr(
             temp_file.name
         )
 
-        print("RAW OCR RESULT:")
-        print(ocr_result)
+        print("\nOCR FINISHED")
 
-        # ======================================
-        # CONVERT FORMAT
-        # ======================================
-
-        lines = []
-
-        for item in ocr_result:
-
-            box = item[0]
-
-            text = item[1]
-
-            confidence = item[2]
-
-            lines.append([
-
-                box,
-
-                (
-
-                    text,
-                    confidence
-                )
-            ])
-
-        result = [lines]
+        print("OCR RESULT TYPE:")
+        print(type(result))
+        print("AFTER OCR")
+        print("\nCOLUMN COUNT:")
 
         # ======================================
         # DETECT COLUMNS
@@ -137,6 +124,9 @@ def process_ocr():
         columns = detect_columns(
             result
         )
+        print("\nCOLUMN COUNT:")
+        print(len(columns))
+        print("AFTER COLUMNS")
 
         print("COLUMNS:")
         print(columns)
@@ -150,6 +140,8 @@ def process_ocr():
         anchors = detect_anchors(
             result
         )
+        print("\nANCHOR COUNT:")
+        print(len(anchors))
 
         print("ANCHORS:")
         print(anchors)
@@ -165,33 +157,11 @@ def process_ocr():
             result,
             anchors
         )
+        print("\nSUBJECT COUNT:")
+        print(len(subjects))
 
         print("SUBJECTS:")
         print(subjects)
-
-        # ======================================
-        # SAFE CHECK
-        # ======================================
-
-        if len(columns) == 0:
-
-            return jsonify({
-
-                "success": False,
-
-                "error":
-                    "No columns detected"
-            })
-
-        if len(anchors) == 0:
-
-            return jsonify({
-
-                "success": False,
-
-                "error":
-                    "No anchors detected"
-            })
 
         # ======================================
         # BUILD BUSY SLOTS
@@ -209,10 +179,6 @@ def process_ocr():
         print("BUSY SLOTS:")
         print(busy_slots)
 
-        # ======================================
-        # DAYS
-        # ======================================
-
         days = list(set([
 
             item["dayOfWeek"]
@@ -220,10 +186,8 @@ def process_ocr():
             for item in busy_slots
         ]))
 
-        print("\nDAYS WITH SCHEDULE:")
+        print("DAYS:")
         print(days)
-
-        print("\nOCR SUCCESS")
 
         return jsonify({
 
@@ -241,13 +205,12 @@ def process_ocr():
         print("\nOCR ERROR:")
         print(str(e))
 
-        return jsonify({
+    return jsonify({
 
-            "success": False,
+        "success": False,
 
-            "error": str(e)
-        })
-
+        "error": str(e)
+    })
 
 # ==========================================
 # RUN
@@ -261,5 +224,5 @@ if __name__ == "__main__":
 
         port=5000,
 
-        debug=True
+        debug=False
     )

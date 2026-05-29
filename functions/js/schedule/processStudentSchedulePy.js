@@ -42,7 +42,7 @@ exports.processStudentSchedulePy =
 
                     await axios.post(
 
-                        "https://tl-studentjobs-hohoangduy-hk2-2526.onrender.com/ocr",
+                        "https://wasp-kudos-snaking.ngrok-free.dev/ocr",
 
                         {
 
