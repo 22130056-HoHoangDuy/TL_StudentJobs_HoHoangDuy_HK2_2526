@@ -7,17 +7,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.studentjobs.app.data.model.status.VerificationStatus
+import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserRole
 import com.studentjobs.app.feature.profile.employer.EmployerVerificationScreen
 import com.studentjobs.app.feature.profile.employer.components.VerifiedEmployerProfile
@@ -35,6 +42,11 @@ fun ProfileScreen(
 
     val state by viewModel.uiState.collectAsState()
 
+    var showPlusDialog by remember {
+
+        mutableStateOf(false)
+    }
+
     // ========================================
     // LOADING
     // ========================================
@@ -42,7 +54,12 @@ fun ProfileScreen(
     if (state.isLoading) {
 
         Box(
-            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+
+            modifier =
+                Modifier.fillMaxSize(),
+
+            contentAlignment =
+                Alignment.Center
         ) {
 
             CircularProgressIndicator()
@@ -52,6 +69,7 @@ fun ProfileScreen(
     }
 
     Column(
+
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -71,7 +89,8 @@ fun ProfileScreen(
 
             UserRole.STUDENT -> {
 
-                val verification = state.studentVerification
+                val verification =
+                    state.studentVerification
 
                 val fullyVerified =
 
@@ -94,12 +113,34 @@ fun ProfileScreen(
                 if (fullyVerified) {
 
                     VerifiedStudentProfile(
+
                         state = state,
+
                         onUpgradePlusClick = {
 
                             navController.navigate(
                                 "subscription/STUDENT"
                             )
+                        },
+
+                        onScheduleClick = {
+
+                            if (
+
+                                state.userCore?.subscriptionPlan ==
+
+                                SubscriptionPlan.PLUS
+
+                            ) {
+
+                                navController.navigate(
+                                    "schedule"
+                                )
+
+                            } else {
+
+                                showPlusDialog = true
+                            }
                         }
                     )
 
@@ -196,7 +237,8 @@ fun ProfileScreen(
                                     "email_verification/STUDENT"
                                 )
                             }
-                        })
+                        }
+                    )
                 }
             }
 
@@ -206,7 +248,8 @@ fun ProfileScreen(
 
             UserRole.EMPLOYER -> {
 
-                val verification = state.employerVerification
+                val verification =
+                    state.employerVerification
 
                 val fullyVerified =
 
@@ -217,7 +260,9 @@ fun ProfileScreen(
                 if (fullyVerified) {
 
                     VerifiedEmployerProfile(
+
                         state = state,
+
                         onUpgradePlusClick = {
 
                             navController.navigate(
@@ -234,5 +279,72 @@ fun ProfileScreen(
                 }
             }
         }
+    }
+
+    // ========================================
+    // PLUS DIALOG
+    // ========================================
+
+    if (showPlusDialog) {
+
+        AlertDialog(
+
+            onDismissRequest = {
+
+                showPlusDialog = false
+            },
+
+            confirmButton = {
+
+                TextButton(
+
+                    onClick = {
+
+                        showPlusDialog = false
+
+                        navController.navigate(
+                            "subscription/STUDENT"
+                        )
+                    }
+                ) {
+
+                    Text(
+                        text = "Continue to PLUS"
+                    )
+                }
+            },
+
+            dismissButton = {
+
+                TextButton(
+
+                    onClick = {
+
+                        showPlusDialog = false
+                    }
+                ) {
+
+                    Text(
+                        text = "Not now"
+                    )
+                }
+            },
+
+            title = {
+
+                Text(
+                    text = "PLUS Feature"
+                )
+            },
+
+            text = {
+
+                Text(
+
+                    text =
+                        "Upgrade to PLUS to use timetable OCR and Smart Auto Apply."
+                )
+            }
+        )
     }
 }

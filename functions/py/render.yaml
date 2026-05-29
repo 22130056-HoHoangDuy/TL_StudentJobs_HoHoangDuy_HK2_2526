@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: studentjobs-ocr
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn schedule_orc.api:app
