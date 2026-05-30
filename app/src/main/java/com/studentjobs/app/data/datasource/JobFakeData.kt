@@ -18,8 +18,6 @@ val fakeJobs = listOf(
         description =
             "Part-time barista for coffee shop.",
 
-        category = "Food & Beverage",
-
         // ===== SALARY =====
         salaryMin = 18000.0,
 
@@ -64,8 +62,6 @@ val fakeJobs = listOf(
         description =
             "Support customers and manage products.",
 
-        category = "Retail",
-
         salaryMin = 17000.0,
 
         salaryMax = 20000.0,
@@ -102,8 +98,6 @@ val fakeJobs = listOf(
 
         description =
             "Serve food and support restaurant operations.",
-
-        category = "Restaurant",
 
         salaryMin = 20000.0,
 

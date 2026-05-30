@@ -184,7 +184,10 @@ fun EmployerVerificationScreen(
                 viewModel::onBusinessDescriptionChange,
 
             onGoogleMapsUrlChange =
-                viewModel::onGoogleMapsUrlChange
+                viewModel::onGoogleMapsUrlChange,
+
+            onVerifyAddress =
+                viewModel::verifyAddress
         )
 
         // ========================================

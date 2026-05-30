@@ -201,22 +201,22 @@ class EmployerVerificationViewModel : ViewModel() {
 
                 userService.submitEmployerVerification(
 
-                        uid = uid,
+                    uid = uid,
 
-                        businessName = uiState.businessName,
+                    businessName = uiState.businessName,
 
-                        businessCategory = uiState.businessCategory,
+                    businessCategory = uiState.businessCategory,
 
-                        businessAddress = uiState.businessAddressText,
+                    businessAddress = uiState.businessAddressText,
 
-                        businessDescription = uiState.businessDescription,
+                    businessDescription = uiState.businessDescription,
 
-                        businessLocationUrl = uiState.businessLocationUrl,
+                    businessLocationUrl = uiState.businessLocationUrl,
 
-                        businessLicenseUrl = businessLicenseUrl,
+                    businessLicenseUrl = businessLicenseUrl,
 
-                        businessStoreFrontImageUrl = storefrontUrl
-                    )
+                    businessStoreFrontImageUrl = storefrontUrl
+                )
 
                 // ========================================
                 // UPDATE UI
@@ -298,14 +298,14 @@ class EmployerVerificationViewModel : ViewModel() {
 
                                 VerificationStatus.valueOf(
 
-                                        snapshot.getString(
+                                    snapshot.getString(
 
-                                            "businessLicenseVerified"
+                                        "businessLicenseVerified"
 
-                                        )
-
-                                            ?: "UNVERIFIED"
                                     )
+
+                                        ?: "UNVERIFIED"
+                                )
 
                             // =====================
                             // EMAIL STATUS
@@ -315,14 +315,14 @@ class EmployerVerificationViewModel : ViewModel() {
 
                                 VerificationStatus.valueOf(
 
-                                        snapshot.getString(
+                                    snapshot.getString(
 
-                                            "businessEmailVerified"
+                                        "businessEmailVerified"
 
-                                        )
-
-                                            ?: "UNVERIFIED"
                                     )
+
+                                        ?: "UNVERIFIED"
+                                )
 
                             // =====================
                             // PHONE STATUS
@@ -332,14 +332,14 @@ class EmployerVerificationViewModel : ViewModel() {
 
                                 VerificationStatus.valueOf(
 
-                                        snapshot.getString(
+                                    snapshot.getString(
 
-                                            "businessPhoneVerified"
+                                        "businessPhoneVerified"
 
-                                        )
-
-                                            ?: "UNVERIFIED"
                                     )
+
+                                        ?: "UNVERIFIED"
+                                )
 
                             // =====================
                             // SUBMISSION STATUS
@@ -349,14 +349,14 @@ class EmployerVerificationViewModel : ViewModel() {
 
                                 VerificationStatus.valueOf(
 
-                                        snapshot.getString(
+                                    snapshot.getString(
 
-                                            "submissionStatus"
+                                        "submissionStatus"
 
-                                        )
-
-                                            ?: "UNVERIFIED"
                                     )
+
+                                        ?: "UNVERIFIED"
+                                )
 
                             // =====================
                             // UPDATE UI
@@ -402,5 +402,17 @@ class EmployerVerificationViewModel : ViewModel() {
         verificationListener?.remove()
 
         super.onCleared()
+    }
+
+    fun verifyAddress() {
+
+        uiState = uiState.copy(
+
+            businessLatitude = 10.8507,
+
+            businessLongitude = 106.7712,
+
+            addressVerified = true
+        )
     }
 }

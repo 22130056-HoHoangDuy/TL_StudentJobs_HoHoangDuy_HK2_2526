@@ -1,19 +1,24 @@
 package com.studentjobs.app.feature.job.create
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
 import com.studentjobs.app.feature.job.create.components.BasicInfoSection
 import com.studentjobs.app.feature.job.create.components.JobPreviewCard
 import com.studentjobs.app.feature.job.create.components.SalarySection
@@ -25,12 +30,20 @@ fun CreateJobScreen(
 
     employerBusinessName: String,
 
-    viewModel: CreateJobViewModel
+    viewModel: CreateJobViewModel,
+
+    onNavigateToSubscription: () -> Unit
 
 ) {
 
     val state by
     viewModel.uiState.collectAsState()
+
+    val auth =
+        FirebaseAuth.getInstance()
+
+    val employerUid =
+        auth.currentUser?.uid
 
     LazyColumn(
 
@@ -183,6 +196,84 @@ fun CreateJobScreen(
         }
 
         // ====================================
+        // AUTO RECRUITMENT
+        // ====================================
+
+        item {
+
+            Card {
+
+                Column(
+
+                    modifier =
+                        Modifier.fillMaxWidth(),
+
+                    verticalArrangement =
+                        Arrangement.spacedBy(8.dp)
+
+                ) {
+
+                    Text(
+                        "✨ Smart Auto Recruitment"
+                    )
+
+                    Text(
+                        "Automatically recruit the most suitable students."
+                    )
+
+                    if (
+                        state.isPlusEmployer
+                    ) {
+
+                        Row(
+
+                            horizontalArrangement =
+                                Arrangement.SpaceBetween,
+
+                            modifier =
+                                Modifier.fillMaxWidth()
+                        ) {
+
+                            Text(
+                                "Enable Auto Recruitment"
+                            )
+
+                            Switch(
+
+                                checked =
+                                    state.autoRecruitmentEnabled,
+
+                                onCheckedChange = {
+
+                                    viewModel
+                                        .toggleAutoRecruitment()
+                                }
+                            )
+                        }
+
+                    } else {
+
+                        Text(
+                            "🔒 Available for PLUS members"
+                        )
+
+                        Button(
+
+                            onClick =
+                                onNavigateToSubscription
+
+                        ) {
+
+                            Text(
+                                "Upgrade to PLUS"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // ====================================
         // ERROR
         // ====================================
 
@@ -203,6 +294,27 @@ fun CreateJobScreen(
         }
 
         // ====================================
+        // SUCCESS
+        // ====================================
+
+        if (state.success) {
+
+            item {
+
+                Text(
+
+                    text =
+                        "✅ Job created successfully",
+
+                    color =
+                        MaterialTheme
+                            .colorScheme
+                            .primary
+                )
+            }
+        }
+
+        // ====================================
         // PUBLISH
         // ====================================
 
@@ -212,19 +324,23 @@ fun CreateJobScreen(
 
                 onClick = {
 
-                    // TODO:
-                    // truyền employerUid
+                    employerUid?.let {
+
+                        viewModel
+                            .createJob(it)
+                    }
                 },
 
                 modifier =
-                    Modifier.fillMaxWidth()
+                    Modifier.fillMaxWidth(),
+
+                enabled =
+                    !state.isLoading
 
             ) {
 
                 if (
-
                     state.isLoading
-
                 ) {
 
                     CircularProgressIndicator()

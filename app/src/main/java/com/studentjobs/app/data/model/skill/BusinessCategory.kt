@@ -2,24 +2,27 @@ package com.studentjobs.app.data.model.skill
 
 object BusinessCategory {
 
-    const val CAFE = "Cafe"
+    const val CAFE = "Quán Caffe"
 
-    const val RESTAURANT = "Restaurant"
+    const val RESTAURANT = "Nhà hàng"
 
     const val CONVENIENCE_STORE =
-        "Convenience Store"
+        "Cửa hàng tiện lợi"
 
     const val RETAIL_SHOP =
-        "Retail Shop"
+        "Cửa hàng bán lẻ"
 
     const val WAREHOUSE =
-        "Warehouse"
+        "Kho vận"
 
     const val OFFICE =
-        "Office"
+        "Văn phòng"
 
-    const val EVENT =
-        "Event"
+    const val EVENT_AGENCY = "Công ty tổ chức sự kiện"
+
+    const val ENTERTAINMENT = "Khu vui chơi / Giải trí"
+
+    const val TUTOR_CENTER = "Trung tâm giáo dục"
 
     val all = listOf(
 
@@ -35,6 +38,10 @@ object BusinessCategory {
 
         OFFICE,
 
-        EVENT
+        EVENT_AGENCY,
+
+        ENTERTAINMENT,
+
+        TUTOR_CENTER
     )
 }

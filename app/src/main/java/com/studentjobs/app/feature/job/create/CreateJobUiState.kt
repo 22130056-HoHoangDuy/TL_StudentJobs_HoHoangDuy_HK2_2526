@@ -7,7 +7,6 @@ data class CreateJobUiState(
     // ========================================
     // BASIC
     // ========================================
-
     val title: String = "",
 
     val description: String = "",
@@ -50,6 +49,9 @@ data class CreateJobUiState(
     val autoRecruitmentEnabled:
     Boolean = false,
 
+    val isPlusEmployer:
+    Boolean = false,
+
     // ========================================
     // SYSTEM
     // ========================================
@@ -62,6 +64,15 @@ data class CreateJobUiState(
 
     val draftJobId: String = "",
 
-    val startTime: String = "",
-    val endTime: String = ""
+    // ========================================
+// SHIFT INPUT
+// ========================================
+
+    val selectedDay: Int = 1,
+
+    val startMinute: String = "",
+
+    val endMinute: String = "",
+
+    val slots: String = "1",
 )

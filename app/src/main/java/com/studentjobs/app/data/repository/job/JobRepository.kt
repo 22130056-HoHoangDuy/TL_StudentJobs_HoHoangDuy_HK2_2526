@@ -82,6 +82,32 @@ class JobRepository(
     }
 
     // ========================================
+    // GET EMPLOYER CATEGORY
+    // ========================================
+
+    suspend fun getEmployerCategory(
+        employerUid: String
+    ): String? {
+
+        return employerService
+            .getEmployerProfile(
+                employerUid
+            )
+            ?.businessCategory
+    }
+
+    // ========================================
+    // GET EMPLOYER PROFILE
+    // ========================================
+
+    suspend fun getEmployerProfile(
+        employerUid: String
+    ) = employerService
+        .getEmployerProfile(
+            employerUid
+        )
+
+    // ========================================
     // GET JOB
     // ========================================
 
