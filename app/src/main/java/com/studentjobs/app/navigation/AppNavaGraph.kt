@@ -65,9 +65,17 @@ fun AppNavGraph(viewModel: AuthViewModel) {
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
-                onLoginSuccess = {
+                onLoginSuccess = { user ->
+
+                    prefs.saveUserRole(
+                        user.role.name
+                    )
+
                     navController.navigate("main") {
-                        popUpTo("login") { inclusive = true }
+
+                        popUpTo("login") {
+                            inclusive = true
+                        }
                     }
                 }
             )

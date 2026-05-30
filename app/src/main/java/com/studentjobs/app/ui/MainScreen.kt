@@ -22,7 +22,19 @@ fun MainScreen() {
                 NavigationBarItem(
                     selected = false,
                     onClick = {
-                        navController.navigate("home")
+
+                        navController.navigate("home") {
+
+                            launchSingleTop = true
+
+                            restoreState = true
+
+                            popUpTo(
+                                navController.graph.startDestinationId
+                            ) {
+                                saveState = true
+                            }
+                        }
                     },
                     icon = { Text("🏠") },
                     label = { Text("Home") }
@@ -31,7 +43,19 @@ fun MainScreen() {
                 NavigationBarItem(
                     selected = false,
                     onClick = {
-                        navController.navigate("jobs")
+
+                        navController.navigate("jobs") {
+
+                            launchSingleTop = true
+
+                            restoreState = true
+
+                            popUpTo(
+                                navController.graph.startDestinationId
+                            ) {
+                                saveState = true
+                            }
+                        }
                     },
                     icon = { Text("💼") },
                     label = { Text("Jobs") }
@@ -40,7 +64,19 @@ fun MainScreen() {
                 NavigationBarItem(
                     selected = false,
                     onClick = {
-                        navController.navigate("messages")
+
+                        navController.navigate("messages") {
+
+                            launchSingleTop = true
+
+                            restoreState = true
+
+                            popUpTo(
+                                navController.graph.startDestinationId
+                            ) {
+                                saveState = true
+                            }
+                        }
                     },
                     icon = { Text("💬") },
                     label = { Text("Messages") }
@@ -49,7 +85,19 @@ fun MainScreen() {
                 NavigationBarItem(
                     selected = false,
                     onClick = {
-                        navController.navigate("profile")
+
+                        navController.navigate("profile") {
+
+                            launchSingleTop = true
+
+                            restoreState = true
+
+                            popUpTo(
+                                navController.graph.startDestinationId
+                            ) {
+                                saveState = true
+                            }
+                        }
                     },
                     icon = { Text("👤") },
                     label = { Text("Profile") }
