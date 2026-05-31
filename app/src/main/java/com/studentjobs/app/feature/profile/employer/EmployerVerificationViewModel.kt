@@ -12,6 +12,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
 import com.studentjobs.app.data.model.status.VerificationStatus
 import com.studentjobs.app.firebase.firestore.UserServiceNew
+import com.studentjobs.app.firebase.location.GeocodingService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -215,6 +216,10 @@ class EmployerVerificationViewModel : ViewModel() {
 
                     businessLicenseUrl = businessLicenseUrl,
 
+                    businessLatitude = uiState.businessLatitude,
+
+                    businessLongitude = uiState.businessLongitude,
+
                     businessStoreFrontImageUrl = storefrontUrl
                 )
 
@@ -406,13 +411,38 @@ class EmployerVerificationViewModel : ViewModel() {
 
     fun verifyAddress() {
 
-        uiState = uiState.copy(
+        viewModelScope.launch {
 
-            businessLatitude = 10.8507,
+            val result =
 
-            businessLongitude = 106.7712,
+                geocodingService.getLatLng(
 
-            addressVerified = true
-        )
+                    uiState.businessAddressText
+                )
+
+            if (result != null) {
+
+                uiState = uiState.copy(
+
+                    businessLatitude =
+                        result.first,
+
+                    businessLongitude =
+                        result.second,
+
+                    addressVerified = true
+                )
+            }
+            else {
+
+                uiState = uiState.copy(
+
+                    errorMessage =
+                        "Address not found"
+                )
+            }
+        }
     }
+    private val geocodingService =
+        GeocodingService()
 }

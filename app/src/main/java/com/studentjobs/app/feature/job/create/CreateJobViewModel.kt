@@ -236,14 +236,14 @@ class CreateJobViewModel(
                 _uiState.value.selectedDay,
 
             startMinute =
-                _uiState.value.startMinute
-                    .toIntOrNull()
-                    ?: 0,
+                convertTimeToMinute(
+                    _uiState.value.startMinute
+                ),
 
             endMinute =
-                _uiState.value.endMinute
-                    .toIntOrNull()
-                    ?: 0,
+                convertTimeToMinute(
+                    _uiState.value.endMinute
+                ),
 
             slots =
                 _uiState.value.slots
@@ -368,13 +368,23 @@ class CreateJobViewModel(
         time: String
     ): Int {
 
-        val parts = time.split(":")
+        return try {
 
-        val hour = parts[0].toInt()
+            val parts =
+                time.split(":")
 
-        val minute = parts[1].toInt()
+            val hour =
+                parts[0].toInt()
 
-        return hour * 60 + minute
+            val minute =
+                parts[1].toInt()
+
+            hour * 60 + minute
+
+        } catch (e: Exception) {
+
+            0
+        }
     }
 
     fun updateSelectedDay(

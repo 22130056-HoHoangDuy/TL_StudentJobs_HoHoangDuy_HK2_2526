@@ -174,13 +174,13 @@ class UserServiceNew {
 
             db.collection("users").document(uid).update(
 
-                    mapOf(
+                mapOf(
 
-                        "userVerified" to verified,
+                    "userVerified" to verified,
 
-                        "updatedAt" to System.currentTimeMillis()
-                    )
-                ).await()
+                    "updatedAt" to System.currentTimeMillis()
+                )
+            ).await()
 
             Result.success(Unit)
 
@@ -206,14 +206,14 @@ class UserServiceNew {
 
         db.collection("users").document(uid).addSnapshotListener { snapshot, _ ->
 
-                val user =
+            val user =
 
-                    snapshot?.toObject(
-                        UserCore::class.java
-                    )
+                snapshot?.toObject(
+                    UserCore::class.java
+                )
 
-                onChange(user)
-            }
+            onChange(user)
+        }
     }
 
     // ========================================
@@ -227,6 +227,8 @@ class UserServiceNew {
         businessAddress: String,
         businessDescription: String,
         businessLocationUrl: String,
+        businessLatitude: Double?,
+        businessLongitude: Double?,
         businessLicenseUrl: String,
         businessStoreFrontImageUrl: String
     ): Result<Unit> {
@@ -234,33 +236,37 @@ class UserServiceNew {
             val now = System.currentTimeMillis()
 
             db.collection("employer_verifications").document(uid).set(
-                    mapOf(
-                        "uid" to uid,
-                        "businessName" to businessName,
-                        "businessCategory" to businessCategory,
-                        "businessDescription" to businessDescription,
-                        "businessAddressText" to businessAddress,
-                        "businessLocationUrl" to businessLocationUrl,
-                        "businessLicenseUrl" to businessLicenseUrl,
-                        "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
-                        "submissionStatus" to "PENDING",
-                        "submittedAt" to now,
-                        "updatedAt" to now
-                    ), SetOptions.merge()
-                ).await()
+                mapOf(
+                    "uid" to uid,
+                    "businessName" to businessName,
+                    "businessCategory" to businessCategory,
+                    "businessDescription" to businessDescription,
+                    "businessAddressText" to businessAddress,
+                    "businessLocationUrl" to businessLocationUrl,
+                    "businessLatitude" to businessLatitude,
+                    "businessLongitude" to businessLongitude,
+                    "businessLicenseUrl" to businessLicenseUrl,
+                    "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
+                    "submissionStatus" to "PENDING",
+                    "submittedAt" to now,
+                    "updatedAt" to now
+                ), SetOptions.merge()
+            ).await()
 
             db.collection("employers").document(uid).set(
-                    mapOf(
-                        "uid" to uid,
-                        "businessName" to businessName,
-                        "businessCategory" to businessCategory,
-                        "businessDescription" to businessDescription,
-                        "businessAddressText" to businessAddress,
-                        "businessLocationUrl" to businessLocationUrl,
-                        "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
-                        "updatedAt" to now
-                    ), SetOptions.merge()
-                ).await()
+                mapOf(
+                    "uid" to uid,
+                    "businessName" to businessName,
+                    "businessCategory" to businessCategory,
+                    "businessDescription" to businessDescription,
+                    "businessAddressText" to businessAddress,
+                    "businessLocationUrl" to businessLocationUrl,
+                    "businessLatitude" to businessLatitude,
+                    "businessLongitude" to businessLongitude,
+                    "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
+                    "updatedAt" to now
+                ), SetOptions.merge()
+            ).await()
 
             Result.success(Unit)
         } catch (e: Exception) {
@@ -282,16 +288,16 @@ class UserServiceNew {
 
             db.collection("users").document(uid).set(
 
-                    mapOf(
+                mapOf(
 
-                        "userVerified" to verified,
+                    "userVerified" to verified,
 
-                        "updatedAt" to System.currentTimeMillis()
+                    "updatedAt" to System.currentTimeMillis()
 
-                    ),
+                ),
 
-                    SetOptions.merge()
-                ).await()
+                SetOptions.merge()
+            ).await()
 
             Result.success(Unit)
 

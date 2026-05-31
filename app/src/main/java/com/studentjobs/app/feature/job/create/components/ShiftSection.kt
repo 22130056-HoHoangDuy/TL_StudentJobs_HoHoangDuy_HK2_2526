@@ -5,11 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -48,17 +47,11 @@ fun ShiftSection(
     val days = mapOf(
 
         1 to "Mon",
-
         2 to "Tue",
-
         3 to "Wed",
-
         4 to "Thu",
-
         5 to "Fri",
-
         6 to "Sat",
-
         7 to "Sun"
     )
 
@@ -89,35 +82,34 @@ fun ShiftSection(
                 text = "🕒 Working Shifts",
 
                 style =
-                    MaterialTheme.typography
-                        .titleMedium
+                    MaterialTheme.typography.titleMedium
             )
 
             Text(
-                text =
-                    "Add one or more working shifts"
+                text = "Add one or more working shifts"
             )
 
+            // =========================
             // DAY SELECTOR
+            // =========================
 
             FlowRow(
 
                 horizontalArrangement =
-                    Arrangement.spacedBy(
-                        8.dp
-                    )
+                    Arrangement.spacedBy(8.dp)
 
             ) {
 
                 days.forEach { (day, label) ->
 
-                    AssistChip(
+                    FilterChip(
+
+                        selected =
+                            selectedDay == day,
 
                         onClick = {
 
-                            onDaySelected(
-                                day
-                            )
+                            onDaySelected(day)
                         },
 
                         label = {
@@ -127,6 +119,10 @@ fun ShiftSection(
                     )
                 }
             }
+
+            // =========================
+            // TIME
+            // =========================
 
             OutlinedTextField(
 
@@ -142,14 +138,14 @@ fun ShiftSection(
                 label = {
 
                     Text(
-                        "Start Minute"
+                        "Start Time"
                     )
                 },
 
                 placeholder = {
 
                     Text(
-                        "1080 = 18:00"
+                        "13:00"
                     )
                 }
             )
@@ -168,14 +164,14 @@ fun ShiftSection(
                 label = {
 
                     Text(
-                        "End Minute"
+                        "End Time"
                     )
                 },
 
                 placeholder = {
 
                     Text(
-                        "1320 = 22:00"
+                        "20:00"
                     )
                 }
             )
@@ -212,35 +208,31 @@ fun ShiftSection(
                 }
             )
 
-            if (
+            // =========================
+            // SHIFT LIST
+            // =========================
 
-                shifts.isNotEmpty()
+            if (shifts.isNotEmpty()) {
 
-            ) {
-
-                LazyColumn(
+                Column(
 
                     verticalArrangement =
-                        Arrangement.spacedBy(
-                            8.dp
-                        )
+                        Arrangement.spacedBy(8.dp)
 
                 ) {
 
-                    items(shifts) {
-
-                            shift ->
+                    shifts.forEach { shift ->
 
                         ShiftItemCard(
 
                             shift = shift,
 
-                            onDelete =
-                                {
-                                    onDeleteShift(
-                                        shift.shiftId
-                                    )
-                                }
+                            onDelete = {
+
+                                onDeleteShift(
+                                    shift.shiftId
+                                )
+                            }
                         )
                     }
                 }
