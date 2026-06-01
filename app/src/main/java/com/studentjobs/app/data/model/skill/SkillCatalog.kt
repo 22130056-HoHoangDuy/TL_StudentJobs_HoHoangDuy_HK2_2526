@@ -198,4 +198,5 @@ object SkillCatalog {
             .flatten()
             .distinctBy { it.skillName }
     }
+
 }

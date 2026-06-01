@@ -14,6 +14,9 @@ import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.job.create.CreateJobScreen
 import com.studentjobs.app.feature.job.create.CreateJobViewModel
 import com.studentjobs.app.feature.job.create.CreateJobViewModelFactory
+import com.studentjobs.app.feature.job.list.JobListScreen
+import com.studentjobs.app.feature.job.list.JobListViewModel
+import com.studentjobs.app.feature.job.list.JobListViewModelFactory
 import com.studentjobs.app.feature.location.LocationPickerScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
 import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
@@ -22,6 +25,7 @@ import com.studentjobs.app.feature.profile.verification.phone.employer.EmployerP
 import com.studentjobs.app.feature.profile.verification.phone.student.StudentPhoneVerificationScreen
 import com.studentjobs.app.feature.schedule.ScheduleScreen
 import com.studentjobs.app.feature.schedule.ScheduleUploadScreen
+import com.studentjobs.app.feature.skill.ManageSkillsScreen
 import com.studentjobs.app.feature.subscription.SubscriptionRequestScreen
 import com.studentjobs.app.feature.subscription.SubscriptionScreen
 import com.studentjobs.app.firebase.firestore.EmployerService
@@ -41,20 +45,12 @@ fun MainNavGraph(
 
         navController = navController,
 
-        startDestination = "home",
+        startDestination = "jobs",
 
         modifier = modifier
 
     ) {
 
-        // ========================================
-        // HOME
-        // ========================================
-
-        composable("home") {
-
-            HomeEntryScreen(navController)
-        }
 
         // ========================================
         // PROFILE
@@ -143,7 +139,46 @@ fun MainNavGraph(
 
         composable("jobs") {
 
-            Text("Jobs")
+            val repository =
+
+                JobRepository(
+
+                    jobService =
+                        JobService(),
+
+                    shiftService =
+                        ShiftService(),
+
+                    employerService =
+                        EmployerService()
+                )
+
+            val factory =
+
+                JobListViewModelFactory(
+                    repository
+                )
+
+            val viewModel:
+                    JobListViewModel =
+
+                viewModel(
+                    factory = factory
+                )
+
+            JobListScreen(
+                viewModel = viewModel
+            )
+        }
+
+        composable("trust") {
+
+            Text("Trust Score")
+        }
+
+        composable("history") {
+
+            Text("History")
         }
 
         // ========================================
@@ -293,6 +328,38 @@ fun MainNavGraph(
                 },
 
                 onBack = {
+
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable("manage_skills") {
+
+            ManageSkillsScreen(
+
+                currentCategories = emptyList(),
+
+                currentSkills = emptyList(),
+
+                isPlus = false,
+
+                onSave = { categories, skills ->
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(
+                            "selected_categories",
+                            categories
+                        )
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(
+                            "selected_skills",
+                            skills
+                        )
 
                     navController.popBackStack()
                 }

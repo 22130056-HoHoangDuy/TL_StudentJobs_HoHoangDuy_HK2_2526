@@ -47,6 +47,8 @@ class JobRepository(
             val completedJob =
 
                 job.copy(
+                    businessCategory =
+                        employer.businessCategory ?: "",
 
                     locationText =
                         employer.businessAddressText

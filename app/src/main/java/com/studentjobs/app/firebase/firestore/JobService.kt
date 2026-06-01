@@ -169,12 +169,10 @@ class JobService {
             Result.failure(e)
         }
     }
-    // ========================================
-// GET ACTIVE JOBS
-// ========================================
 
-    suspend fun getActiveJobs():
-            List<JobEntity> {
+    // GET ACTIVE JOBS
+// ========================================
+    suspend fun getActiveJobs(): List<JobEntity> {
 
         return try {
 
@@ -183,11 +181,6 @@ class JobService {
                 .whereEqualTo(
                     "status",
                     "ACTIVE"
-                )
-
-                .whereEqualTo(
-                    "moderationStatus",
-                    "APPROVED"
                 )
 
                 .get()

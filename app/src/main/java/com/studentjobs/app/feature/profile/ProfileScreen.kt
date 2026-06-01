@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -30,8 +32,6 @@ import com.studentjobs.app.feature.profile.employer.EmployerVerificationScreen
 import com.studentjobs.app.feature.profile.employer.components.VerifiedEmployerProfile
 import com.studentjobs.app.feature.profile.student.components.ProfileCompletionSection
 import com.studentjobs.app.feature.profile.student.components.VerifiedStudentProfile
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun ProfileScreen(
@@ -53,7 +53,7 @@ fun ProfileScreen(
 
         mutableStateOf(false)
     }
-
+    // save location
     LaunchedEffect(Unit) {
 
         val lat =
@@ -80,6 +80,47 @@ fun ProfileScreen(
 
             savedStateHandle.remove<Double>(
                 "selected_lng"
+            )
+        }
+    }
+    // save skill
+    LaunchedEffect(Unit) {
+
+        val categories =
+
+            savedStateHandle
+                ?.get<List<String>>(
+                    "selected_categories"
+                )
+
+        val skills =
+
+            savedStateHandle
+                ?.get<List<String>>(
+                    "selected_skills"
+                )
+
+        if (
+
+            categories != null &&
+
+            skills != null
+
+        ) {
+
+            viewModel.updateStudentSkills(
+
+                categories = categories,
+
+                skills = skills
+            )
+
+            savedStateHandle.remove<List<String>>(
+                "selected_categories"
+            )
+
+            savedStateHandle.remove<List<String>>(
+                "selected_skills"
             )
         }
     }
@@ -184,6 +225,12 @@ fun ProfileScreen(
 
                             navController.navigate(
                                 "location_picker"
+                            )
+                        },
+                        onManageSkills = {
+
+                            navController.navigate(
+                                "manage_skills"
                             )
                         }
                     )
