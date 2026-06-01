@@ -30,6 +30,8 @@ import com.studentjobs.app.feature.profile.employer.EmployerVerificationScreen
 import com.studentjobs.app.feature.profile.employer.components.VerifiedEmployerProfile
 import com.studentjobs.app.feature.profile.student.components.ProfileCompletionSection
 import com.studentjobs.app.feature.profile.student.components.VerifiedStudentProfile
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun ProfileScreen(
@@ -41,10 +43,45 @@ fun ProfileScreen(
 ) {
 
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    val savedStateHandle =
+        navController.currentBackStackEntry
+            ?.savedStateHandle
 
     var showPlusDialog by remember {
 
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(Unit) {
+
+        val lat =
+            savedStateHandle
+                ?.get<Double>("selected_lat")
+
+        val lng =
+            savedStateHandle
+                ?.get<Double>("selected_lng")
+
+        if (
+            lat != null &&
+            lng != null
+        ) {
+
+            viewModel.updateStudentLocation(
+                latitude = lat,
+                longitude = lng
+            )
+
+            savedStateHandle.remove<Double>(
+                "selected_lat"
+            )
+
+            savedStateHandle.remove<Double>(
+                "selected_lng"
+            )
+        }
     }
 
     // ========================================
@@ -141,6 +178,13 @@ fun ProfileScreen(
 
                                 showPlusDialog = true
                             }
+                        },
+
+                        onSelectLocation = {
+
+                            navController.navigate(
+                                "location_picker"
+                            )
                         }
                     )
 

@@ -1,4 +1,4 @@
-package com.studentjobs.app.firebase.location
+package com.studentjobs.app.firebase.geocoding
 
 data class GeocodingResponse(
 

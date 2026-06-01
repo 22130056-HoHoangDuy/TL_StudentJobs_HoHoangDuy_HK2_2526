@@ -12,7 +12,6 @@ import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.storage.FirebaseStorage
 import com.studentjobs.app.data.model.status.VerificationStatus
 import com.studentjobs.app.firebase.firestore.UserServiceNew
-import com.studentjobs.app.firebase.location.GeocodingService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -135,6 +134,18 @@ class EmployerVerificationViewModel : ViewModel() {
                     FirebaseAuth.getInstance().currentUser?.uid
 
                         ?: return@launch
+                if (
+
+                    uiState.businessLatitude == null ||
+
+                    uiState.businessLongitude == null
+
+                ) {
+
+                    throw Exception(
+                        "Please select business location"
+                    )
+                }
 
                 // ========================================
                 // VALIDATION
@@ -409,40 +420,16 @@ class EmployerVerificationViewModel : ViewModel() {
         super.onCleared()
     }
 
-    fun verifyAddress() {
+    fun setBusinessLocation(
+        latitude: Double, longitude: Double
+    ) {
 
-        viewModelScope.launch {
+        uiState = uiState.copy(
 
-            val result =
+            businessLatitude = latitude,
 
-                geocodingService.getLatLng(
-
-                    uiState.businessAddressText
-                )
-
-            if (result != null) {
-
-                uiState = uiState.copy(
-
-                    businessLatitude =
-                        result.first,
-
-                    businessLongitude =
-                        result.second,
-
-                    addressVerified = true
-                )
-            }
-            else {
-
-                uiState = uiState.copy(
-
-                    errorMessage =
-                        "Address not found"
-                )
-            }
-        }
+            businessLongitude = longitude
+        )
     }
-    private val geocodingService =
-        GeocodingService()
+
 }

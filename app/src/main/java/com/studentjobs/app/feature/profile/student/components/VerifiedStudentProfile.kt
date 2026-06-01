@@ -13,7 +13,9 @@ import com.studentjobs.app.feature.profile.shared.components.GradientHeader
 import com.studentjobs.app.feature.profile.shared.components.PlusBannerCard
 import com.studentjobs.app.feature.profile.shared.components.TrustScoreCard
 import com.studentjobs.app.feature.profile.shared.components.VerificationStatusCard
-
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun VerifiedStudentProfile(
@@ -22,7 +24,9 @@ fun VerifiedStudentProfile(
 
     onUpgradePlusClick: () -> Unit,
 
-    onScheduleClick: () -> Unit
+    onScheduleClick: () -> Unit,
+
+    onSelectLocation: () -> Unit
 
 ) {
 
@@ -126,6 +130,21 @@ fun VerifiedStudentProfile(
 
         ContactInfoCard(
             state = state
+        )
+
+        Spacer(
+            modifier =
+                Modifier.height(16.dp)
+        )
+
+        LocationInfoCard(
+
+            state = state,
+
+            onSelectLocation = {
+
+                onSelectLocation()
+            }
         )
 
         Spacer(

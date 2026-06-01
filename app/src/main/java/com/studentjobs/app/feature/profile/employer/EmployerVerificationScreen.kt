@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,6 +19,8 @@ import com.studentjobs.app.feature.profile.employer.components.BusinessDocumentS
 import com.studentjobs.app.feature.profile.employer.components.BusinessInfoSection
 import com.studentjobs.app.feature.profile.shared.components.VerificationBanner
 import com.studentjobs.app.feature.profile.shared.components.VerificationCard
+import androidx.compose.runtime.collectAsState
+
 
 @Composable
 fun EmployerVerificationScreen(
@@ -29,6 +32,53 @@ fun EmployerVerificationScreen(
 ) {
 
     val state = viewModel.uiState
+
+    val savedStateHandle =
+
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+
+    val selectedLat =
+        savedStateHandle
+            ?.getStateFlow<Double?>(
+                "selected_lat",
+                null
+            )
+
+    val selectedLng =
+        savedStateHandle
+            ?.getStateFlow<Double?>(
+                "selected_lng",
+                null
+            )
+
+    LaunchedEffect(
+        selectedLat?.collectAsState()?.value,
+        selectedLng?.collectAsState()?.value
+    ) {
+
+        val lat = selectedLat?.value
+        val lng = selectedLng?.value
+
+        if (
+            lat != null &&
+            lng != null
+        ) {
+
+            viewModel.setBusinessLocation(
+                latitude = lat,
+                longitude = lng
+            )
+
+            savedStateHandle?.remove<Double>(
+                "selected_lat"
+            )
+
+            savedStateHandle?.remove<Double>(
+                "selected_lng"
+            )
+        }
+    }
 
     // ========================================
     // LICENSE PICKER
@@ -186,8 +236,12 @@ fun EmployerVerificationScreen(
             onGoogleMapsUrlChange =
                 viewModel::onGoogleMapsUrlChange,
 
-            onVerifyAddress =
-                viewModel::verifyAddress
+            onSelectLocation = {
+
+                navController.navigate(
+                    "location_picker"
+                )
+            }
         )
 
         // ========================================

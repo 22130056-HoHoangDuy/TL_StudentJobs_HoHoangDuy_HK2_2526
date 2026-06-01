@@ -41,7 +41,7 @@ fun BusinessInfoSection(
 
     onGoogleMapsUrlChange: (String) -> Unit,
 
-    onVerifyAddress: () -> Unit = {}
+    onSelectLocation: () -> Unit
 ) {
 
     var expanded by remember {
@@ -191,28 +191,25 @@ fun BusinessInfoSection(
 
             Button(
 
-                onClick = onVerifyAddress,
+                onClick = onSelectLocation,
+            ) {
 
-                modifier =
-                    Modifier.fillMaxWidth(),
+                Text(
+                    "Select Business Location"
+                )
+            }
 
-                enabled =
-                    enabled &&
-                            state.businessAddressText
-                                .isNotBlank()
+            if (
+
+                state.businessLatitude != null &&
+
+                state.businessLongitude != null
 
             ) {
 
                 Text(
-                    "📍 Verify Address"
-                )
-            }
-
-            if (state.addressVerified) {
-
-                Text(
                     text =
-                        "✅ Address Verified"
+                        "📍 ${state.businessLatitude}, ${state.businessLongitude}"
                 )
             }
 

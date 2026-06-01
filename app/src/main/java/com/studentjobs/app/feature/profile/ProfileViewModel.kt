@@ -184,4 +184,38 @@ class ProfileViewModel(
                 )
         }
     }
+    fun updateStudentLocation(
+        latitude: Double,
+        longitude: Double
+    ) {
+
+        val profile =
+            _uiState.value.studentProfile
+                ?: return
+
+        viewModelScope.launch {
+
+            val updatedProfile =
+
+                profile.copy(
+
+                    studentLatitude = latitude,
+
+                    studentLongitude = longitude,
+
+                    studentLocationUrl =
+                        "https://maps.google.com/?q=$latitude,$longitude",
+
+                    updatedAt =
+                        System.currentTimeMillis()
+                )
+
+            repository
+                .updateStudentProfile(
+                    updatedProfile
+                )
+
+            loadProfile()
+        }
+    }
 }

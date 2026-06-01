@@ -1,4 +1,4 @@
-package com.studentjobs.app.firebase.location
+package com.studentjobs.app.firebase.geocoding
 
 import retrofit2.http.GET
 import retrofit2.http.Query

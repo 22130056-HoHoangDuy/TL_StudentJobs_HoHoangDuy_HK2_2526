@@ -14,6 +14,7 @@ import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.job.create.CreateJobScreen
 import com.studentjobs.app.feature.job.create.CreateJobViewModel
 import com.studentjobs.app.feature.job.create.CreateJobViewModelFactory
+import com.studentjobs.app.feature.location.LocationPickerScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
 import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
 import com.studentjobs.app.feature.profile.verification.email.EmailVerificationScreen
@@ -269,6 +270,31 @@ fun MainNavGraph(
                     navController.navigate(
                         "subscription/EMPLOYER"
                     )
+                }
+            )
+        }
+        composable("location_picker") {
+
+            LocationPickerScreen(
+
+                onConfirmLocation = { lat, lng ->
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_lat", lat)
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_lng", lng)
+
+                    navController.popBackStack()
+                },
+
+                onBack = {
+
+                    navController.popBackStack()
                 }
             )
         }
