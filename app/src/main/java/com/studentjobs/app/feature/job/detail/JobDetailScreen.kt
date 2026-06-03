@@ -1,5 +1,6 @@
 package com.studentjobs.app.feature.job.detail
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.CardTravel
 import androidx.compose.material.icons.filled.CurrencyExchange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,15 +37,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.studentjobs.app.feature.application.apply.ApplyJobLimitType
+import com.studentjobs.app.feature.application.apply.ApplyJobViewModel
 import com.studentjobs.app.utils.dayOfWeekText
 import com.studentjobs.app.utils.minuteToTime
 import java.text.NumberFormat
@@ -52,9 +59,13 @@ import java.util.Locale
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun JobDetailScreen(
-    viewModel: JobDetailViewModel
+    viewModel: JobDetailViewModel, applyViewModel: ApplyJobViewModel
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    val applyState by applyViewModel.uiState.collectAsState()
+
+    val context = LocalContext.current
 
     if (state.isLoading) {
         Box(
@@ -66,6 +77,117 @@ fun JobDetailScreen(
     }
 
     val job = state.job ?: return
+
+    LaunchedEffect(job.jobId) {
+        applyViewModel.clearLimitType()
+
+        applyViewModel.checkApplied(
+            job.jobId
+        )
+    }
+
+    LaunchedEffect(
+        applyState.limitType
+    ) {
+
+        if (applyState.limitType == ApplyJobLimitType.ALREADY_APPLIED) {
+
+            Toast.makeText(
+
+                context,
+
+                "Bạn đã ứng tuyển công việc này",
+
+                Toast.LENGTH_SHORT
+
+            ).show()
+
+            applyViewModel.clearLimitType()
+        }
+    }
+
+    if (applyState.limitType == ApplyJobLimitType.FREE_LIMIT_REACHED) {
+        AlertDialog(
+
+            onDismissRequest = {
+
+                applyViewModel.clearLimitType()
+            },
+
+            title = {
+
+                Text(
+                    "Đạt giới hạn công việc"
+                )
+            },
+
+            text = {
+
+                Text(
+
+                    "Bạn được quản lý tối đa 1 công việc cùng lúc.\n\n" +
+
+                            "Hãy hoàn thành hoặc kết thúc công việc hiện tại trước khi ứng tuyển công việc mới."
+                )
+            },
+
+            confirmButton = {
+
+                TextButton(
+
+                    onClick = {
+
+                        applyViewModel.clearLimitType()
+                    }) {
+
+                    Text(
+                        "Đã hiểu"
+                    )
+                }
+            })
+    }
+    if (applyState.limitType == ApplyJobLimitType.PLUS_LIMIT_REACHED) {
+
+        AlertDialog(
+
+            onDismissRequest = {
+
+                applyViewModel.clearLimitType()
+            },
+
+            title = {
+
+                Text(
+                    "Đạt giới hạn công việc"
+                )
+            },
+
+            text = {
+
+                Text(
+
+                    "Bạn đang quản lý tối đa 2 công việc cùng lúc.\n\n" +
+
+                            "Hãy hoàn thành hoặc kết thúc một công việc hiện tại trước khi ứng tuyển công việc mới."
+                )
+            },
+
+            confirmButton = {
+
+                TextButton(
+
+                    onClick = {
+
+                        applyViewModel.clearLimitType()
+                    }) {
+
+                    Text(
+                        "Đã hiểu"
+                    )
+                }
+            })
+    }
+
 
     Box(
         modifier = Modifier
@@ -375,20 +497,48 @@ fun JobDetailScreen(
                     ) // padding bottom sâu hơn tí cho cân đối máy tai thỏ/nút home ảo
             ) {
                 Button(
-                    onClick = { /* TODO: Xử lý ứng tuyển */ },
+
+                    onClick = {
+
+                        applyViewModel.applyJob(
+                            job.jobId
+                        )
+                    },
+
+                    enabled = !applyState.isLoading && !applyState.hasApplied,
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(52.dp),
-                    shape = RoundedCornerShape(16.dp), // Bo góc mượt mà kiểu modern
+
+                    shape = RoundedCornerShape(16.dp),
+
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                    )
                 ) {
+
                     Text(
-                        text = "Ứng tuyển ngay",
+
+                        text = when {
+
+                            applyState.isLoading ->
+
+                                "Đang gửi..."
+
+                            applyState.hasApplied ->
+
+                                "Đã ứng tuyển"
+
+                            else ->
+
+                                "Ứng tuyển ngay"
+                        },
+
                         style = MaterialTheme.typography.titleMedium,
+
                         fontWeight = FontWeight.Bold,
+
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 }

@@ -47,6 +47,9 @@ class JobRepository(
             val completedJob =
 
                 job.copy(
+                    businessName =
+                        employer.businessName,
+
                     businessCategory =
                         employer.businessCategory ?: "",
 
@@ -191,6 +194,7 @@ class JobRepository(
             Result.failure(e)
         }
     }
+
     suspend fun getJobWithShifts(
         jobId: String
     ): Pair<JobEntity?, List<ShiftEntity>> {

@@ -8,6 +8,8 @@ data class JobEntity(
     // ===== OWNER =====
     val employerUid: String = "",
 
+    val businessName: String = "",
+
     // ===== BASIC =====
     val title: String = "",
     val description: String = "",
@@ -27,9 +29,6 @@ data class JobEntity(
 
     // ===== RECRUITMENT =====
     val autoRecruitmentEnabled: Boolean = false,
-
-    // ===== MODERATION =====
-    val moderationStatus: String = "PENDING",
 
     // ===== STATUS =====
     val status: String = "ACTIVE",

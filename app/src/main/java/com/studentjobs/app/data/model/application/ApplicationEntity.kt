@@ -2,29 +2,33 @@ package com.studentjobs.app.data.model.application
 
 data class ApplicationEntity(
 
-    // ===== ID =====
+    // ID
     val applicationId: String = "",
 
-    // ===== RELATION =====
+    // Relation
     val studentUid: String = "",
+
     val employerUid: String = "",
 
     val jobId: String = "",
-    val shiftId: String = "",
 
-    // ===== STATUS =====
+    // Status
     val status: String = "PENDING",
 
-    // ===== CONFLICT =====
+    // Schedule matching
     val conflictDetected: Boolean = false,
 
-    // ===== SNAPSHOT =====
+    // Student Snapshot
+    val studentName: String = "",
+
+    val schoolName: String = "",
+
+    // Job Snapshot
     val jobTitle: String = "",
+
+    // Employer Snapshot
     val businessName: String = "",
 
-    val shiftStartTime: String = "",
-    val shiftEndTime: String = "",
-
-    // ===== SYSTEM =====
+    // System
     val appliedAt: Long = 0L
 )

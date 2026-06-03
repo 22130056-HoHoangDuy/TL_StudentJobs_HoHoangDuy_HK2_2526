@@ -9,7 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserRole
+import com.studentjobs.app.data.repository.application.ApplicationRepository
 import com.studentjobs.app.data.repository.job.JobRepository
+import com.studentjobs.app.data.repository.student.StudentRepository
+import com.studentjobs.app.data.repository.user.UserRepository
+import com.studentjobs.app.feature.application.apply.ApplyJobViewModel
+import com.studentjobs.app.feature.application.apply.ApplyJobViewModelFactory
 import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.job.JobEntryScreen
 import com.studentjobs.app.feature.job.create.CreateJobScreen
@@ -18,9 +23,6 @@ import com.studentjobs.app.feature.job.create.CreateJobViewModelFactory
 import com.studentjobs.app.feature.job.detail.JobDetailScreen
 import com.studentjobs.app.feature.job.detail.JobDetailViewModel
 import com.studentjobs.app.feature.job.detail.JobDetailViewModelFactory
-import com.studentjobs.app.feature.job.list.JobListScreen
-import com.studentjobs.app.feature.job.list.JobListViewModel
-import com.studentjobs.app.feature.job.list.JobListViewModelFactory
 import com.studentjobs.app.feature.location.LocationPickerScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
 import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
@@ -32,9 +34,12 @@ import com.studentjobs.app.feature.schedule.ScheduleUploadScreen
 import com.studentjobs.app.feature.skill.ManageSkillsScreen
 import com.studentjobs.app.feature.subscription.SubscriptionRequestScreen
 import com.studentjobs.app.feature.subscription.SubscriptionScreen
+import com.studentjobs.app.firebase.firestore.ApplicationService
 import com.studentjobs.app.firebase.firestore.EmployerService
 import com.studentjobs.app.firebase.firestore.JobService
 import com.studentjobs.app.firebase.firestore.ShiftService
+import com.studentjobs.app.firebase.firestore.StudentService
+import com.studentjobs.app.firebase.firestore.UserServiceNew
 
 @Composable
 fun MainNavGraph(
@@ -275,6 +280,7 @@ fun MainNavGraph(
                     factory = factory
                 )
 
+
             CreateJobScreen(
 
                 employerBusinessName = "",
@@ -370,6 +376,24 @@ fun MainNavGraph(
                     employerService =
                         EmployerService()
                 )
+            val applicationRepository =
+
+                ApplicationRepository(
+                    ApplicationService()
+                )
+
+            val studentRepository =
+
+                StudentRepository(
+                    StudentService()
+                )
+
+            val userRepository =
+
+                UserRepository(
+                    UserServiceNew()
+                )
+
 
             val factory =
 
@@ -386,9 +410,32 @@ fun MainNavGraph(
                 viewModel(
                     factory = factory
                 )
+            val applyFactory =
+
+                ApplyJobViewModelFactory(
+
+                    applicationRepository,
+
+                    studentRepository,
+
+                    repository,
+
+                    userRepository
+                )
+
+            val applyViewModel:
+                    ApplyJobViewModel =
+
+                viewModel(
+                    factory = applyFactory
+                )
 
             JobDetailScreen(
-                viewModel = viewModel
+
+                viewModel = viewModel,
+
+                applyViewModel =
+                    applyViewModel
             )
         }
     }
