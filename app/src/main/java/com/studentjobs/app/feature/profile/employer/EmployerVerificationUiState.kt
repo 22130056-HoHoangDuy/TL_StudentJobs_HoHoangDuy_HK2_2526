@@ -49,5 +49,13 @@ data class EmployerVerificationUiState(
 
     val errorMessage: String? = null,
 
-    val verificationSubmitted: Boolean = false
+    val verificationSubmitted: Boolean = false,
+
+    // ===== LOCATION =====
+
+    val businessLatitude: Double? = null,
+
+    val businessLongitude: Double? = null,
+
+    val addressVerified: Boolean = false,
 )

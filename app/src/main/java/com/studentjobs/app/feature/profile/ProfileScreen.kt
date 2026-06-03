@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -41,10 +43,86 @@ fun ProfileScreen(
 ) {
 
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    val savedStateHandle =
+        navController.currentBackStackEntry
+            ?.savedStateHandle
 
     var showPlusDialog by remember {
 
         mutableStateOf(false)
+    }
+    // save location
+    LaunchedEffect(Unit) {
+
+        val lat =
+            savedStateHandle
+                ?.get<Double>("selected_lat")
+
+        val lng =
+            savedStateHandle
+                ?.get<Double>("selected_lng")
+
+        if (
+            lat != null &&
+            lng != null
+        ) {
+
+            viewModel.updateStudentLocation(
+                latitude = lat,
+                longitude = lng
+            )
+
+            savedStateHandle.remove<Double>(
+                "selected_lat"
+            )
+
+            savedStateHandle.remove<Double>(
+                "selected_lng"
+            )
+        }
+    }
+    // save skill
+    LaunchedEffect(Unit) {
+
+        val categories =
+
+            savedStateHandle
+                ?.get<List<String>>(
+                    "selected_categories"
+                )
+
+        val skills =
+
+            savedStateHandle
+                ?.get<List<String>>(
+                    "selected_skills"
+                )
+
+        if (
+
+            categories != null &&
+
+            skills != null
+
+        ) {
+
+            viewModel.updateStudentSkills(
+
+                categories = categories,
+
+                skills = skills
+            )
+
+            savedStateHandle.remove<List<String>>(
+                "selected_categories"
+            )
+
+            savedStateHandle.remove<List<String>>(
+                "selected_skills"
+            )
+        }
     }
 
     // ========================================
@@ -141,6 +219,19 @@ fun ProfileScreen(
 
                                 showPlusDialog = true
                             }
+                        },
+
+                        onSelectLocation = {
+
+                            navController.navigate(
+                                "location_picker"
+                            )
+                        },
+                        onManageSkills = {
+
+                            navController.navigate(
+                                "manage_skills"
+                            )
                         }
                     )
 

@@ -3,12 +3,25 @@ package com.studentjobs.app.navigation
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserRole
+import com.studentjobs.app.data.repository.job.JobRepository
 import com.studentjobs.app.feature.home.HomeEntryScreen
+import com.studentjobs.app.feature.job.JobEntryScreen
+import com.studentjobs.app.feature.job.create.CreateJobScreen
+import com.studentjobs.app.feature.job.create.CreateJobViewModel
+import com.studentjobs.app.feature.job.create.CreateJobViewModelFactory
+import com.studentjobs.app.feature.job.detail.JobDetailScreen
+import com.studentjobs.app.feature.job.detail.JobDetailViewModel
+import com.studentjobs.app.feature.job.detail.JobDetailViewModelFactory
+import com.studentjobs.app.feature.job.list.JobListScreen
+import com.studentjobs.app.feature.job.list.JobListViewModel
+import com.studentjobs.app.feature.job.list.JobListViewModelFactory
+import com.studentjobs.app.feature.location.LocationPickerScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
 import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
 import com.studentjobs.app.feature.profile.verification.email.EmailVerificationScreen
@@ -16,8 +29,12 @@ import com.studentjobs.app.feature.profile.verification.phone.employer.EmployerP
 import com.studentjobs.app.feature.profile.verification.phone.student.StudentPhoneVerificationScreen
 import com.studentjobs.app.feature.schedule.ScheduleScreen
 import com.studentjobs.app.feature.schedule.ScheduleUploadScreen
+import com.studentjobs.app.feature.skill.ManageSkillsScreen
 import com.studentjobs.app.feature.subscription.SubscriptionRequestScreen
 import com.studentjobs.app.feature.subscription.SubscriptionScreen
+import com.studentjobs.app.firebase.firestore.EmployerService
+import com.studentjobs.app.firebase.firestore.JobService
+import com.studentjobs.app.firebase.firestore.ShiftService
 
 @Composable
 fun MainNavGraph(
@@ -37,14 +54,11 @@ fun MainNavGraph(
         modifier = modifier
 
     ) {
-
-        // ========================================
-        // HOME
-        // ========================================
-
         composable("home") {
 
-            HomeEntryScreen()
+            HomeEntryScreen(
+                navController
+            )
         }
 
         // ========================================
@@ -134,7 +148,18 @@ fun MainNavGraph(
 
         composable("jobs") {
 
-            Text("Jobs")
+            JobEntryScreen(
+                navController
+            )
+        }
+        composable("trust") {
+
+            Text("Trust Score")
+        }
+
+        composable("history") {
+
+            Text("History")
         }
 
         // ========================================
@@ -220,6 +245,151 @@ fun MainNavGraph(
         composable("schedule_upload") {
 
             ScheduleUploadScreen()
+        }
+        composable("create_job") {
+
+            val repository =
+
+                JobRepository(
+
+                    jobService =
+                        JobService(),
+
+                    shiftService =
+                        ShiftService(),
+
+                    employerService =
+                        EmployerService()
+                )
+
+            val factory =
+
+                CreateJobViewModelFactory(
+                    repository
+                )
+
+            val viewModel:
+                    CreateJobViewModel =
+
+                viewModel(
+                    factory = factory
+                )
+
+            CreateJobScreen(
+
+                employerBusinessName = "",
+
+                viewModel = viewModel,
+
+                onNavigateToSubscription = {
+
+                    navController.navigate(
+                        "subscription/EMPLOYER"
+                    )
+                }
+            )
+        }
+        composable("location_picker") {
+
+            LocationPickerScreen(
+
+                onConfirmLocation = { lat, lng ->
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_lat", lat)
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("selected_lng", lng)
+
+                    navController.popBackStack()
+                },
+
+                onBack = {
+
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable("manage_skills") {
+
+            ManageSkillsScreen(
+
+                currentCategories = emptyList(),
+
+                currentSkills = emptyList(),
+
+                isPlus = false,
+
+                onSave = { categories, skills ->
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(
+                            "selected_categories",
+                            categories
+                        )
+
+                    navController
+                        .previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set(
+                            "selected_skills",
+                            skills
+                        )
+
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(
+            "job_detail/{jobId}"
+        ) { backStackEntry ->
+
+            val jobId =
+
+                backStackEntry
+                    .arguments
+                    ?.getString("jobId")
+                    ?: return@composable
+
+            val repository =
+
+                JobRepository(
+
+                    jobService =
+                        JobService(),
+
+                    shiftService =
+                        ShiftService(),
+
+                    employerService =
+                        EmployerService()
+                )
+
+            val factory =
+
+                JobDetailViewModelFactory(
+
+                    repository,
+
+                    jobId
+                )
+
+            val viewModel:
+                    JobDetailViewModel =
+
+                viewModel(
+                    factory = factory
+                )
+
+            JobDetailScreen(
+                viewModel = viewModel
+            )
         }
     }
 }

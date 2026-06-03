@@ -1,6 +1,5 @@
 package com.studentjobs.app.feature.schedule.components
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.studentjobs.app.data.model.student.BusyTimeSlot
+import com.studentjobs.app.utils.dayOfWeekText
+import com.studentjobs.app.utils.minuteToTime
 
 @Composable
 fun SubjectCard(
@@ -38,12 +39,15 @@ fun SubjectCard(
 
         verticalArrangement =
             Arrangement.spacedBy(6.dp)
+
     ) {
 
         Text(
 
             text =
-                getDayText(item.dayOfWeek),
+                dayOfWeekText(
+                    item.dayOfWeek
+                ),
 
             style =
                 MaterialTheme
@@ -70,51 +74,5 @@ fun SubjectCard(
             color =
                 Color.DarkGray
         )
-    }
-}
-
-@SuppressLint("DefaultLocale")
-private fun minuteToTime(
-
-    minute: Int
-
-): String {
-
-    val hour =
-        minute / 60
-
-    val min =
-        minute % 60
-
-    return String.format(
-        "%02d:%02d",
-        hour,
-        min
-    )
-}
-
-private fun getDayText(
-
-    day: Int
-
-): String {
-
-    return when (day) {
-
-        1 -> "Monday"
-
-        2 -> "Tuesday"
-
-        3 -> "Wednesday"
-
-        4 -> "Thursday"
-
-        5 -> "Friday"
-
-        6 -> "Saturday"
-
-        7 -> "Sunday"
-
-        else -> "Unknown Day"
     }
 }

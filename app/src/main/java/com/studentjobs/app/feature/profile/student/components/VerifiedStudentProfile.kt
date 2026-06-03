@@ -14,7 +14,6 @@ import com.studentjobs.app.feature.profile.shared.components.PlusBannerCard
 import com.studentjobs.app.feature.profile.shared.components.TrustScoreCard
 import com.studentjobs.app.feature.profile.shared.components.VerificationStatusCard
 
-
 @Composable
 fun VerifiedStudentProfile(
 
@@ -22,8 +21,11 @@ fun VerifiedStudentProfile(
 
     onUpgradePlusClick: () -> Unit,
 
-    onScheduleClick: () -> Unit
+    onScheduleClick: () -> Unit,
 
+    onSelectLocation: () -> Unit,
+
+    onManageSkills: () -> Unit
 ) {
 
     Column {
@@ -133,17 +135,34 @@ fun VerifiedStudentProfile(
                 Modifier.height(16.dp)
         )
 
-        // ========================================
-        // SKILLS
-        // ========================================
+        LocationInfoCard(
 
-        SkillsCard(
-            state = state
+            state = state,
+
+            onSelectLocation = {
+
+                onSelectLocation()
+            }
         )
 
         Spacer(
             modifier =
                 Modifier.height(16.dp)
         )
+
+        // ========================================
+        // SKILLS
+        // ========================================
+
+        SkillsCard(
+
+            state = state,
+
+            onManageSkills = onManageSkills
+        )
     }
+    Spacer(
+        modifier =
+            Modifier.height(16.dp)
+    )
 }

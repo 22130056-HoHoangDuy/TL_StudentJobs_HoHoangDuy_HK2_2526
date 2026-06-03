@@ -27,7 +27,8 @@ import com.studentjobs.app.feature.profile.ProfileUiState
 
 @Composable
 fun SkillsCard(
-    state: ProfileUiState
+    state: ProfileUiState,
+    onManageSkills: () -> Unit
 ) {
 
     val gradient = Brush.linearGradient(
@@ -63,7 +64,7 @@ fun SkillsCard(
                 Spacer(modifier = Modifier.height(0.dp))
 
                 Text(
-                    text = " Skills & Technologies",
+                    text = " Kỹ năng ",
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
@@ -75,11 +76,26 @@ fun SkillsCard(
             // Empty State
             if (state.studentProfile?.skills?.isEmpty() ?: true) {
 
-                Text(
-                    text = "Add your skills to build your student profile 🚀",
-                    color = Color.White.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Column {
+
+                    Text(
+                        text =
+                            " Thêm kỹ năng để chứng minh năng lực của mình nhé <3 🚀",
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+
+                    Spacer(
+                        modifier =
+                            Modifier.height(12.dp)
+                    )
+
+                    androidx.compose.material3.Button(
+                        onClick = onManageSkills
+                    ) {
+
+                        Text(" Quản lý kỹ năng ")
+                    }
+                }
 
             } else {
 
@@ -92,6 +108,17 @@ fun SkillsCard(
 
                         SkillChip(skill)
                     }
+                }
+                Spacer(
+                    modifier =
+                        Modifier.height(16.dp)
+                )
+
+                androidx.compose.material3.Button(
+                    onClick = onManageSkills
+                ) {
+
+                    Text(" Chỉnh sửa ")
                 }
             }
         }

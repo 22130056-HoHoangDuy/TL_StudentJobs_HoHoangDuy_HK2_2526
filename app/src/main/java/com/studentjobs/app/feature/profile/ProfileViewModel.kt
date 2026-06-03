@@ -184,4 +184,73 @@ class ProfileViewModel(
                 )
         }
     }
+
+    // student pick location
+    fun updateStudentLocation(
+        latitude: Double,
+        longitude: Double
+    ) {
+
+        val profile =
+            _uiState.value.studentProfile
+                ?: return
+
+        viewModelScope.launch {
+
+            val updatedProfile =
+
+                profile.copy(
+
+                    studentLatitude = latitude,
+
+                    studentLongitude = longitude,
+
+                    studentLocationUrl =
+                        "https://maps.google.com/?q=$latitude,$longitude",
+
+                    updatedAt =
+                        System.currentTimeMillis()
+                )
+
+            repository
+                .updateStudentProfile(
+                    updatedProfile
+                )
+
+            loadProfile()
+        }
+    }
+
+    // student selected skills
+    fun updateStudentSkills(
+        categories: List<String>,
+        skills: List<String>
+    ) {
+
+        val profile =
+            _uiState.value.studentProfile
+                ?: return
+
+        viewModelScope.launch {
+
+            val updatedProfile =
+
+                profile.copy(
+
+                    preferredJobCategories =
+                        categories,
+
+                    skills = skills,
+
+                    updatedAt =
+                        System.currentTimeMillis()
+                )
+
+            repository.updateStudentProfile(
+                updatedProfile
+            )
+
+            loadProfile()
+        }
+    }
 }

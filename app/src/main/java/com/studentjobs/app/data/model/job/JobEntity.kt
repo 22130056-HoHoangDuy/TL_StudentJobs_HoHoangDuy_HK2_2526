@@ -12,8 +12,6 @@ data class JobEntity(
     val title: String = "",
     val description: String = "",
 
-    val category: String = "",
-
     // ===== SALARY =====
     val salaryMin: Double = 0.0,
     val salaryMax: Double = 0.0,
@@ -35,6 +33,12 @@ data class JobEntity(
 
     // ===== STATUS =====
     val status: String = "ACTIVE",
+    //
+    val requiredApplicants: Int = 1,
+    val currentApplicants: Int = 0,
+
+    //job category
+    val businessCategory: String = "",
 
     // ===== SYSTEM =====
     val createdAt: Long = 0L,
