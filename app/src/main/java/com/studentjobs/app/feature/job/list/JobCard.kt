@@ -113,7 +113,7 @@ fun JobCard(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
-                        text = "${formatSalary(job.salaryMin)}-${formatSalary(job.salaryMax)} đ/h", // Viết tắt đ/h cho gọn gàng, vừa vặn khung ngang
+                        text = "${formatSalary(job.salaryMin)}-${formatSalary(job.salaryMax)}/h", // Viết tắt đ/h cho gọn gàng, vừa vặn khung ngang
                         style = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.ExtraBold,
                             color = salaryTeal

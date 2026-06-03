@@ -191,4 +191,19 @@ class JobRepository(
             Result.failure(e)
         }
     }
+    suspend fun getJobWithShifts(
+        jobId: String
+    ): Pair<JobEntity?, List<ShiftEntity>> {
+
+        val job =
+            jobService.getJob(jobId)
+
+        val shifts =
+            shiftService.getShiftsByJob(jobId)
+
+        return Pair(
+            job,
+            shifts
+        )
+    }
 }

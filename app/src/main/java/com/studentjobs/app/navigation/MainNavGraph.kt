@@ -11,9 +11,13 @@ import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserRole
 import com.studentjobs.app.data.repository.job.JobRepository
 import com.studentjobs.app.feature.home.HomeEntryScreen
+import com.studentjobs.app.feature.job.JobEntryScreen
 import com.studentjobs.app.feature.job.create.CreateJobScreen
 import com.studentjobs.app.feature.job.create.CreateJobViewModel
 import com.studentjobs.app.feature.job.create.CreateJobViewModelFactory
+import com.studentjobs.app.feature.job.detail.JobDetailScreen
+import com.studentjobs.app.feature.job.detail.JobDetailViewModel
+import com.studentjobs.app.feature.job.detail.JobDetailViewModelFactory
 import com.studentjobs.app.feature.job.list.JobListScreen
 import com.studentjobs.app.feature.job.list.JobListViewModel
 import com.studentjobs.app.feature.job.list.JobListViewModelFactory
@@ -45,12 +49,17 @@ fun MainNavGraph(
 
         navController = navController,
 
-        startDestination = "jobs",
+        startDestination = "home",
 
         modifier = modifier
 
     ) {
+        composable("home") {
 
+            HomeEntryScreen(
+                navController
+            )
+        }
 
         // ========================================
         // PROFILE
@@ -139,38 +148,10 @@ fun MainNavGraph(
 
         composable("jobs") {
 
-            val repository =
-
-                JobRepository(
-
-                    jobService =
-                        JobService(),
-
-                    shiftService =
-                        ShiftService(),
-
-                    employerService =
-                        EmployerService()
-                )
-
-            val factory =
-
-                JobListViewModelFactory(
-                    repository
-                )
-
-            val viewModel:
-                    JobListViewModel =
-
-                viewModel(
-                    factory = factory
-                )
-
-            JobListScreen(
-                viewModel = viewModel
+            JobEntryScreen(
+                navController
             )
         }
-
         composable("trust") {
 
             Text("Trust Score")
@@ -363,6 +344,51 @@ fun MainNavGraph(
 
                     navController.popBackStack()
                 }
+            )
+        }
+        composable(
+            "job_detail/{jobId}"
+        ) { backStackEntry ->
+
+            val jobId =
+
+                backStackEntry
+                    .arguments
+                    ?.getString("jobId")
+                    ?: return@composable
+
+            val repository =
+
+                JobRepository(
+
+                    jobService =
+                        JobService(),
+
+                    shiftService =
+                        ShiftService(),
+
+                    employerService =
+                        EmployerService()
+                )
+
+            val factory =
+
+                JobDetailViewModelFactory(
+
+                    repository,
+
+                    jobId
+                )
+
+            val viewModel:
+                    JobDetailViewModel =
+
+                viewModel(
+                    factory = factory
+                )
+
+            JobDetailScreen(
+                viewModel = viewModel
             )
         }
     }
