@@ -245,11 +245,6 @@ class CreateJobViewModel(
                     _uiState.value.endMinute
                 ),
 
-            slots =
-                _uiState.value.slots
-                    .toIntOrNull()
-                    ?: 1,
-
             createdAt =
                 System.currentTimeMillis()
         )
@@ -263,8 +258,6 @@ class CreateJobViewModel(
                 startMinute = "",
 
                 endMinute = "",
-
-                slots = "1"
             )
     }
 
@@ -314,7 +307,8 @@ class CreateJobViewModel(
 
                     JobEntity(
 
-                        jobId = UUID.randomUUID().toString(),
+                        jobId =
+                            _uiState.value.draftJobId,
 
                         employerUid = employerUid,
 
@@ -414,16 +408,6 @@ class CreateJobViewModel(
         _uiState.value =
             _uiState.value.copy(
                 endMinute = value
-            )
-    }
-
-    fun updateSlots(
-        value: String
-    ) {
-
-        _uiState.value =
-            _uiState.value.copy(
-                slots = value
             )
     }
 

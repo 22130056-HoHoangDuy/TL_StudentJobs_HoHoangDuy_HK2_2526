@@ -16,8 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.studentjobs.app.data.model.job.ShiftEntity
-import com.studentjobs.app.feature.job.create.formatMinute
-import com.studentjobs.app.feature.job.create.getDayName
+import com.studentjobs.app.utils.dayOfWeekText
+import com.studentjobs.app.utils.minuteToTime
 
 @Composable
 fun ShiftItemCard(
@@ -52,7 +52,7 @@ fun ShiftItemCard(
                 Text(
 
                     text =
-                        getDayName(
+                        dayOfWeekText(
                             shift.dayOfWeek
                         ),
 
@@ -65,17 +65,11 @@ fun ShiftItemCard(
                 Text(
 
                     text =
-                        "${formatMinute(shift.startMinute)} - ${
-                            formatMinute(
+                        "${minuteToTime(shift.startMinute)} - ${
+                            minuteToTime(
                                 shift.endMinute
                             )
                         }"
-                )
-
-                Text(
-
-                    text =
-                        "👥 ${shift.slots} slots"
                 )
             }
 

@@ -44,6 +44,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.studentjobs.app.utils.dayOfWeekText
+import com.studentjobs.app.utils.minuteToTime
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -56,8 +58,7 @@ fun JobDetailScreen(
 
     if (state.isLoading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
         }
@@ -66,9 +67,11 @@ fun JobDetailScreen(
 
     val job = state.job ?: return
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
 
         Column(
             modifier = Modifier
@@ -134,8 +137,7 @@ fun JobDetailScreen(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             // Lấy ký tự đầu làm logo tạm thời nếu chưa có ảnh
                             Text(
@@ -307,7 +309,9 @@ fun JobDetailScreen(
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
-                                        text = "Thứ ${shift.dayOfWeek}",
+                                        text = dayOfWeekText(
+                                            shift.dayOfWeek
+                                        ),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.onSurface
@@ -323,8 +327,12 @@ fun JobDetailScreen(
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
-                                        text = "${formatMinute(shift.startMinute)} - ${
-                                            formatMinute(
+                                        text = "${
+                                            minuteToTime(
+                                                shift.startMinute
+                                            )
+                                        } - ${
+                                            minuteToTime(
                                                 shift.endMinute
                                             )
                                         }",
@@ -339,15 +347,7 @@ fun JobDetailScreen(
                                 shape = RoundedCornerShape(8.dp),
                                 color = MaterialTheme.colorScheme.surface,
                                 shadowElevation = 1.dp
-                            ) {
-                                Text(
-                                    text = "Còn ${shift.slots} slot",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Black,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                                )
-                            }
+                            ) {}
                         }
                     }
                 }
@@ -371,10 +371,7 @@ fun JobDetailScreen(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(
-                        start = 20.dp,
-                        end = 20.dp,
-                        top = 12.dp,
-                        bottom = 20.dp
+                        start = 20.dp, end = 20.dp, top = 12.dp, bottom = 20.dp
                     ) // padding bottom sâu hơn tí cho cân đối máy tai thỏ/nút home ảo
             ) {
                 Button(
@@ -409,13 +406,6 @@ private fun SectionTitle(text: String) {
         fontWeight = FontWeight.Black,
         color = MaterialTheme.colorScheme.onSurface
     )
-}
-
-// Chuyển đổi dữ liệu phút sang định dạng thời gian trực quan HH:mm
-private fun formatMinute(minute: Int): String {
-    val hour = minute / 60
-    val min = minute % 60
-    return "%02d:%02d".format(hour, min)
 }
 
 // Định dạng tiền tệ VNĐ chuẩn phân cách dấu chấm (ví dụ: 30.000)

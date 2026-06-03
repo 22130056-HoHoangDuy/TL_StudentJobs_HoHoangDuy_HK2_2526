@@ -184,9 +184,6 @@ fun CreateJobScreen(
                 onEndMinuteChange =
                     viewModel::updateEndMinute,
 
-                onSlotsChange =
-                    viewModel::updateSlots,
-
                 onAddShift =
                     viewModel::addShift,
 

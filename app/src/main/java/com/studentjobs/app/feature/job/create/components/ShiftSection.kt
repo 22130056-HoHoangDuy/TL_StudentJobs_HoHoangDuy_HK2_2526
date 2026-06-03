@@ -36,8 +36,6 @@ fun ShiftSection(
 
     onEndMinuteChange: (String) -> Unit,
 
-    onSlotsChange: (String) -> Unit,
-
     onAddShift: () -> Unit,
 
     onDeleteShift: (String) -> Unit
@@ -172,25 +170,6 @@ fun ShiftSection(
 
                     Text(
                         "20:00"
-                    )
-                }
-            )
-
-            OutlinedTextField(
-
-                value =
-                    slots,
-
-                onValueChange =
-                    onSlotsChange,
-
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                label = {
-
-                    Text(
-                        "Slots"
                     )
                 }
             )
