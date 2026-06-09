@@ -1,10 +1,12 @@
 package com.studentjobs.app.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.studentjobs.app.feature.auth.AuthViewModel
 import com.studentjobs.app.feature.auth.LoginScreen
 import com.studentjobs.app.feature.auth.RegisterScreen
@@ -22,9 +24,18 @@ fun AppNavGraph(viewModel: AuthViewModel) {
 
     val DEBUG_ALWAYS_SHOW_ONBOARDING = true
 
+    val currentUser =
+
+        FirebaseAuth
+            .getInstance()
+            .currentUser
+
     val startDestination = when {
-        DEBUG_ALWAYS_SHOW_ONBOARDING -> "onboarding"
+
+        currentUser != null -> "main"
+
         prefs.isOnboardingShown() -> "login"
+
         else -> "onboarding"
     }
 
@@ -95,7 +106,28 @@ fun AppNavGraph(viewModel: AuthViewModel) {
         }
 
         composable("main") {
-            MainScreen()
+
+            MainScreen(
+
+                onLogout = {
+
+                    viewModel.logout()
+
+                    navController.navigate("login") {
+
+                        popUpTo("main") {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+
+                    Log.d(
+                        "LOGOUT",
+                        "AFTER NAVIGATE"
+                    )
+                }
+            )
         }
     }
 }

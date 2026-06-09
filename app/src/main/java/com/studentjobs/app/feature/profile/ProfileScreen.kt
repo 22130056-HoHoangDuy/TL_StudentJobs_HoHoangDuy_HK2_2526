@@ -38,6 +38,8 @@ fun ProfileScreen(
 
     navController: NavController,
 
+    onLogout: () -> Unit,
+
     viewModel: ProfileViewModel = viewModel()
 
 ) {
@@ -50,6 +52,10 @@ fun ProfileScreen(
             ?.savedStateHandle
 
     var showPlusDialog by remember {
+
+        mutableStateOf(false)
+    }
+    var showLogoutDialog by remember {
 
         mutableStateOf(false)
     }
@@ -160,6 +166,7 @@ fun ProfileScreen(
     ) {
 
         when (state.role) {
+
 
             // ========================================
             // STUDENT FLOW
@@ -370,6 +377,16 @@ fun ProfileScreen(
                 }
             }
         }
+        TextButton(
+
+            onClick = {
+
+                showLogoutDialog = true
+            }
+        ) {
+
+            Text("Đăng xuất")
+        }
     }
 
     // ========================================
@@ -435,6 +452,58 @@ fun ProfileScreen(
                     text =
                         "Upgrade to PLUS to use timetable OCR and Smart Auto Apply."
                 )
+            }
+        )
+    }
+    if (showLogoutDialog) {
+
+        AlertDialog(
+
+            onDismissRequest = {
+
+                showLogoutDialog = false
+            },
+
+            title = {
+
+                Text("Đăng xuất")
+            },
+
+            text = {
+
+                Text(
+                    "Bạn có chắc muốn đăng xuất?"
+                )
+            },
+
+            confirmButton = {
+
+                TextButton(
+
+                    onClick = {
+
+                        showLogoutDialog = false
+
+                        onLogout()
+                    }
+                ) {
+
+                    Text("Đăng xuất")
+                }
+            },
+
+            dismissButton = {
+
+                TextButton(
+
+                    onClick = {
+
+                        showLogoutDialog = false
+                    }
+                ) {
+
+                    Text("Hủy")
+                }
             }
         )
     }

@@ -24,7 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import com.studentjobs.app.navigation.MainNavGraph
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    onLogout: () -> Unit
+) {
 
     val navController = rememberNavController()
 
@@ -295,7 +297,8 @@ fun MainScreen() {
             modifier =
                 Modifier.padding(
                     padding
-                )
+                ),
+            onLogout = onLogout
         )
     }
 }

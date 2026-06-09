@@ -15,7 +15,6 @@ import com.studentjobs.app.data.repository.student.StudentRepository
 import com.studentjobs.app.data.repository.user.UserRepository
 import com.studentjobs.app.feature.application.apply.ApplyJobViewModel
 import com.studentjobs.app.feature.application.apply.ApplyJobViewModelFactory
-import com.studentjobs.app.feature.home.HomeEntryScreen
 import com.studentjobs.app.feature.job.JobEntryScreen
 import com.studentjobs.app.feature.job.create.CreateJobScreen
 import com.studentjobs.app.feature.job.create.CreateJobViewModel
@@ -46,33 +45,32 @@ fun MainNavGraph(
 
     navController: NavHostController,
 
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 
+    onLogout: () -> Unit,
 ) {
 
     NavHost(
 
         navController = navController,
 
-        startDestination = "home",
+        startDestination = "jobs",
 
         modifier = modifier
 
     ) {
-        composable("home") {
-
-            HomeEntryScreen(
-                navController
-            )
-        }
 
         // ========================================
         // PROFILE
         // ========================================
 
         composable("profile") {
+            ProfileScreen(
 
-            ProfileScreen(navController)
+                navController = navController,
+
+                onLogout = onLogout
+            )
         }
 
         // ========================================
@@ -287,14 +285,38 @@ fun MainNavGraph(
 
                 viewModel = viewModel,
 
+                onNavigateBack = {
+
+                    navController.popBackStack()
+                },
+
                 onNavigateToSubscription = {
 
                     navController.navigate(
                         "subscription/EMPLOYER"
                     )
+                },
+
+                onJobCreated = {
+
+                    navController.popBackStack()
                 }
             )
         }
+
+        composable(
+            "employer_job_detail/{jobId}"
+        ) {
+
+            val jobId =
+
+                it.arguments
+                    ?.getString("jobId")
+                    ?: return@composable
+
+
+        }
+
         composable("location_picker") {
 
             LocationPickerScreen(

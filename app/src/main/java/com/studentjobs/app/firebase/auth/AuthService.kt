@@ -13,4 +13,8 @@ class AuthService {
     fun getCurrentUser() = auth.currentUser
     suspend fun login(email: String, password: String) =
         auth.signInWithEmailAndPassword(email, password).await()
+    //logout
+    fun logout() {
+        auth.signOut()
+    }
 }
