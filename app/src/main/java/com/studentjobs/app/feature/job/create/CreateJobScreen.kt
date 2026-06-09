@@ -60,30 +60,26 @@ import com.studentjobs.app.feature.job.create.components.SkillSelectorSection
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateJobScreen(
-
     employerBusinessName: String,
-
     viewModel: CreateJobViewModel,
-
     onNavigateBack: () -> Unit,
-
     onNavigateToSubscription: () -> Unit,
-
     onJobCreated: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
-    LaunchedEffect(
-        state.success
-    ) {
-
+    LaunchedEffect(state.success) {
         if (state.success) {
-
             onJobCreated()
         }
     }
 
     val auth = FirebaseAuth.getInstance()
     val employerUid = auth.currentUser?.uid
+
+    // Bảng màu mới: Tập trung hoàn toàn vào Gradient nền rực rỡ, bỏ hoàn toàn Border
+    val infoGradient = listOf(Color(0xFFE0E7FF), Color(0xFFC7D2FE))    // Tím/Xanh mộng mơ
+    val financeGradient = listOf(Color(0xFFD1FAE5), Color(0xFFA7F3D0)) // Xanh Mint tài lộc
+    val shiftGradient = listOf(Color(0xFFDBEAFE), Color(0xFFBFDBFE))   // Xanh Da trời năng động
 
     Scaffold(
         topBar = {
@@ -105,7 +101,6 @@ fun CreateJobScreen(
             )
         },
         bottomBar = {
-            // Nút Publish đặt ở dưới cùng cố định để luôn thôi thúc Employer
             Surface(
                 tonalElevation = 8.dp,
                 shadowElevation = 12.dp,
@@ -154,7 +149,7 @@ fun CreateJobScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // 1. PREVIEW SECTION (Nhìn thấu tâm hồn sinh viên)
+            // 1. PREVIEW SECTION
             item {
                 SectionHeader("Xem trước tin đăng", "Cách sinh viên nhìn thấy bài đăng của bạn")
                 JobPreviewCard(
@@ -168,7 +163,7 @@ fun CreateJobScreen(
 
             // 2. BASIC INFO
             item {
-                SectionWrapper {
+                SectionWrapper(bgGradient = infoGradient) {
                     BasicInfoSection(
                         title = state.title,
                         description = state.description,
@@ -182,7 +177,7 @@ fun CreateJobScreen(
 
             // 3. SALARY & SKILLS
             item {
-                SectionWrapper {
+                SectionWrapper(bgGradient = financeGradient) {
                     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                         SalarySection(
                             salaryMin = state.salaryMin,
@@ -190,7 +185,7 @@ fun CreateJobScreen(
                             onSalaryMinChange = viewModel::updateSalaryMin,
                             onSalaryMaxChange = viewModel::updateSalaryMax
                         )
-                        Divider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Divider(color = Color.White.copy(alpha = 0.6f))
                         SkillSelectorSection(
                             availableSkills = state.availableSkills,
                             selectedSkills = state.selectedSkills,
@@ -202,7 +197,7 @@ fun CreateJobScreen(
 
             // 4. SHIFTS
             item {
-                SectionWrapper {
+                SectionWrapper(bgGradient = shiftGradient) {
                     ShiftSection(
                         shifts = state.shifts,
                         selectedDay = state.selectedDay,
@@ -218,7 +213,7 @@ fun CreateJobScreen(
                 }
             }
 
-            // 5. SMART AUTO RECRUITMENT (The Plus Highlight)
+            // 5. SMART AUTO RECRUITMENT
             item {
                 val plusGradient = Brush.linearGradient(
                     colors = listOf(Color(0xFF6366F1), Color(0xFFA855F7))
@@ -228,9 +223,7 @@ fun CreateJobScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                            alpha = 0.3f
-                        )
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
@@ -332,7 +325,28 @@ fun CreateJobScreen(
     }
 }
 
-// --- Helper Composables ---
+// Cập nhật lại SectionWrapper: Loại bỏ Border, sử dụng nền Gradient lấp đầy trọn vẹn khối
+@Composable
+fun SectionWrapper(
+    bgGradient: List<Color>,
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent), // Nền Transparent để lộ Box Gradient
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(brush = Brush.linearGradient(colors = bgGradient)) // Tô trọn màu nền
+                .padding(20.dp)
+        ) {
+            content()
+        }
+    }
+}
 
 @Composable
 fun SectionHeader(title: String, subtitle: String) {
@@ -348,26 +362,5 @@ fun SectionHeader(title: String, subtitle: String) {
             subtitle,
             style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
         )
-    }
-}
-
-@Composable
-fun SectionWrapper(content: @Composable () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                alpha = 0.2f
-            )
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-        )
-    ) {
-        Box(modifier = Modifier.padding(20.dp)) {
-            content()
-        }
     }
 }
