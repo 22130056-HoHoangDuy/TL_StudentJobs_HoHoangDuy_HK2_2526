@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation("com.google.firebase:firebase-functions-ktx")
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.foundation)
 
     // Test
     testImplementation(libs.junit)

@@ -95,6 +95,11 @@ class ApplyJobViewModel(
                     "STEP 2 - alreadyApplied = $alreadyApplied"
                 )
 
+                Log.d(
+                    "APPLY_JOB",
+                    "STEP 2 - alreadyApplied = $alreadyApplied"
+                )
+
                 if (alreadyApplied) {
 
                     _uiState.value =
@@ -257,9 +262,18 @@ class ApplyJobViewModel(
                     "STEP 6 - Saving Firestore"
                 )
 
-                applicationRepository
-                    .createApplication(
-                        application
+                val result =
+
+                    applicationRepository
+                        .createApplication(
+                            application
+                        )
+
+                result.getOrThrow()
+
+                jobRepository
+                    .incrementApplicantCount(
+                        job.jobId
                     )
 
                 Log.d(

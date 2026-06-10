@@ -39,7 +39,12 @@ data class JobEntity(
     //job category
     val businessCategory: String = "",
 
+    // accepted applicants
+    val acceptedApplicants: Int = 0,
+
     // ===== SYSTEM =====
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
+
+
 )

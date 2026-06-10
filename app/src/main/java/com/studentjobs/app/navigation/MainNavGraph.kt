@@ -15,6 +15,9 @@ import com.studentjobs.app.data.repository.student.StudentRepository
 import com.studentjobs.app.data.repository.user.UserRepository
 import com.studentjobs.app.feature.application.apply.ApplyJobViewModel
 import com.studentjobs.app.feature.application.apply.ApplyJobViewModelFactory
+import com.studentjobs.app.feature.application.employer.ApplicantListScreen
+import com.studentjobs.app.feature.application.employer.ApplicantListViewModel
+import com.studentjobs.app.feature.application.employer.ApplicantListViewModelFactory
 import com.studentjobs.app.feature.job.JobEntryScreen
 import com.studentjobs.app.feature.job.create.CreateJobScreen
 import com.studentjobs.app.feature.job.create.CreateJobViewModel
@@ -306,15 +309,67 @@ fun MainNavGraph(
 
         composable(
             "employer_job_detail/{jobId}"
-        ) {
+        ) { backStackEntry ->
 
             val jobId =
 
-                it.arguments
+                backStackEntry
+                    .arguments
                     ?.getString("jobId")
                     ?: return@composable
 
+            val applicationRepository =
 
+                ApplicationRepository(
+                    ApplicationService()
+                )
+
+            val studentRepository =
+
+                StudentRepository(
+                    StudentService()
+                )
+
+            val userRepository =
+
+                UserRepository(
+                    UserServiceNew()
+                )
+
+            val jobRepository =
+
+                JobRepository(
+                    JobService(),
+                    ShiftService(),
+                    EmployerService()
+                )
+
+            val factory =
+
+                ApplicantListViewModelFactory(
+
+                    applicationRepository,
+
+                    studentRepository,
+
+                    userRepository,
+
+                    jobRepository,
+
+                    jobId
+                )
+
+            val viewModel:
+                    ApplicantListViewModel =
+
+                viewModel(
+                    factory = factory
+                )
+
+            ApplicantListScreen(
+
+                viewModel = viewModel
+            )
         }
 
         composable("location_picker") {
