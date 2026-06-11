@@ -225,7 +225,7 @@ fun EmployerJobScreen(
 
 @Composable
 fun JobItemCard(
-    job: JobEntity, // Thay bằng tên Model Object thực tế của anh
+    job: JobEntity,
     navController: NavController,
     isActive: Boolean
 ) {
@@ -234,7 +234,19 @@ fun JobItemCard(
             .fillMaxWidth()
             .animateContentSize() // Hiệu ứng tự động co giãn cực kỳ mượt mà khi đổi trạng thái
             .clickable {
-                navController.navigate("employer_job_detail/${job.jobId}")
+
+                if (isActive) {
+
+                    navController.navigate(
+                        "employer_job_detail/${job.jobId}"
+                    )
+
+                } else {
+
+                    navController.navigate(
+                        "active_job_detail/${job.jobId}"
+                    )
+                }
             },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
@@ -303,7 +315,7 @@ fun JobItemCard(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = if (isActive) "${job.currentApplicants} ứng viên mới" else "Sinh viên đã chốt việc",
+                        text = if (isActive) "${job.currentApplicants} ứng viên mới" else "Sinh viên đang làm việc",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = if (isActive && job.currentApplicants > 0) FontWeight.Bold else FontWeight.Normal,
                             color = if (isActive && job.currentApplicants > 0) MaterialTheme.colorScheme.primary else Color.Gray
