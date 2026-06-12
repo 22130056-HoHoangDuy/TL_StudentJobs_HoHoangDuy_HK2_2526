@@ -280,10 +280,9 @@ class CreateJobViewModel(
     // ========================================
 
     fun createJob(
-
         employerUid: String
-
     ) {
+
         val error = validate()
 
         if (error != null) {
@@ -295,13 +294,62 @@ class CreateJobViewModel(
 
             return
         }
+
         viewModelScope.launch {
 
             try {
 
-                _uiState.value = _uiState.value.copy(
-                    isLoading = true
-                )
+                // ==========================
+                // CHECK JOB LIMIT
+                // ==========================
+
+                val jobs =
+
+                    repository
+                        .getJobsByEmployer(
+                            employerUid
+                        )
+
+                val runningJobs =
+
+                    jobs.count {
+
+                        it.status == "ACTIVE"
+
+                                ||
+
+                                it.status == "ON_GOING"
+                    }
+
+                val maxAllowed =
+
+                    if (_uiState.value.isPlusEmployer)
+                        5
+                    else
+                        2
+
+                if (runningJobs >= maxAllowed) {
+
+                    _uiState.value =
+                        _uiState.value.copy(
+
+                            isLoading = false,
+
+                            errorMessage =
+                                "Bạn đã đạt giới hạn $maxAllowed công việc đang hoạt động."
+                        )
+
+                    return@launch
+                }
+
+                // ==========================
+                // CREATE JOB
+                // ==========================
+
+                _uiState.value =
+                    _uiState.value.copy(
+                        isLoading = true
+                    )
 
                 val job =
 
@@ -310,25 +358,41 @@ class CreateJobViewModel(
                         jobId =
                             _uiState.value.draftJobId,
 
-                        employerUid = employerUid,
+                        employerUid =
+                            employerUid,
 
-                        title = _uiState.value.title,
+                        title =
+                            _uiState.value.title,
 
-                        description = _uiState.value.description,
+                        description =
+                            _uiState.value.description,
 
-                        salaryMin = _uiState.value.salaryMin.toDoubleOrNull() ?: 0.0,
+                        salaryMin =
+                            _uiState.value.salaryMin
+                                .toDoubleOrNull()
+                                ?: 0.0,
 
-                        salaryMax = _uiState.value.salaryMax.toDoubleOrNull() ?: 0.0,
+                        salaryMax =
+                            _uiState.value.salaryMax
+                                .toDoubleOrNull()
+                                ?: 0.0,
 
-                        requiredSkills = _uiState.value.selectedSkills,
+                        requiredSkills =
+                            _uiState.value.selectedSkills,
 
-                        requiredApplicants = _uiState.value.requiredApplicants.toIntOrNull() ?: 1,
+                        requiredApplicants =
+                            _uiState.value.requiredApplicants
+                                .toIntOrNull()
+                                ?: 1,
 
-                        autoRecruitmentEnabled = _uiState.value.autoRecruitmentEnabled,
+                        autoRecruitmentEnabled =
+                            _uiState.value.autoRecruitmentEnabled,
 
-                        createdAt = System.currentTimeMillis(),
+                        createdAt =
+                            System.currentTimeMillis(),
 
-                        updatedAt = System.currentTimeMillis()
+                        updatedAt =
+                            System.currentTimeMillis()
                     )
 
                 repository.createJob(
@@ -336,24 +400,25 @@ class CreateJobViewModel(
                     job,
 
                     _uiState.value.shifts
-
                 )
 
-                _uiState.value = _uiState.value.copy(
+                _uiState.value =
+                    _uiState.value.copy(
 
-                    isLoading = false,
+                        isLoading = false,
 
-                    success = true
-                )
+                        success = true
+                    )
 
             } catch (e: Exception) {
 
-                _uiState.value = _uiState.value.copy(
+                _uiState.value =
+                    _uiState.value.copy(
 
-                    isLoading = false,
+                        isLoading = false,
 
-                    errorMessage = e.message
-                )
+                        errorMessage = e.message
+                    )
             }
         }
     }

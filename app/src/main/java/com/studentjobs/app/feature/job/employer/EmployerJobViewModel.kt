@@ -65,6 +65,17 @@ class EmployerJobViewModel(
                     userService
                         .getUserCore(uid)
 
+                val runningJobCount =
+
+                    jobs.count {
+
+                        it.status == "ACTIVE"
+
+                                ||
+
+                                it.status == "ON_GOING"
+                    }
+
                 val maxAllowed =
 
                     when (
@@ -85,7 +96,7 @@ class EmployerJobViewModel(
                         jobs = jobs,
 
                         activeJobCount =
-                            jobs.size,
+                            runningJobCount,
 
                         maxJobAllowed =
                             maxAllowed,
