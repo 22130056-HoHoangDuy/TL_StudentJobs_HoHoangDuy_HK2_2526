@@ -308,4 +308,38 @@ class UserServiceNew {
             Result.failure(e)
         }
     }
+
+    suspend fun updateTrustScore(
+
+        uid: String,
+
+        score: Int
+
+    ): Result<Unit> {
+
+        return try {
+
+            db.collection("users")
+                .document(uid)
+                .update(
+
+                    mapOf(
+
+                        "trustScore" to score,
+
+                        "updatedAt" to
+                                System.currentTimeMillis()
+                    )
+                )
+                .await()
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
+    }
 }

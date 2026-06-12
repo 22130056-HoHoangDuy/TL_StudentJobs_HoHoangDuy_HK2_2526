@@ -1,11 +1,13 @@
 package com.studentjobs.app.feature.trust
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.studentjobs.app.data.model.trust.TrustLog
+import com.studentjobs.app.data.repository.trust.TrustRepository
+import com.studentjobs.app.firebase.firestore.TrustService
+import com.studentjobs.app.firebase.firestore.UserServiceNew
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -14,26 +16,65 @@ class TrustViewModel : ViewModel() {
     private val auth =
         FirebaseAuth.getInstance()
 
+    private val repository =
+        TrustRepository(
+            TrustService(),
+            UserServiceNew()
+        )
+
     private val _uiState =
         MutableStateFlow(
             TrustUiState()
         )
 
-    val uiState:
-            StateFlow<TrustUiState> =
+    val uiState =
         _uiState.asStateFlow()
 
     init {
-
         loadTrustData()
+    }
+
+    fun changeFilter(
+        filter: TrustFilter
+    ) {
+
+        _uiState.value =
+            _uiState.value.copy(
+                selectedFilter = filter
+            )
+    }
+
+    private fun calculateTrustLevel(
+        score: Int
+    ): String {
+
+        return when {
+
+            score >= 80 ->
+                "Độ tin cậy: Cao"
+
+            score >= 60 ->
+                "Độ tin cậy: Trung"
+
+            score >= 40 ->
+                "Độ tin cậy: Thấp"
+
+            score >= 20 ->
+                "Độ tin cậy: Nguy hiểm"
+
+            else ->
+                "Không xác định"
+        }
     }
 
     private fun loadTrustData() {
 
-        val uid =
-            auth.currentUser?.uid
-                ?: return
+        val uid = auth.currentUser?.uid ?: return
 
+        Log.d(
+            "TRUST_DEBUG",
+            "uid = $uid"
+        )
         viewModelScope.launch {
 
             try {
@@ -43,47 +84,23 @@ class TrustViewModel : ViewModel() {
                         isLoading = true
                     )
 
-                // TODO:
-                // Load trustScore từ UserCore
-                // Load logs từ Firestore
+                val trustScore =
+                    repository.getTrustScore(uid)
 
-                val trustScore = 50
+                Log.d(
+                    "TRUST_DEBUG",
+                    "trustScore = $trustScore"
+                )
 
-                val logs = listOf(
+                val logs =
+                    repository.getTrustLogs(uid)
 
-                    TrustLog(
-                        trustLogId = "1",
-                        userUid = uid,
-                        actionType = "EMAIL_VERIFIED",
-                        changeAmount = 10,
-                        severity = "LOW",
-                        description = "Xác thực email thành công",
-                        createdAt = System.currentTimeMillis()
-                    ),
-
-                    TrustLog(
-                        trustLogId = "2",
-                        userUid = uid,
-                        actionType = "PHONE_VERIFIED",
-                        changeAmount = 10,
-                        severity = "LOW",
-                        description = "Xác thực số điện thoại",
-                        createdAt = System.currentTimeMillis()
-                    ),
-
-                    TrustLog(
-                        trustLogId = "3",
-                        userUid = uid,
-                        actionType = "JOB_COMPLETED",
-                        changeAmount = 5,
-                        severity = "LOW",
-                        description = "Hoàn thành công việc",
-                        createdAt = System.currentTimeMillis()
-                    )
+                Log.d(
+                    "TRUST_DEBUG",
+                    "logs size = ${logs.size}"
                 )
 
                 _uiState.value =
-
                     _uiState.value.copy(
 
                         isLoading = false,
@@ -98,38 +115,24 @@ class TrustViewModel : ViewModel() {
                         logs = logs
                     )
 
+                Log.d(
+                    "TRUST_DEBUG",
+                    "uiState updated"
+                )
+
             } catch (e: Exception) {
 
-                e.printStackTrace()
+                Log.e(
+                    "TRUST_DEBUG",
+                    "load error",
+                    e
+                )
 
                 _uiState.value =
                     _uiState.value.copy(
                         isLoading = false
                     )
             }
-        }
-    }
-
-    private fun calculateTrustLevel(
-        score: Int
-    ): String {
-
-        return when {
-
-            score >= 80 ->
-                "Elite User"
-
-            score >= 60 ->
-                "Trusted User"
-
-            score >= 40 ->
-                "Verified User"
-
-            score >= 20 ->
-                "Basic User"
-
-            else ->
-                "New User"
         }
     }
 }

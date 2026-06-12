@@ -99,6 +99,7 @@ class VerificationService {
             null
         }
     }
+
     suspend fun updateStudentVerificationFields(
         uid: String,
         fields: Map<String, Any>
@@ -286,9 +287,13 @@ class VerificationService {
                             VerificationStatus.UNVERIFIED
                         },
 
-                        createdAt = (data?.get("createdAt") as? Long) ?: 0L,
+                        createdAt =
+                            (data?.get("createdAt") as? Long)
+                                ?: 0L,
 
-                        updatedAt = (data?.get("updatedAt") as? Long) ?: 0L
+                        updatedAt =
+                            (data?.get("updatedAt") as? Long)
+                                ?: 0L
                     )
 
                     onChange(verification)
