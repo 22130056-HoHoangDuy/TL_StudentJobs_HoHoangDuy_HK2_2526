@@ -39,6 +39,7 @@ import com.studentjobs.app.feature.schedule.ScheduleUploadScreen
 import com.studentjobs.app.feature.skill.ManageSkillsScreen
 import com.studentjobs.app.feature.subscription.SubscriptionRequestScreen
 import com.studentjobs.app.feature.subscription.SubscriptionScreen
+import com.studentjobs.app.feature.trust.TrustScreen
 import com.studentjobs.app.firebase.firestore.ApplicationService
 import com.studentjobs.app.firebase.firestore.EmployerService
 import com.studentjobs.app.firebase.firestore.JobService
@@ -162,8 +163,7 @@ fun MainNavGraph(
             )
         }
         composable("trust") {
-
-            Text("Trust Score")
+            TrustScreen()
         }
 
         composable("history") {

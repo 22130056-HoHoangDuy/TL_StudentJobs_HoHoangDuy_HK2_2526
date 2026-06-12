@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -27,9 +28,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.functions.FirebaseFunctions
 import com.studentjobs.app.data.model.status.VerificationStatus
 import com.studentjobs.app.data.model.student.StudentVerification
-import com.studentjobs.app.data.model.user.UserCore
+import com.studentjobs.app.data.repository.trust.TrustRepository
 import com.studentjobs.app.firebase.firestore.SchoolDomainService
-import com.studentjobs.app.utils.calculateTrustScore
+import com.studentjobs.app.firebase.firestore.TrustService
+import com.studentjobs.app.firebase.firestore.UserServiceNew
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -37,335 +39,211 @@ import kotlinx.coroutines.tasks.await
 fun StudentEmailVerificationScreen(
     navController: NavController
 ) {
-
     val context = LocalContext.current
-
-    val auth = FirebaseAuth.getInstance()
-
-    val firestore = FirebaseFirestore.getInstance()
-
-    val functions = FirebaseFunctions.getInstance("us-east1")
-
     val scope = rememberCoroutineScope()
 
-    val schoolDomainService = remember {
-        SchoolDomainService()
-    }
+    // Firebase Instantiation
+    val auth = remember { FirebaseAuth.getInstance() }
+    val firestore = remember { FirebaseFirestore.getInstance() }
+    val functions = remember { FirebaseFunctions.getInstance("us-east1") }
+    val schoolDomainService = remember { SchoolDomainService() }
+    val trustRepository = remember { TrustRepository(TrustService(), UserServiceNew()) }
 
-    var studentEmail by remember {
-        mutableStateOf("")
-    }
-
-    var otp by remember {
-        mutableStateOf("")
-    }
-
-    var isLoading by remember {
-        mutableStateOf(false)
-    }
-
-    var isOtpSent by remember {
-        mutableStateOf(false)
-    }
-
-    var error by remember {
-        mutableStateOf("")
-    }
+    // States
+    var studentEmail by remember { mutableStateOf("") }
+    var otp by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+    var isOtpSent by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
-
         Text(
-            text = "Student Email Verification", style = MaterialTheme.typography.headlineSmall
+            text = "Xác thực Email Sinh viên",
+            style = MaterialTheme.typography.headlineSmall
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // EMAIL
+        // INPUT EMAIL FIELD
         OutlinedTextField(
-            value = studentEmail, onValueChange = {
-            studentEmail = it
-        }, label = {
-            Text("Student Email")
-        }, modifier = Modifier.fillMaxWidth()
+            value = studentEmail,
+            onValueChange = { studentEmail = it },
+            label = { Text("Email Sinh viên") },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isOtpSent && !isLoading
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // OTP FIELD
+        // INPUT OTP FIELD (Chỉ hiện sau khi gửi OTP thành công)
         if (isOtpSent) {
-
             OutlinedTextField(
-                value = otp, onValueChange = {
-                otp = it
-            }, label = {
-                Text("OTP Code")
-            }, modifier = Modifier.fillMaxWidth()
+                value = otp,
+                onValueChange = { otp = it },
+                label = { Text("Mã xác thực OTP") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
             )
-
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // SEND OTP
-        if (!isOtpSent) {
+        // BUTTON CONTROL LOGIC
+        Button(
+            onClick = {
+                scope.launch {
+                    error = ""
+                    val user = auth.currentUser
+                    if (user == null) {
+                        error = "Không tìm thấy thông tin tài khoản"
+                        return@launch
+                    }
 
-            Button(
-                onClick = {
-
-                    scope.launch {
-
+                    if (!isOtpSent) {
+                        // ========================================
+                        // LUỒNG 1: GỬI OTP
+                        // ========================================
                         try {
-
-                            error = ""
-
                             if (!studentEmail.contains("@")) {
-
-                                error = "Invalid email"
-
+                                error = "Định dạng email không hợp lệ"
                                 return@launch
                             }
 
                             val domain = studentEmail.substringAfter("@")
-
                             isLoading = true
 
                             val isValid = schoolDomainService.isValidStudentDomain(domain)
-
                             if (!isValid) {
-
                                 isLoading = false
-
-                                error = "Invalid student domain"
-
+                                error = "Email không thuộc danh sách tên miền trường học liên kết"
                                 return@launch
                             }
 
-                            val user = auth.currentUser
-
-                            if (user == null) {
-
-                                isLoading = false
-
-                                error = "User not found"
-
-                                return@launch
-                            }
-
-                            // CALL CLOUD FUNCTION
-                            val data = hashMapOf(
-                                "email" to studentEmail, "uid" to user.uid
-                            )
-
+                            val data = hashMapOf("email" to studentEmail, "uid" to user.uid)
                             functions.getHttpsCallable("sendVerificationOtp").call(data).await()
 
                             isLoading = false
-
                             isOtpSent = true
-
                             Toast.makeText(
-                                context, "OTP sent to email", Toast.LENGTH_SHORT
+                                context,
+                                "Mã OTP đã được gửi vào email!",
+                                Toast.LENGTH_SHORT
                             ).show()
-
                         } catch (e: Exception) {
-
                             isLoading = false
-
-                            error = e.message ?: "Failed to send OTP"
+                            error = e.message ?: "Gửi mã OTP thất bại"
                         }
-                    }
-                }, modifier = Modifier.fillMaxWidth(), enabled = !isLoading
-            ) {
-
-                if (isLoading) {
-
-                    CircularProgressIndicator()
-
-                } else {
-
-                    Text("Send OTP")
-                }
-            }
-
-        } else {
-
-            // ========================================
-// VERIFY OTP
-// ========================================
-
-            Button(
-                onClick = {
-
-                    scope.launch {
-
+                    } else {
+                        // ========================================
+                        // LUỒNG 2: XÁC THỰC MÃ OTP
+                        // ========================================
                         try {
-
                             isLoading = true
-
-                            val user = auth.currentUser
-
-                            if (user == null) {
-
-                                isLoading = false
-
-                                error = "User not found"
-
-                                return@launch
-                            }
-
-                            // ========================================
-                            // GET OTP
-                            // ========================================
 
                             val otpDoc =
                                 firestore.collection("email_otps").document(user.uid).get().await()
-
                             val savedOtp = otpDoc.getString("otp")
-
                             val savedEmail = otpDoc.getString("email")
 
-                            if (
+                            if (savedOtp == otp && savedEmail == studentEmail) {
+                                val verificationBeforeUpdate =
 
-                                savedOtp == otp &&
+                                    firestore.collection("student_verifications")
+                                        .document(user.uid)
+                                        .get()
+                                        .await()
+                                        .toObject(StudentVerification::class.java)
 
-                                savedEmail == studentEmail
+                                val wasEmailVerified =
 
-                            ) {
+                                    verificationBeforeUpdate?.studentEmailVerified ==
+                                            VerificationStatus.VERIFIED
 
-                                // ========================================
-                                // UPDATE STUDENT VERIFICATION
-                                // ========================================
-
+                                // 1. Cập nhật trạng thái xác thực email
                                 firestore.collection("student_verifications").document(user.uid)
-                                    .update(
-                                        mapOf(
+                                    .update(mapOf("studentEmailVerified" to VerificationStatus.VERIFIED))
+                                    .await()
 
-                                            "studentEmailVerified" to VerificationStatus.VERIFIED
+                                // 2. Đồng bộ email vào thông tin chi tiết sinh viên
+                                firestore.collection("students").document(user.uid)
+                                    .update(mapOf("studentEmail" to studentEmail))
+                                    .await()
 
-                                        )
-                                    ).await()
-
-                                // ========================================
-                                // UPDATE STUDENT PROFILE
-                                // ========================================
-
-                                firestore.collection("students").document(user.uid).update(
-                                        mapOf(
-                                            "studentEmail" to studentEmail
-                                        )
-                                    ).await()
-
-                                // ========================================
-                                // LOAD FULL STATE
-                                // ========================================
-
-                                val userCore =
-
-                                    firestore.collection("users").document(user.uid).get().await()
-                                        .toObject(
-                                            UserCore::class.java
-                                        )
-
+                                // 3. Đọc dữ liệu mới nhất kiểm tra trạng thái xác thực tổng hợp
                                 val studentVerification =
+                                    firestore.collection("student_verifications")
+                                        .document(user.uid).get().await()
+                                        .toObject(StudentVerification::class.java)
 
-                                    firestore.collection("student_verifications").document(user.uid)
-                                        .get().await().toObject(
-                                            StudentVerification::class.java
-                                        )
+                                val isAllVerified =
+                                    studentVerification?.studentEmailVerified == VerificationStatus.VERIFIED
+                                            && studentVerification.studentPhoneVerified == VerificationStatus.VERIFIED
+                                            && studentVerification.studentCardVerified == VerificationStatus.VERIFIED
 
-                                // ========================================
-                                // RECALCULATE TRUST SCORE
-                                // ========================================
+                                // 4. Cập nhật trạng thái Verified cuối cùng lên User Core
+                                firestore.collection("users").document(user.uid)
+                                    .update(mapOf("userVerified" to isAllVerified))
+                                    .await()
 
-                                val trustScore =
+                                // 5. Thêm sự kiện cộng điểm uy tín (Trust Score) - CHỈ GỌI 1 LẦN DUY NHẤT
+                                if (!wasEmailVerified) {
 
-                                    calculateTrustScore(
-
-                                        user = userCore!!,
-
-                                        studentVerification = studentVerification
+                                    trustRepository.addTrustEvent(
+                                        uid = user.uid,
+                                        actionType = "EMAIL_VERIFIED",
+                                        changeAmount = 10,
+                                        description = "Xác thực thành công email sinh viên"
                                     )
+                                }
 
-                                // ========================================
-                                // CHECK FINAL VERIFIED
-                                // ========================================
-
-                                val userVerified =
-
-                                    studentVerification?.studentEmailVerified ==
-
-                                            VerificationStatus.VERIFIED
-
-                                            &&
-
-                                            studentVerification.studentPhoneVerified ==
-
-                                            VerificationStatus.VERIFIED
-
-                                            &&
-
-                                            studentVerification.studentCardVerified ==
-
-                                            VerificationStatus.VERIFIED
-
-                                // ========================================
-                                // UPDATE USER CORE
-                                // ========================================
-
-                                firestore.collection("users").document(user.uid).update(
-                                        mapOf(
-
-                                            "trustScore" to trustScore,
-
-                                            "userVerified" to userVerified
-                                        )
-                                    ).await()
+                                // OTP chỉ xóa khi verify thành công
+                                firestore.collection("email_otps")
+                                    .document(user.uid)
+                                    .delete()
+                                    .await()
 
                                 isLoading = false
-
                                 Toast.makeText(
-                                    context, "Student email verified", Toast.LENGTH_SHORT
+                                    context,
+                                    "Xác thực email thành công!",
+                                    Toast.LENGTH_SHORT
                                 ).show()
-
                                 navController.popBackStack()
-
                             } else {
-
                                 isLoading = false
-
-                                error = "Invalid OTP"
+                                error = "Mã OTP hoặc Email không chính xác"
                             }
-
                         } catch (e: Exception) {
-
                             isLoading = false
-
-                            error = e.message ?: "Verification failed"
+                            error = e.message ?: "Quá trình xác thực gặp lỗi"
                         }
                     }
-                }, modifier = Modifier.fillMaxWidth(), enabled = !isLoading
-            ) {
-
-                if (isLoading) {
-
-                    CircularProgressIndicator()
-
-                } else {
-
-                    Text("Verify OTP")
                 }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (error.isNotEmpty()) {
-
-                Text(
-                    text = error, color = MaterialTheme.colorScheme.error
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
+            } else {
+                Text(if (!isOtpSent) "Gửi mã OTP" else "Xác thực OTP")
             }
+        }
+
+        // ERROR MESSAGE DISPLAY (Đặt ngoài cùng để bắt trọn mọi loại lỗi)
+        if (error.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }
-
