@@ -26,5 +26,15 @@ data class ProfileUiState(
     // ===== EMPLOYER =====
     val employerProfile: EmployerProfile? = null,
 
-    val employerVerification: EmployerVerification? = null
+    val employerVerification: EmployerVerification? = null,
+
+    // EMPLOYER STATS
+
+    val totalJobs: Int = 0,
+
+    val activeJobs: Int = 0,
+
+    val ongoingJobs: Int = 0,
+
+    val completedJobs: Int = 0
 )

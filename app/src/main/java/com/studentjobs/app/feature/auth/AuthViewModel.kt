@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
 ) : ViewModel() {
 
     // =========================
@@ -110,5 +110,10 @@ class AuthViewModel(
                     }
                 )
         }
+    }
+
+    //logout
+    fun logout() {
+        repository.logout()
     }
 }

@@ -11,15 +11,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.studentjobs.app.feature.profile.employer.components.BusinessDocumentSection
-import com.studentjobs.app.feature.profile.employer.components.BusinessInfoSection
 import com.studentjobs.app.feature.profile.shared.components.VerificationBanner
 import com.studentjobs.app.feature.profile.shared.components.VerificationCard
-import androidx.compose.runtime.collectAsState
 
 
 @Composable
@@ -207,68 +205,6 @@ fun EmployerVerificationScreen(
                 navController.navigate(
                     "phone_verification/EMPLOYER"
                 )
-            }
-        )
-
-        // ========================================
-        // BUSINESS INFO
-        // ========================================
-
-        BusinessInfoSection(
-
-            enabled =
-                !state.verificationSubmitted,
-
-            state = state,
-
-            onBusinessNameChange =
-                viewModel::onBusinessNameChange,
-
-            onBusinessCategoryChange =
-                viewModel::onBusinessCategoryChange,
-
-            onBusinessAddressChange =
-                viewModel::onBusinessAddressChange,
-
-            onBusinessDescriptionChange =
-                viewModel::onBusinessDescriptionChange,
-
-            onGoogleMapsUrlChange =
-                viewModel::onGoogleMapsUrlChange,
-
-            onSelectLocation = {
-
-                navController.navigate(
-                    "location_picker"
-                )
-            }
-        )
-
-        // ========================================
-        // DOCUMENTS
-        // ========================================
-
-        BusinessDocumentSection(
-
-            enabled =
-                !state.verificationSubmitted,
-
-            businessLicenseUri =
-                state.businessLicenseUri,
-
-            storefrontUri =
-                state.businessStoreFrontUri,
-
-            onUploadBusinessLicense = {
-
-                businessLicensePicker
-                    .launch("image/*")
-            },
-
-            onUploadStorefront = {
-
-                storefrontPicker
-                    .launch("image/*")
             }
         )
 

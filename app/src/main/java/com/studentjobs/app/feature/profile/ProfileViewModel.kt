@@ -5,8 +5,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.studentjobs.app.data.model.user.UserRole
+import com.studentjobs.app.data.repository.job.JobRepository
 import com.studentjobs.app.data.repository.profile.ProfileRepository
 import com.studentjobs.app.firebase.firestore.EmployerService
+import com.studentjobs.app.firebase.firestore.JobService
+import com.studentjobs.app.firebase.firestore.ShiftService
 import com.studentjobs.app.firebase.firestore.StudentService
 import com.studentjobs.app.firebase.firestore.UserServiceNew
 import com.studentjobs.app.firebase.firestore.VerificationService
@@ -31,6 +34,14 @@ class ProfileViewModel(
 
         verificationService = VerificationService()
     )
+
+
+    private val jobRepository =
+        JobRepository(
+            JobService(),
+            ShiftService(),
+            EmployerService()
+        )
 
     // ========================================
     // UI STATE
@@ -140,27 +151,55 @@ class ProfileViewModel(
                     val employerProfile =
                         repository.getEmployerProfile(uid)
 
+                    val jobs =
+                        jobRepository.getJobsByEmployer(uid)
+
+                    val totalJobs =
+                        jobs.size
+
+                    val activeJobs =
+                        jobs.count {
+                            it.status == "ACTIVE"
+                        }
+
+                    val ongoingJobs =
+                        jobs.count {
+                            it.status == "ON_GOING"
+                        }
+
+                    val completedJobs =
+                        jobs.count {
+                            it.status == "COMPLETED"
+                        }
+
                     val employerVerification =
                         repository.getEmployerVerification(uid)
 
                     _uiState.value =
                         _uiState.value.copy(
 
-                            // SYSTEM
                             isLoading = false,
 
-                            // USER
                             userCore = userCore,
 
-                            // ROLE
                             role = userCore.role,
 
-                            // EMPLOYER
-                            employerProfile =
-                                employerProfile,
+                            employerProfile = employerProfile,
 
                             employerVerification =
-                                employerVerification
+                                employerVerification,
+
+                            totalJobs =
+                                totalJobs,
+
+                            activeJobs =
+                                activeJobs,
+
+                            ongoingJobs =
+                                ongoingJobs,
+
+                            completedJobs =
+                                completedJobs
                         )
                 }
 

@@ -260,4 +260,8 @@ class AuthRepository(
             Result.failure(e)
         }
     }
+    //logout
+    fun logout() {
+        authService.logout()
+    }
 }

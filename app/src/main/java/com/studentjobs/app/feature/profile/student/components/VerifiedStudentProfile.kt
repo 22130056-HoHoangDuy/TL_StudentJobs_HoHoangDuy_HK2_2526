@@ -1,10 +1,19 @@
 package com.studentjobs.app.feature.profile.student.components
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.feature.profile.ProfileUiState
@@ -16,153 +25,53 @@ import com.studentjobs.app.feature.profile.shared.components.VerificationStatusC
 
 @Composable
 fun VerifiedStudentProfile(
-
     state: ProfileUiState,
-
     onUpgradePlusClick: () -> Unit,
-
     onScheduleClick: () -> Unit,
-
     onSelectLocation: () -> Unit,
-
-    onManageSkills: () -> Unit
+    onManageSkills: () -> Unit,
+    onLogoutClick: () -> Unit // Bổ sung callback logout
 ) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Tự tạo khoảng cách, không cần lạm dụng Spacer
+    ) {
+        item { GradientHeader(state = state) }
 
-    Column {
+        item {
+            PlusBannerCard(
+                currentPlan = state.userCore?.subscriptionPlan ?: SubscriptionPlan.FREE,
+                role = state.role,
+                onUpgradePlusClick = onUpgradePlusClick
+            )
+        }
 
-        // ========================================
-        // HEADER
-        // ========================================
+        item { ScheduleFeatureCard(onClick = onScheduleClick) }
 
-        GradientHeader(
-            state = state
-        )
+        item { TrustScoreCard(state = state) }
 
-        Spacer(
-            modifier =
-                Modifier.height(20.dp)
-        )
+        item { VerificationStatusCard(state = state) }
 
-        // ========================================
-        // PLUS
-        // ========================================
+        item { AcademicInfoCard(state = state) }
 
-        PlusBannerCard(
+        item { ContactInfoCard(state = state) }
 
-            currentPlan =
-                state.userCore?.subscriptionPlan
-                    ?: SubscriptionPlan.FREE,
+        item { LocationInfoCard(state = state, onSelectLocation = onSelectLocation) }
 
-            role = state.role,
+        item { SkillsCard(state = state, onManageSkills = onManageSkills) }
 
-            onUpgradePlusClick = {
-
-                onUpgradePlusClick()
+        // Nút Đăng xuất đồng bộ ở đáy danh sách Sinh viên
+        item {
+            TextButton(
+                onClick = onLogoutClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFEF4444))
+            ) {
+                Text("Đăng xuất tài khoản", style = MaterialTheme.typography.bodyMedium)
             }
-        )
+        }
 
-        Spacer(
-            modifier =
-                Modifier.height(20.dp)
-        )
-
-        // ========================================
-        // TIMETABLE OCR
-        // ========================================
-
-        ScheduleFeatureCard(
-
-            onClick = {
-
-                onScheduleClick()
-            }
-        )
-
-        Spacer(
-            modifier =
-                Modifier.height(20.dp)
-        )
-
-        // ========================================
-        // TRUST SCORE
-        // ========================================
-
-        TrustScoreCard(
-            state = state
-        )
-
-        Spacer(
-            modifier =
-                Modifier.height(16.dp)
-        )
-
-        // ========================================
-        // VERIFICATION
-        // ========================================
-
-        VerificationStatusCard(
-            state = state
-        )
-
-        Spacer(
-            modifier =
-                Modifier.height(16.dp)
-        )
-
-        // ========================================
-        // ACADEMIC
-        // ========================================
-
-        AcademicInfoCard(
-            state = state
-        )
-
-        Spacer(
-            modifier =
-                Modifier.height(16.dp)
-        )
-
-        // ========================================
-        // CONTACT
-        // ========================================
-
-        ContactInfoCard(
-            state = state
-        )
-
-        Spacer(
-            modifier =
-                Modifier.height(16.dp)
-        )
-
-        LocationInfoCard(
-
-            state = state,
-
-            onSelectLocation = {
-
-                onSelectLocation()
-            }
-        )
-
-        Spacer(
-            modifier =
-                Modifier.height(16.dp)
-        )
-
-        // ========================================
-        // SKILLS
-        // ========================================
-
-        SkillsCard(
-
-            state = state,
-
-            onManageSkills = onManageSkills
-        )
+        item { Spacer(modifier = Modifier.height(24.dp)) }
     }
-    Spacer(
-        modifier =
-            Modifier.height(16.dp)
-    )
 }

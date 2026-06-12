@@ -1,5 +1,6 @@
 package com.studentjobs.app.data.repository.job
 
+import android.util.Log
 import com.studentjobs.app.data.model.job.JobEntity
 import com.studentjobs.app.data.model.job.ShiftEntity
 import com.studentjobs.app.firebase.firestore.EmployerService
@@ -32,10 +33,9 @@ class JobRepository(
 
             val employer =
 
-                employerService
-                    .getEmployerProfile(
-                        job.employerUid
-                    )
+                employerService.getEmployerProfile(
+                    job.employerUid
+                )
 
                     ?: return Result.failure(
 
@@ -47,31 +47,24 @@ class JobRepository(
             val completedJob =
 
                 job.copy(
-                    businessCategory =
-                        employer.businessCategory ?: "",
+                    businessName = employer.businessName,
 
-                    locationText =
-                        employer.businessAddressText
-                            ?: "",
+                    businessCategory = employer.businessCategory ?: "",
 
-                    latitude =
-                        employer.businessLatitude,
+                    locationText = employer.businessAddressText ?: "",
 
-                    longitude =
-                        employer.businessLongitude
+                    latitude = employer.businessLatitude,
+
+                    longitude = employer.businessLongitude
                 )
 
-            jobService
-                .createJob(
-                    completedJob
-                )
-                .getOrThrow()
+            jobService.createJob(
+                completedJob
+            ).getOrThrow()
 
-            shiftService
-                .createShifts(
-                    shifts
-                )
-                .getOrThrow()
+            shiftService.createShifts(
+                shifts
+            ).getOrThrow()
 
             Result.success(Unit)
 
@@ -91,11 +84,9 @@ class JobRepository(
         employerUid: String
     ): String? {
 
-        return employerService
-            .getEmployerProfile(
-                employerUid
-            )
-            ?.businessCategory
+        return employerService.getEmployerProfile(
+            employerUid
+        )?.businessCategory
     }
 
     // ========================================
@@ -104,10 +95,9 @@ class JobRepository(
 
     suspend fun getEmployerProfile(
         employerUid: String
-    ) = employerService
-        .getEmployerProfile(
-            employerUid
-        )
+    ) = employerService.getEmployerProfile(
+        employerUid
+    )
 
     // ========================================
     // GET JOB
@@ -117,19 +107,16 @@ class JobRepository(
         jobId: String
     ): JobEntity? {
 
-        return jobService
-            .getJob(jobId)
+        return jobService.getJob(jobId)
     }
 
     // ========================================
     // GET ACTIVE JOBS
     // ========================================
 
-    suspend fun getActiveJobs():
-            List<JobEntity> {
+    suspend fun getActiveJobs(): List<JobEntity> {
 
-        return jobService
-            .getActiveJobs()
+        return jobService.getActiveJobs()
     }
 
     // ========================================
@@ -140,10 +127,9 @@ class JobRepository(
         employerUid: String
     ): List<JobEntity> {
 
-        return jobService
-            .getJobsByEmployer(
-                employerUid
-            )
+        return jobService.getJobsByEmployer(
+            employerUid
+        )
     }
 
     // ========================================
@@ -154,10 +140,9 @@ class JobRepository(
         jobId: String
     ): List<ShiftEntity> {
 
-        return shiftService
-            .getShiftsByJob(
-                jobId
-            )
+        return shiftService.getShiftsByJob(
+            jobId
+        )
     }
 
     // ========================================
@@ -170,17 +155,13 @@ class JobRepository(
 
         return try {
 
-            shiftService
-                .deleteShiftsByJob(
-                    jobId
-                )
-                .getOrThrow()
+            shiftService.deleteShiftsByJob(
+                jobId
+            ).getOrThrow()
 
-            jobService
-                .deleteJob(
-                    jobId
-                )
-                .getOrThrow()
+            jobService.deleteJob(
+                jobId
+            ).getOrThrow()
 
             Result.success(Unit)
 
@@ -191,19 +172,74 @@ class JobRepository(
             Result.failure(e)
         }
     }
+
     suspend fun getJobWithShifts(
         jobId: String
     ): Pair<JobEntity?, List<ShiftEntity>> {
 
-        val job =
-            jobService.getJob(jobId)
+        val job = jobService.getJob(jobId)
 
-        val shifts =
-            shiftService.getShiftsByJob(jobId)
+        val shifts = shiftService.getShiftsByJob(jobId)
 
         return Pair(
-            job,
-            shifts
+            job, shifts
         )
     }
+
+    // application++
+    suspend fun incrementApplicantCount(
+        jobId: String
+    ): Result<Unit> {
+
+        Log.d(
+            "JOB_REPOSITORY",
+            "incrementApplicantCount = $jobId"
+        )
+
+        return jobService
+            .incrementApplicantCount(
+                jobId
+            )
+    }
+
+    // application--
+    suspend fun decrementApplicantCount(
+        jobId: String
+    ): Result<Unit> {
+
+        Log.d(
+            "JOB_REPOSITORY",
+            "decrementApplicantCount = $jobId"
+        )
+
+        return jobService
+            .decrementApplicantCount(
+                jobId
+            )
+    }
+
+    suspend fun incrementAcceptedApplicantCount(
+        jobId: String
+    ): Result<Unit> {
+
+        return jobService
+            .incrementAcceptedApplicantCount(
+                jobId
+            )
+    }
+    // ========================================
+// UPDATE JOB
+// ========================================
+
+    suspend fun updateJob(
+        job: JobEntity
+    ): Result<Unit> {
+
+        return jobService
+            .updateJob(
+                job
+            )
+    }
+
+
 }

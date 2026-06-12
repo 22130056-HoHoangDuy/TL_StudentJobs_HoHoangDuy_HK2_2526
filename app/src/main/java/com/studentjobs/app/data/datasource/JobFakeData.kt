@@ -39,9 +39,6 @@ val fakeJobs = listOf(
         // ===== RECRUITMENT =====
         autoRecruitmentEnabled = true,
 
-        // ===== MODERATION =====
-        moderationStatus = "APPROVED",
-
         // ===== STATUS =====
         status = "ACTIVE",
 
@@ -79,8 +76,6 @@ val fakeJobs = listOf(
 
         autoRecruitmentEnabled = false,
 
-        moderationStatus = "APPROVED",
-
         status = "ACTIVE",
 
         createdAt = System.currentTimeMillis(),
@@ -115,8 +110,6 @@ val fakeJobs = listOf(
         ),
 
         autoRecruitmentEnabled = true,
-
-        moderationStatus = "APPROVED",
 
         status = "ACTIVE",
 

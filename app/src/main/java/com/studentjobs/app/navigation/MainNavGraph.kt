@@ -9,8 +9,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserRole
+import com.studentjobs.app.data.repository.application.ApplicationRepository
 import com.studentjobs.app.data.repository.job.JobRepository
-import com.studentjobs.app.feature.home.HomeEntryScreen
+import com.studentjobs.app.data.repository.student.StudentRepository
+import com.studentjobs.app.data.repository.user.UserRepository
+import com.studentjobs.app.feature.application.apply.ApplyJobViewModel
+import com.studentjobs.app.feature.application.apply.ApplyJobViewModelFactory
+import com.studentjobs.app.feature.application.employer.ActiveJobScreen
+import com.studentjobs.app.feature.application.employer.ActiveJobViewModel
+import com.studentjobs.app.feature.application.employer.ActiveJobViewModelFactory
+import com.studentjobs.app.feature.application.employer.ApplicantListScreen
+import com.studentjobs.app.feature.application.employer.ApplicantListViewModel
+import com.studentjobs.app.feature.application.employer.ApplicantListViewModelFactory
 import com.studentjobs.app.feature.job.JobEntryScreen
 import com.studentjobs.app.feature.job.create.CreateJobScreen
 import com.studentjobs.app.feature.job.create.CreateJobViewModel
@@ -18,9 +28,6 @@ import com.studentjobs.app.feature.job.create.CreateJobViewModelFactory
 import com.studentjobs.app.feature.job.detail.JobDetailScreen
 import com.studentjobs.app.feature.job.detail.JobDetailViewModel
 import com.studentjobs.app.feature.job.detail.JobDetailViewModelFactory
-import com.studentjobs.app.feature.job.list.JobListScreen
-import com.studentjobs.app.feature.job.list.JobListViewModel
-import com.studentjobs.app.feature.job.list.JobListViewModelFactory
 import com.studentjobs.app.feature.location.LocationPickerScreen
 import com.studentjobs.app.feature.profile.ProfileScreen
 import com.studentjobs.app.feature.profile.student.StudentVerificationScreen
@@ -32,42 +39,44 @@ import com.studentjobs.app.feature.schedule.ScheduleUploadScreen
 import com.studentjobs.app.feature.skill.ManageSkillsScreen
 import com.studentjobs.app.feature.subscription.SubscriptionRequestScreen
 import com.studentjobs.app.feature.subscription.SubscriptionScreen
+import com.studentjobs.app.firebase.firestore.ApplicationService
 import com.studentjobs.app.firebase.firestore.EmployerService
 import com.studentjobs.app.firebase.firestore.JobService
 import com.studentjobs.app.firebase.firestore.ShiftService
+import com.studentjobs.app.firebase.firestore.StudentService
+import com.studentjobs.app.firebase.firestore.UserServiceNew
 
 @Composable
 fun MainNavGraph(
 
     navController: NavHostController,
 
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 
+    onLogout: () -> Unit,
 ) {
 
     NavHost(
 
         navController = navController,
 
-        startDestination = "home",
+        startDestination = "jobs",
 
         modifier = modifier
 
     ) {
-        composable("home") {
-
-            HomeEntryScreen(
-                navController
-            )
-        }
 
         // ========================================
         // PROFILE
         // ========================================
 
         composable("profile") {
+            ProfileScreen(
 
-            ProfileScreen(navController)
+                navController = navController,
+
+                onLogout = onLogout
+            )
         }
 
         // ========================================
@@ -275,20 +284,97 @@ fun MainNavGraph(
                     factory = factory
                 )
 
+
             CreateJobScreen(
 
                 employerBusinessName = "",
 
                 viewModel = viewModel,
 
+                onNavigateBack = {
+
+                    navController.popBackStack()
+                },
+
                 onNavigateToSubscription = {
 
                     navController.navigate(
                         "subscription/EMPLOYER"
                     )
+                },
+
+                onJobCreated = {
+
+                    navController.popBackStack()
                 }
             )
         }
+
+        composable(
+            "employer_job_detail/{jobId}"
+        ) { backStackEntry ->
+
+            val jobId =
+
+                backStackEntry
+                    .arguments
+                    ?.getString("jobId")
+                    ?: return@composable
+
+            val applicationRepository =
+
+                ApplicationRepository(
+                    ApplicationService()
+                )
+
+            val studentRepository =
+
+                StudentRepository(
+                    StudentService()
+                )
+
+            val userRepository =
+
+                UserRepository(
+                    UserServiceNew()
+                )
+
+            val jobRepository =
+
+                JobRepository(
+                    JobService(),
+                    ShiftService(),
+                    EmployerService()
+                )
+
+            val factory =
+
+                ApplicantListViewModelFactory(
+
+                    applicationRepository,
+
+                    studentRepository,
+
+                    userRepository,
+
+                    jobRepository,
+
+                    jobId
+                )
+
+            val viewModel:
+                    ApplicantListViewModel =
+
+                viewModel(
+                    factory = factory
+                )
+
+            ApplicantListScreen(
+
+                viewModel = viewModel
+            )
+        }
+
         composable("location_picker") {
 
             LocationPickerScreen(
@@ -370,6 +456,24 @@ fun MainNavGraph(
                     employerService =
                         EmployerService()
                 )
+            val applicationRepository =
+
+                ApplicationRepository(
+                    ApplicationService()
+                )
+
+            val studentRepository =
+
+                StudentRepository(
+                    StudentService()
+                )
+
+            val userRepository =
+
+                UserRepository(
+                    UserServiceNew()
+                )
+
 
             val factory =
 
@@ -386,8 +490,95 @@ fun MainNavGraph(
                 viewModel(
                     factory = factory
                 )
+            val applyFactory =
+
+                ApplyJobViewModelFactory(
+
+                    applicationRepository,
+
+                    studentRepository,
+
+                    repository,
+
+                    userRepository
+                )
+
+            val applyViewModel:
+                    ApplyJobViewModel =
+
+                viewModel(
+                    factory = applyFactory
+                )
 
             JobDetailScreen(
+
+                viewModel = viewModel,
+
+                applyViewModel =
+                    applyViewModel
+            )
+        }
+        composable(
+            "active_job_detail/{jobId}"
+        ) { backStackEntry ->
+
+            val jobId =
+
+                backStackEntry
+                    .arguments
+                    ?.getString("jobId")
+                    ?: return@composable
+
+            val applicationRepository =
+
+                ApplicationRepository(
+                    ApplicationService()
+                )
+
+            val studentRepository =
+
+                StudentRepository(
+                    StudentService()
+                )
+
+            val userRepository =
+
+                UserRepository(
+                    UserServiceNew()
+                )
+
+            val jobRepository =
+
+                JobRepository(
+                    JobService(),
+                    ShiftService(),
+                    EmployerService()
+                )
+
+            val factory =
+
+                ActiveJobViewModelFactory(
+
+                    applicationRepository,
+
+                    studentRepository,
+
+                    userRepository,
+
+                    jobRepository,
+
+                    jobId
+                )
+
+            val viewModel:
+                    ActiveJobViewModel =
+
+                viewModel(
+                    factory = factory
+                )
+
+            ActiveJobScreen(
+
                 viewModel = viewModel
             )
         }

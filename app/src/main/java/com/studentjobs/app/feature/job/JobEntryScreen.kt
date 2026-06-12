@@ -5,6 +5,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.studentjobs.app.data.repository.job.JobRepository
+import com.studentjobs.app.feature.job.employer.EmployerJobScreen
+import com.studentjobs.app.feature.job.employer.EmployerJobViewModel
+import com.studentjobs.app.feature.job.employer.EmployerJobViewModelFactory
 import com.studentjobs.app.feature.job.list.JobListScreen
 import com.studentjobs.app.feature.job.list.JobListViewModel
 import com.studentjobs.app.feature.job.list.JobListViewModelFactory
@@ -27,30 +30,61 @@ fun JobEntryScreen(
         "STUDENT" -> {
 
             val repository = JobRepository(
-                JobService(), ShiftService(), EmployerService()
+                JobService(),
+                ShiftService(),
+                EmployerService()
             )
 
-            val factory = JobListViewModelFactory(
-                repository
-            )
+            val factory =
+                JobListViewModelFactory(
+                    repository
+                )
 
-            val viewModel: JobListViewModel = viewModel(
-                factory = factory
-            )
+            val viewModel:
+                    JobListViewModel =
+                viewModel(
+                    factory = factory
+                )
 
             JobListScreen(
-                viewModel = viewModel, onJobClick = { jobId ->
+
+                viewModel = viewModel,
+
+                onJobClick = { jobId ->
 
                     navController.navigate(
                         "job_detail/$jobId"
                     )
-                })
+                }
+            )
         }
 
         "EMPLOYER" -> {
 
+            val repository = JobRepository(
+                JobService(),
+                ShiftService(),
+                EmployerService()
+            )
+
+            val factory =
+                EmployerJobViewModelFactory(
+                    repository
+                )
+
+            val viewModel:
+                    EmployerJobViewModel =
+                viewModel(
+                    factory = factory
+                )
+
             EmployerJobScreen(
-                navController
+
+                navController =
+                    navController,
+
+                viewModel =
+                    viewModel
             )
         }
     }
