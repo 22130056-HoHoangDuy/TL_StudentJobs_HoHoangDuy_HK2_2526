@@ -97,7 +97,7 @@ fun ActiveJobScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             Text(
-                text = "⚡️ Dự án đang chạy và các bạn trẻ đang cống hiến",
+                text = "⚡️ Công việc đang chạy và các bạn trẻ đang cống hiến",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium
