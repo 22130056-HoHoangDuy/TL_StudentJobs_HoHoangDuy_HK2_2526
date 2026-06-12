@@ -275,7 +275,99 @@ const processStudentCardV2 = onObjectFinalized(
           dob: dob,
           createdAt: Date.now(),
         });
+// ======================================
+// TRUST SCORE
+// ======================================
 
+const userRef =
+  admin.firestore()
+    .collection("users")
+    .doc(uid);
+
+const userDoc =
+  await userRef.get();
+
+const currentTrust =
+  userDoc.data()?.trustScore || 0;
+
+// ======================================
+// CHECK DUPLICATE
+// ======================================
+
+const trustLogSnapshot =
+  await admin.firestore()
+    .collection("trust_logs")
+    .where(
+      "userUid",
+      "==",
+      uid
+    )
+    .where(
+      "actionType",
+      "==",
+      "STUDENT_VERIFIED"
+    )
+    .get();
+
+const alreadyRewarded =
+  !trustLogSnapshot.empty;
+
+if (!alreadyRewarded) {
+
+  await userRef.update({
+
+    trustScore:
+      Math.min(
+        currentTrust + 20,
+        100
+      )
+  });
+
+  const trustLogRef =
+    admin.firestore()
+      .collection("trust_logs")
+      .doc();
+
+  await trustLogRef.set({
+
+    trustLogId:
+      trustLogRef.id,
+
+    userUid:
+      uid,
+
+    actionType:
+      "STUDENT_VERIFIED",
+
+    changeAmount:
+      20,
+
+    severity:
+      "LOW",
+
+    description:
+      "Xác thực sinh viên thành công",
+
+    createdAt:
+      Date.now()
+  });
+
+  await admin.firestore()
+    .collection("debug_logs")
+    .add({
+
+      step:
+        "TRUST_REWARD_ADDED",
+
+      uid,
+
+      trustAdded:
+        20,
+
+      createdAt:
+        Date.now()
+    });
+}
       // ======================================
       // UPDATE STUDENT VERIFICATION
       // ======================================
