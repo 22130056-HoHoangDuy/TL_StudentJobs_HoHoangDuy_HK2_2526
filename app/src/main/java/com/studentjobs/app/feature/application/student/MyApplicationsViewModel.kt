@@ -90,9 +90,7 @@ class MyApplicationsViewModel : ViewModel() {
 
                     it.application.status ==
                             ApplicationStatus.ACCEPTED.name
-
                             ||
-
                             it.application.status ==
                             ApplicationStatus.WORKING.name
                 }

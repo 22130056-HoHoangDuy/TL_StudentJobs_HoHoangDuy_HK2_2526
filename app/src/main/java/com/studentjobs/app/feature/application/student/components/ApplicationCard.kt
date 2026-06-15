@@ -149,18 +149,11 @@ fun ApplicationCard(
                     // NÚT LIÊN HỆ (Kích hoạt Intent gọi điện hệ thống Android)
                     OutlinedButton(
                         onClick = {
-                            // Giả định đối tượng application có chứa trường số điện thoại employerPhone,
-                            // Nếu không có, hệ thống sẽ fallback về một chuỗi trống hoặc số tổng đài mặc định
-                            val phoneNumber = application.employerPhone ?: ""
-                            if (phoneNumber.isNotEmpty()) {
-                                launchDialer(context, phoneNumber)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Nhà tuyển dụng chưa cập nhật số điện thoại",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            Toast.makeText(
+                                context,
+                                "Vui lòng dùng nút Liên hệ trong màn Quản lý công việc",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         },
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
