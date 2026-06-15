@@ -18,6 +18,7 @@ firebaseFunctionsKtx = "22.1.1"
 foundationVersion = "1.11.2"
 ui = "1.11.2"
 androidxRuntime = "1.11.2"
+foundationLayout = "1.11.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ firebase-functions-ktx = { group = "com.google.firebase", name = "firebase-funct
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidxRuntime" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
