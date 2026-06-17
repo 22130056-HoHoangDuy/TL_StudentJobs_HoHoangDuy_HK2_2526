@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,14 +31,11 @@ import com.studentjobs.app.feature.profile.ProfileUiState
 
 @Composable
 fun AcademicInfoCard(
-    state: ProfileUiState
+    state: ProfileUiState,
+    onUpdateClick: () -> Unit = {} // Thêm callback để xử lý khi bấm nút cập nhật
 ) {
-
-    val studentProfile =
-        state.studentProfile
-
-    val studentVerification =
-        state.studentVerification
+    val studentProfile = state.studentProfile
+    val studentVerification = state.studentVerification
 
     val gradient = Brush.linearGradient(
         colors = listOf(
@@ -46,12 +46,9 @@ fun AcademicInfoCard(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-
         shape = RoundedCornerShape(28.dp),
-
         color = Color.Transparent
     ) {
-
         Column(
             modifier = Modifier
                 .background(gradient)
@@ -59,155 +56,91 @@ fun AcademicInfoCard(
         ) {
 
             // ====================================
-            // HEADER
+            // HEADER (Việt hóa + Thêm nút Cập nhật)
             // ====================================
-
             Row(
-                verticalAlignment =
-                    Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.School,
+                        contentDescription = null,
+                        tint = Color(0xFF60A5FA)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Thông tin học vấn",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-                Icon(
-                    imageVector =
-                        Icons.Default.School,
-
-                    contentDescription = null,
-
-                    tint =
-                        Color(0xFF60A5FA)
-                )
-
-                Spacer(
-                    modifier =
-                        Modifier.height(0.dp)
-                )
-
-                Text(
-                    text = " Academic Information",
-
-                    color = Color.White,
-
-                    style =
-                        MaterialTheme.typography.titleLarge,
-
-                    fontWeight =
-                        FontWeight.Bold
-                )
+                // Nút "Cập nhật" nhỏ gọn, tinh tế bằng Icon bút chì đúng chuẩn UI hiện đại
+                IconButton(onClick = onUpdateClick) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Cập nhật thông tin",
+                        tint = Color(0xFF60A5FA)
+                    )
+                }
             }
 
-            Spacer(
-                modifier =
-                    Modifier.height(24.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(
-                modifier =
-                    Modifier.height(16.dp)
-            )
-
-            // STUDENT ID
+            // MÃ SỐ SINH VIÊN
             AcademicItem(
-                label = "Student ID",
-
-                value =
-                    studentVerification
-                        ?.extractedStudentId
-                        ?: ""
+                label = "Mã số sinh viên (MSSV)",
+                value = studentVerification?.extractedStudentId ?: ""
             )
 
-            Spacer(
-                modifier =
-                    Modifier.height(16.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-// ====================================
-// UNIVERSITY
-// ====================================
-
+            // TRƯỜNG ĐẠI HỌC
             AcademicItem(
-                label = "University",
-
-                value =
-                    studentVerification
-                        ?.extractedStudentSchoolName
-                        ?: ""
+                label = "Trường Đại học / Cao đẳng",
+                value = studentVerification?.extractedStudentSchoolName ?: ""
             )
 
-            Spacer(
-                modifier =
-                    Modifier.height(16.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-// ====================================
-// STUDENT EMAIL
-// ====================================
-
+            // EMAIL SINH VIÊN
             AcademicItem(
-                label = "Student Email",
-
-                value =
-                    studentProfile
-                        ?.studentEmail
-                        ?: ""
+                label = "Email sinh viên (.edu)",
+                value = studentProfile?.studentEmail ?: ""
             )
 
-            Spacer(
-                modifier =
-                    Modifier.height(16.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-// ====================================
-// DATE OF BIRTH
-// ====================================
-
+            // NGÀY SINH
             AcademicItem(
-                label = "Date Of Birth",
-
-                value =
-                    studentVerification
-                        ?.extractedStudentDob
-                        ?: ""
+                label = "Ngày tháng năm sinh",
+                value = studentVerification?.extractedStudentDob ?: ""
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             // ====================================
-            // VERIFIED FOOTER
+            // VERIFIED FOOTER (Gen Z Style)
             // ====================================
-
             Row(
-                verticalAlignment =
-                    Alignment.CenterVertically,
-
-                horizontalArrangement =
-                    Arrangement.Center,
-
-                modifier =
-                    Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
             ) {
-
                 Icon(
-                    imageVector =
-                        Icons.Default.Verified,
-
+                    imageVector = Icons.Default.Verified,
                     contentDescription = null,
-
-                    tint =
-                        Color(0xFF4ADE80)
+                    tint = Color(0xFF4ADE80)
                 )
-
-                Spacer(
-                    modifier =
-                        Modifier.height(0.dp)
-                )
-
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text =
-                        " OCR Verified Student Identity",
-
-                    color =
-                        Color(0xFF4ADE80),
-
-                    fontWeight =
-                        FontWeight.SemiBold
+                    text = "Đã quét OCR - Real 100% nha!",
+                    color = Color(0xFF4ADE80), // Đổi Color.0xFF... thành Color(0xFF...) là mượt ngay!
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
@@ -216,64 +149,32 @@ fun AcademicInfoCard(
 
 @Composable
 private fun AcademicItem(
-
     label: String,
-
     value: String
-
 ) {
-
     Column {
-
         Text(
             text = label,
-
-            color =
-                Color.White.copy(alpha = 0.6f),
-
-            style =
-                MaterialTheme.typography.bodySmall
+            color = Color.White.copy(alpha = 0.6f),
+            style = MaterialTheme.typography.bodySmall
         )
 
-        Spacer(
-            modifier =
-                Modifier.height(6.dp)
-        )
+        Spacer(modifier = Modifier.height(6.dp))
 
-        Row(
-            verticalAlignment =
-                Alignment.CenterVertically
-        ) {
-
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                imageVector =
-                    Icons.Default.Badge,
-
+                imageVector = Icons.Default.Badge,
                 contentDescription = null,
-
-                tint =
-                    Color(0xFF8B5CF6)
+                tint = Color(0xFF8B5CF6)
             )
 
-            Spacer(
-                modifier =
-                    Modifier.height(0.dp)
-            )
+            Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text =
-                    if (value.isBlank())
-                        "Not Available"
-                    else
-                        value,
-
+                text = if (value.isBlank()) "Trống trơn luôn..." else value, // Chuẩn Gen Z khi thiếu data
                 color = Color.White,
-
-                style =
-                    MaterialTheme.typography.bodyLarge,
-
-                fontWeight =
-                    FontWeight.Medium
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
             )
         }
     }
