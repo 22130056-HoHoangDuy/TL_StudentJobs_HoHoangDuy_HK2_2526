@@ -269,7 +269,7 @@ fun MainNavGraph(
 
         composable("schedule_upload") {
 
-            ScheduleUploadScreen()
+            ScheduleUploadScreen(navController)
         }
         composable("create_job") {
 
