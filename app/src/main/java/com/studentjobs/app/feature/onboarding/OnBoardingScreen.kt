@@ -112,7 +112,7 @@ fun OnBoardingScreen(
             ) {
 
                 TextButton(onClick = { onFinish() }) {
-                    Text("Skip", color = Color.White)
+                    Text("Bỏ qua", color = Color.White)
                 }
 
                 Button(
@@ -128,8 +128,8 @@ fun OnBoardingScreen(
                 ) {
                     Text(
                         if (pagerState.currentPage == onboardingPages.lastIndex)
-                            "Get Started"
-                        else "Next"
+                            "Bắt đầu thôi !"
+                        else "Tiếp"
                     )
                 }
             }

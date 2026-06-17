@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -23,174 +24,132 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.studentjobs.app.data.model.status.VerificationStatus
 
 @Composable
 fun VerificationCard(
-
     title: String,
-
     description: String,
-
     status: VerificationStatus,
-
     enabled: Boolean = true,
-
     onClick: () -> Unit
-
 ) {
-
-    val (icon, color, statusText) = when (status) {
-
-        VerificationStatus.VERIFIED -> Triple(
-
+    // Phối lại bộ Icon, Màu sắc và Chữ hiển thị theo trạng thái (Chuẩn tiếng Việt đồ án)
+    val (icon, color, statusText, buttonText) = when (status) {
+        VerificationStatus.VERIFIED -> Quadruple(
             Icons.Default.CheckCircle,
-
-            MaterialTheme.colorScheme.primary,
-
-            "Verified"
+            Color(0xFF4ADE80), // Xanh lá mượt
+            "Đã xác thực thành công ✅",
+            "Xem lại"
         )
 
-        VerificationStatus.UNVERIFIED -> Triple(
-
+        VerificationStatus.UNVERIFIED -> Quadruple(
             Icons.Default.Warning,
-
-            MaterialTheme.colorScheme.error,
-
-            "Not verified"
+            Color(0xFF94A3B8), // Xám Slate
+            "Chưa xác thực",
+            "Xác thực"
         )
 
-        VerificationStatus.PENDING -> Triple(
-
+        VerificationStatus.PENDING -> Quadruple(
             Icons.Default.HourglassBottom,
-
-            MaterialTheme.colorScheme.tertiary,
-
-            "Pending"
+            Color(0xFFFACC15), // Vàng hổ phách
+            "Hồ sơ đang chờ duyệt...",
+            "Chờ duyệt"
         )
 
-        VerificationStatus.REJECTED -> Triple(
-
+        VerificationStatus.REJECTED -> Quadruple(
             Icons.Default.Warning,
-
-            MaterialTheme.colorScheme.error,
-
-            "Rejected"
+            Color(0xFFF87171), // Đỏ Coral
+            "Hồ sơ bị từ chối ❌",
+            "Thử lại"
         )
     }
 
-    Card(
+    // Logic kiểm tra xem có cho phép click hay không (Đang PENDING thì khóa lại)
+    val isActionable = enabled && status != VerificationStatus.PENDING
 
+    Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
-            .clickable(
-
-                enabled =
-
-                    enabled &&
-
-                            status != VerificationStatus.PENDING
-
-            ) {
-
-                onClick()
-            },
-
-        shape = RoundedCornerShape(16.dp),
-
+            .clickable(enabled = isActionable) { onClick() },
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF1E293B) // Tone màu tối đồng bộ xịn mịn
+        ),
         elevation = CardDefaults.cardElevation(2.dp)
-
     ) {
-
         Row(
-
             modifier = Modifier.padding(16.dp),
-
             verticalAlignment = Alignment.CenterVertically
-
         ) {
-
             Icon(
-
                 imageVector = icon,
-
                 contentDescription = null,
-
                 tint = color,
-
                 modifier = Modifier.size(32.dp)
             )
 
-            Spacer(
-                modifier = Modifier.width(12.dp)
-            )
+            Spacer(modifier = Modifier.width(14.dp))
 
             Column(
-
                 modifier = Modifier.weight(1f)
-
             ) {
-
                 Text(
-
                     text = title,
-
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
                 )
 
                 Text(
-
                     text = description,
-
                     style = MaterialTheme.typography.bodySmall,
-
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = Color.White.copy(alpha = 0.65f)
                 )
 
-                Spacer(
-                    modifier = Modifier.height(4.dp)
-                )
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-
                     text = statusText,
-
                     color = color,
-
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Button hành động bên phải card
             Button(
-
                 onClick = onClick,
-
-                enabled =
-
-                    enabled &&
-
-                            status != VerificationStatus.PENDING,
-
-                shape = RoundedCornerShape(12.dp)
-
+                enabled = isActionable,
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = when (status) {
+                        VerificationStatus.VERIFIED -> Color(0xFF334155) // Màu tối trung tính cho nút xem lại
+                        VerificationStatus.REJECTED -> Color(0xFFF87171) // Đỏ cho nút làm lại
+                        else -> Color(0xFF06B6D4) // Xanh Cyan thương hiệu cho nút xác thực chính
+                    },
+                    contentColor = if (status == VerificationStatus.VERIFIED) Color.White else Color.Black,
+                    disabledContainerColor = Color(0xFF1E293B).copy(alpha = 0.5f),
+                    disabledContentColor = Color.White.copy(alpha = 0.4f)
+                )
             ) {
-
                 Text(
-
-                    text = when (status) {
-
-                        VerificationStatus.VERIFIED -> "View"
-
-                        VerificationStatus.UNVERIFIED -> "Verify"
-
-                        VerificationStatus.PENDING -> "Pending"
-
-                        VerificationStatus.REJECTED -> "Retry"
-                    }
+                    text = buttonText,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
     }
 }
+
+/**
+ * Data class phụ trợ chứa 4 tham số để gộp logic map trạng thái cho gọn code
+ */
+private data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)

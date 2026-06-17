@@ -55,6 +55,13 @@ fun JobEntryScreen(
                     navController.navigate(
                         "job_detail/$jobId"
                     )
+                },
+
+                onMyJobsClick = {
+
+                    navController.navigate(
+                        "my_applications"
+                    )
                 }
             )
         }

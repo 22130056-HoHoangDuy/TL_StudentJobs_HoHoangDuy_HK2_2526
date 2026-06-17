@@ -31,10 +31,7 @@ import com.studentjobs.app.feature.profile.ProfileUiState
 fun ContactInfoCard(
     state: ProfileUiState
 ) {
-
     val userCore = state.userCore
-
-    val studentVerification = state.studentVerification
 
     val gradient = Brush.linearGradient(
         colors = listOf(
@@ -44,113 +41,76 @@ fun ContactInfoCard(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-
         shape = RoundedCornerShape(28.dp),
-
         color = Color.Transparent
     ) {
-
         Column(
             modifier = Modifier
                 .background(gradient)
                 .padding(22.dp)
         ) {
 
-            // ===== HEADER =====
-
+            // ===== HEADER (Việt hóa + Sửa layout giãn cách) =====
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-
                 Icon(
                     imageVector = Icons.Default.Call,
-
                     contentDescription = null,
-
                     tint = Color(0xFF22D3EE)
                 )
 
-                Spacer(
-                    modifier = Modifier.height(0.dp)
-                )
-
                 Text(
-                    text = " Contact Information",
-
+                    text = "Thông tin liên hệ",
                     color = Color.White,
-
                     style = MaterialTheme.typography.titleLarge,
-
                     fontWeight = FontWeight.Bold
                 )
             }
 
-            Spacer(
-                modifier = Modifier.height(24.dp)
-            )
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // ===== PHONE =====
-
+            // ===== SỐ ĐIỆN THOẠI =====
             ContactItem(
                 icon = {
-
                     Icon(
                         imageVector = Icons.Default.PhoneAndroid,
-
                         contentDescription = null,
-
                         tint = Color(0xFF8B5CF6)
                     )
                 },
-
-                label = "Phone Number",
-
+                label = "Số điện thoại di động",
                 value = userCore?.phoneNumber
             )
 
-            Spacer(
-                modifier = Modifier.height(18.dp)
-            )
+            Spacer(modifier = Modifier.height(18.dp))
 
-            // ===== STUDENT EMAIL =====
-
+            // ===== EMAIL SINH VIÊN =====
             ContactItem(
                 icon = {
-
                     Icon(
                         imageVector = Icons.Default.Email,
-
                         contentDescription = null,
-
                         tint = Color(0xFF60A5FA)
                     )
                 },
-
-                label = "Student Email",
-
+                label = "Email sinh viên (.edu)",
                 value = state.studentProfile?.studentEmail
             )
 
-            Spacer(
-                modifier = Modifier.height(18.dp)
-            )
+            Spacer(modifier = Modifier.height(18.dp))
 
-            // ===== LOGIN EMAIL =====
-
+            // ===== EMAIL ĐĂNG NHẬP =====
             ContactItem(
                 icon = {
-
                     Icon(
                         imageVector = Icons.Default.Public,
-
                         contentDescription = null,
-
                         tint = Color(0xFF22C55E)
                     )
                 },
-
-                label = "Login Email",
-
+                label = "Email tài khoản hệ thống",
                 value = userCore?.loginEmail
             )
         }
@@ -159,48 +119,31 @@ fun ContactInfoCard(
 
 @Composable
 private fun ContactItem(
-
     icon: @Composable () -> Unit,
-
     label: String,
-
     value: String?
-
 ) {
-
     Column {
-
         Text(
             text = label,
-
             color = Color.White.copy(alpha = 0.6f),
-
             style = MaterialTheme.typography.bodySmall
         )
 
-        Spacer(
-            modifier = Modifier.height(6.dp)
-        )
+        Spacer(modifier = Modifier.height(6.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-
             icon()
 
             Text(
-                text = if (value.isNullOrBlank()) "Not Available"
-                else value,
-
+                text = if (value.isNullOrBlank()) "Chưa cập nhật rồi..." else value, // Vibe Gen Z nhẹ nhàng
                 color = Color.White,
-
                 style = MaterialTheme.typography.bodyLarge,
-
                 fontWeight = FontWeight.Medium
             )
         }
     }
 }
-

@@ -46,6 +46,8 @@ import com.studentjobs.app.firebase.firestore.JobService
 import com.studentjobs.app.firebase.firestore.ShiftService
 import com.studentjobs.app.firebase.firestore.StudentService
 import com.studentjobs.app.firebase.firestore.UserServiceNew
+import com.studentjobs.app.feature.application.student.MyApplicationsScreen
+import com.studentjobs.app.feature.application.student.MyApplicationsViewModel
 
 @Composable
 fun MainNavGraph(
@@ -162,6 +164,20 @@ fun MainNavGraph(
                 navController
             )
         }
+
+        composable(
+            "my_applications"
+        ) {
+
+            val viewModel:
+                    MyApplicationsViewModel =
+                viewModel()
+
+            MyApplicationsScreen(
+                viewModel = viewModel
+            )
+        }
+
         composable("trust") {
             TrustScreen()
         }
@@ -253,7 +269,7 @@ fun MainNavGraph(
 
         composable("schedule_upload") {
 
-            ScheduleUploadScreen()
+            ScheduleUploadScreen(navController)
         }
         composable("create_job") {
 

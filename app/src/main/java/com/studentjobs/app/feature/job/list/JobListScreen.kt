@@ -3,11 +3,14 @@ package com.studentjobs.app.feature.job.list
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -17,12 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-
 @Composable
 fun JobListScreen(
     viewModel: JobListViewModel,
-    onJobClick: (String) -> Unit
-
+    onJobClick: (String) -> Unit,
+    onMyJobsClick: () -> Unit
 ) {
 
     val state by
@@ -67,6 +69,30 @@ fun JobListScreen(
                 )
             }
         )
+        Spacer(
+            modifier =
+                Modifier.height(12.dp)
+        )
+
+        Button(
+
+            onClick =
+                onMyJobsClick,
+
+            modifier =
+                Modifier.fillMaxWidth()
+
+        ) {
+
+            Text(
+                "Công việc của tôi"
+            )
+        }
+
+        Spacer(
+            modifier =
+                Modifier.height(12.dp)
+        )
 
         if (state.isLoading) {
 
@@ -74,6 +100,11 @@ fun JobListScreen(
 
             return@Column
         }
+
+        Spacer(
+            modifier =
+                Modifier.height(12.dp)
+        )
 
         if (filteredJobs.isEmpty()) {
 

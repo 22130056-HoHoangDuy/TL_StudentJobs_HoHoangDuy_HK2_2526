@@ -34,55 +34,39 @@ import com.studentjobs.app.data.model.user.UserRole
 
 @Composable
 fun PlusBannerCard(
-
     currentPlan: SubscriptionPlan,
-
     role: UserRole,
-
     onUpgradePlusClick: () -> Unit
-
 ) {
-
     val gradient = Brush.horizontalGradient(
-
         colors = listOf(
-
             Color(0xFF7B2FF7),
-
             Color(0xFF3A7BFD)
         )
     )
 
+    // Việt hóa các tính năng xịn sò theo từng Role cụ thể
     val benefits = when (role) {
-
         UserRole.STUDENT ->
-
-            "Auto Apply • OCR Timetable • Conflict Detection"
+            "Ứng Tuyển Tự Động • Quét Lịch Học OCR • Cảnh Báo Trùng Ca Học"
 
         UserRole.EMPLOYER ->
-
-            "Auto Recruitment • Smart Filtering • Priority Boost"
+            "Tuyển Dụng Thông Minh • Lọc Ứng Viên VIP • Đẩy Tin Lên Xu Hướng"
     }
 
     Card(
-
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp),
-
         shape = RoundedCornerShape(26.dp),
-
         elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
         ),
-
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         )
     ) {
-
         Column(
-
             modifier = Modifier
                 .fillMaxWidth()
                 .background(gradient)
@@ -95,142 +79,82 @@ fun PlusBannerCard(
             // ====================================
             // TOP
             // ====================================
-
             Row(
-
-                verticalAlignment =
-                    Alignment.CenterVertically,
-
-                horizontalArrangement =
-                    Arrangement.spacedBy(10.dp)
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-
                 Icon(
-
-                    imageVector =
-                        Icons.Default.AutoAwesome,
-
+                    imageVector = Icons.Default.AutoAwesome,
                     contentDescription = null,
-
                     tint = Color(0xFFFFD54F),
-
                     modifier = Modifier.size(28.dp)
                 )
 
                 Column {
-
                     Text(
-
                         text = "StudentJobs PLUS",
-
-                        style =
-                            MaterialTheme.typography.titleLarge,
-
+                        style = MaterialTheme.typography.titleLarge,
                         color = Color.White,
-
                         fontWeight = FontWeight.Bold
                     )
 
                     Text(
-
-                        text =
-                            "Unlock smart recruitment system",
-
-                        color =
-                            Color.White.copy(alpha = 0.82f),
-
-                        style =
-                            MaterialTheme.typography.bodySmall
+                        text = "Mở khóa hệ thống kết nối việc làm thông minh",
+                        color = Color.White.copy(alpha = 0.82f),
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
 
-            Spacer(
-                modifier =
-                    Modifier.height(18.dp)
-            )
+            Spacer(modifier = Modifier.height(18.dp))
 
             // ====================================
             // BENEFITS
             // ====================================
-
             Text(
-
                 text = benefits,
-
                 color = Color.White,
-
-                style =
-                    MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
             )
 
-            Spacer(
-                modifier =
-                    Modifier.height(18.dp)
-            )
+            Spacer(modifier = Modifier.height(18.dp))
 
             // ====================================
             // BUTTON / STATUS
             // ====================================
-
             if (currentPlan == SubscriptionPlan.PLUS) {
-
                 AssistChip(
-
                     onClick = {},
-
                     label = {
-
                         Text(
-                            text = "PLUS Activated"
+                            text = "Đã Kích Hoạt PLUS",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF7B2FF7) // Đổi màu chữ cho tiệp tone với màu tím gradient nền
                         )
                     },
-
                     leadingIcon = {
-
                         Icon(
-
-                            imageVector =
-                                Icons.Default.Star,
-
+                            imageVector = Icons.Default.Star,
                             contentDescription = null,
-
-                            tint =
-                                Color(0xFFFFD54F)
+                            tint = Color(0xFFFFD54F)
                         )
                     },
-
-                    colors =
-                        AssistChipDefaults.assistChipColors(
-
-                            containerColor =
-                                Color.White
-                        )
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = Color.White
+                    )
                 )
-
             } else {
-
                 Button(
-
                     onClick = onUpgradePlusClick,
-
-                    shape =
-                        RoundedCornerShape(14.dp),
-
-                    colors =
-                        ButtonDefaults.buttonColors(
-
-                            containerColor =
-                                Color(0xFFFFD54F)
-                        )
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFFD54F)
+                    )
                 ) {
-
                     Text(
-
-                        text = "Upgrade to PLUS",
-
+                        text = "Nâng Cấp PLUS Ngay",
                         color = Color.Black,
-
                         fontWeight = FontWeight.Bold
                     )
                 }

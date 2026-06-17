@@ -30,9 +30,7 @@ import com.studentjobs.app.feature.profile.ProfileUiState
 fun TrustScoreCard(
     state: ProfileUiState
 ) {
-
-    val trustScore =
-        state.userCore?.trustScore ?: 0
+    val trustScore = state.userCore?.trustScore ?: 0
 
     val gradient = Brush.linearGradient(
         colors = listOf(
@@ -41,144 +39,84 @@ fun TrustScoreCard(
         )
     )
 
+    // Việt hóa danh hiệu phân cấp theo điểm uy tín (Vibe Gen Z đi làm thêm)
     val level = when {
-
-        trustScore >= 60 ->
-            "Trusted Candidate"
-
-        trustScore >= 40 ->
-            "Verified Student"
-
-        else ->
-            "New User"
+        trustScore >= 60 -> "Chiến Thần Uy Tín 🌟"
+        trustScore >= 40 -> "Học Muội Đáng Tin ✅"
+        else -> "Tấm Chiếu Mới Tinh 🐣"
     }
 
-    val progress =
-        (trustScore / 100f)
-            .coerceIn(0f, 1f)
+    val progress = (trustScore / 100f).coerceIn(0f, 1f)
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-
         shape = RoundedCornerShape(28.dp),
-
         color = Color.Transparent
     ) {
-
         Column(
             modifier = Modifier
                 .background(gradient)
                 .padding(22.dp)
         ) {
-
             Row(
-                verticalAlignment =
-                    Alignment.CenterVertically,
-
-                horizontalArrangement =
-                    Arrangement.SpaceBetween,
-
-                modifier =
-                    Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-
                 Column {
-
                     Text(
-                        text = "Trust Level",
-
-                        color =
-                            Color.White.copy(alpha = 0.7f),
-
-                        style =
-                            MaterialTheme.typography.bodyMedium
+                        text = "Hạng mức uy tín",
+                        color = Color.White.copy(alpha = 0.7f),
+                        style = MaterialTheme.typography.bodyMedium
                     )
 
-                    Spacer(
-                        modifier =
-                            Modifier.height(6.dp)
-                    )
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
                         text = level,
-
                         color = Color.White,
-
-                        style =
-                            MaterialTheme.typography.titleLarge,
-
-                        fontWeight =
-                            FontWeight.Bold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
                     )
                 }
 
-                Row(
-                    verticalAlignment =
-                        Alignment.CenterVertically
-                ) {
-
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector =
-                            Icons.Default.EmojiEvents,
-
+                        imageVector = Icons.Default.EmojiEvents,
                         contentDescription = null,
-
-                        tint =
-                            Color(0xFFFACC15)
+                        tint = Color(0xFFFACC15)
                     )
 
-                    Spacer(
-                        modifier =
-                            Modifier.width(8.dp)
-                    )
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
                         text = "$trustScore",
-
                         color = Color.White,
-
-                        style =
-                            MaterialTheme.typography.headlineSmall,
-
-                        fontWeight =
-                            FontWeight.Bold
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
 
-            Spacer(
-                modifier =
-                    Modifier.height(20.dp)
-            )
+            Spacer(modifier = Modifier.height(20.dp))
 
+            // Thanh tiến trình thể hiện mức điểm
             LinearProgressIndicator(
                 progress = { progress },
-
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(10.dp),
-
-                trackColor =
-                    Color.White.copy(alpha = 0.15f),
-
-                color =
-                    Color(0xFF8B5CF6)
+                trackColor = Color.White.copy(alpha = 0.15f),
+                color = Color(0xFF8B5CF6) // Màu tím Neon cực hợp với Dark Theme
             )
 
-            Spacer(
-                modifier =
-                    Modifier.height(10.dp)
-            )
+            Spacer(modifier = Modifier.height(12.dp))
 
+            // Dòng subtext hướng dẫn tăng điểm
             Text(
-                text =
-                    "Complete verification steps to increase trust score",
-
-                color =
-                    Color.White.copy(alpha = 0.65f),
-
-                style =
-                    MaterialTheme.typography.bodySmall
+                text = "Hoàn thành các bước xác thực danh tính để tăng điểm uy tín, nhận job nhanh hơn nha!",
+                color = Color.White.copy(alpha = 0.65f),
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }
