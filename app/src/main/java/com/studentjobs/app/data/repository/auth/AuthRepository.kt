@@ -264,4 +264,37 @@ class AuthRepository(
     fun logout() {
         authService.logout()
     }
+    suspend fun forgotPassword(
+        email: String
+    ): Result<Unit> {
+
+        return try {
+
+            val user =
+
+                userService.getUserByEmail(
+                    email
+                )
+
+            if (user == null) {
+
+                return Result.failure(
+                    Exception(
+                        "Email chưa được đăng ký"
+                    )
+                )
+            }
+
+            authService
+                .sendPasswordResetEmail(
+                    email
+                )
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+        }
+    }
 }

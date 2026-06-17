@@ -342,4 +342,40 @@ class UserServiceNew {
             Result.failure(e)
         }
     }
+    suspend fun getUserByEmail(
+        email: String
+    ): UserCore? {
+
+        return try {
+
+            val snapshot =
+
+                db.collection("users")
+                    .whereEqualTo(
+                        "email",
+                        email
+                    )
+                    .limit(1)
+                    .get()
+                    .await()
+
+            if (snapshot.isEmpty) {
+
+                null
+
+            } else {
+
+                snapshot.documents.first()
+                    .toObject(
+                        UserCore::class.java
+                    )
+            }
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            null
+        }
+    }
 }

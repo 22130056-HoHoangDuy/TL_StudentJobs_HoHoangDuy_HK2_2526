@@ -53,7 +53,8 @@ import com.studentjobs.app.utils.UiState
 fun LoginScreen(
     viewModel: AuthViewModel,
     onLoginSuccess: (UserCore) -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onForgotPasswordClick: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -158,7 +159,18 @@ fun LoginScreen(
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
+                TextButton(
+                    onClick = onForgotPasswordClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Quên mật khẩu?",
+                        color = Color(0xFFD946EF), // Màu hồng tím chuẩn MoMo, nổi bật vừa đủ
+                        fontWeight = FontWeight.Medium
+                    )
+                }
 
+                Spacer(modifier = Modifier.height(28.dp))
                 Button(
                     onClick = { viewModel.login(email, password) },
                     modifier = Modifier

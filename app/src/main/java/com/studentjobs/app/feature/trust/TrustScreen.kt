@@ -17,6 +17,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.studentjobs.app.feature.trust.components.TrustFilterDropdown
 import com.studentjobs.app.feature.trust.components.TrustGaugeCard
 import com.studentjobs.app.feature.trust.components.TrustHistoryCard
+import com.studentjobs.app.feature.trust.components.TrustOverviewCard
 
 @Composable
 fun TrustScreen(
@@ -30,7 +31,6 @@ fun TrustScreen(
         TrustFilter.NEGATIVE -> state.logs.filter { it.changeAmount < 0 }
     }
 
-    // Tạo nền màu hồng/tím dịu mắt phía trên đỉnh màn hình kéo nhạt dần xuống dưới giống hệt App MoMo
     val backgroundGradient = Brush.verticalGradient(
         colors = listOf(Color(0xFFFCE7F3), Color(0xFFF8FAFC), Color(0xFFF8FAFC)),
         startY = 0f,
@@ -52,6 +52,11 @@ fun TrustScreen(
                     trustScore = state.trustScore,
                     trustLevel = state.trustLevel
                 )
+            }
+
+            // ĐÃ UPDATE: Thay bằng card cẩm nang cơ chế điểm chung cho cả Student & Employer
+            item {
+                TrustOverviewCard()
             }
 
             item {
