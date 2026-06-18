@@ -3,11 +3,11 @@ package com.studentjobs.app.data.repository.user
 import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserCore
 import com.studentjobs.app.firebase.firestore.UserServiceNew
+import java.util.Date
 
 class UserRepository(
 
-    private val userService:
-    UserServiceNew
+    private val userService: UserServiceNew
 
 ) {
 
@@ -15,8 +15,7 @@ class UserRepository(
         uid: String
     ): UserCore? {
 
-        return userService
-            .getUserCore(uid)
+        return userService.getUserCore(uid)
     }
 
     suspend fun isPlusActive(
@@ -24,22 +23,12 @@ class UserRepository(
     ): Boolean {
 
         val user =
-
             getUserCore(uid)
-
                 ?: return false
 
-        val now =
-            System.currentTimeMillis()
+        val now = Date()
 
-        return user.subscriptionPlan ==
-                SubscriptionPlan.PLUS
-
-                &&
-
-                (
-                        user.subscriptionExpiredAt
-                            ?: 0L
-                        ) > now
+        return user.subscriptionPlan == SubscriptionPlan.PLUS &&
+                (user.subscriptionExpiredAt?.after(now) == true)
     }
 }

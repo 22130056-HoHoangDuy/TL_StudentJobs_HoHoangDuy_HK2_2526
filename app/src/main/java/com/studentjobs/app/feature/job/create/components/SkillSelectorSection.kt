@@ -1,21 +1,37 @@
 package com.studentjobs.app.feature.job.create.components
 
+
 import androidx.compose.foundation.layout.Arrangement
+
 import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.FlowRow
+
 import androidx.compose.foundation.layout.fillMaxWidth
+
 import androidx.compose.foundation.layout.padding
+
 import androidx.compose.material3.Card
+
 import androidx.compose.material3.CardDefaults
+
 import androidx.compose.material3.FilterChip
+
 import androidx.compose.material3.FilterChipDefaults
+
 import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.material3.Text
+
 import androidx.compose.runtime.Composable
+
 import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.unit.dp
 
+
 @Composable
+
 fun SkillSelectorSection(
 
     availableSkills: List<String>,
@@ -28,90 +44,79 @@ fun SkillSelectorSection(
 
     Card(
 
-        modifier =
-            Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
 
-        elevation =
-            CardDefaults.cardElevation(
-                defaultElevation = 4.dp
-            )
+        elevation = CardDefaults.cardElevation(
+
+            defaultElevation = 4.dp
+
+        )
 
     ) {
 
         Column(
 
-            modifier =
-                Modifier.padding(16.dp),
+            modifier = Modifier.padding(16.dp),
 
-            verticalArrangement =
-                Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
 
         ) {
 
             Text(
 
-                text =
-                    "🎯 Required Skills",
+                text = "🎯 Kỹ năng yêu cầu",
 
-                style =
-                    MaterialTheme.typography
-                        .titleMedium
+                style = MaterialTheme.typography.titleMedium
+
             )
+
+
 
             Text(
 
-                text =
-                    "Select the skills required for this job"
+                text = "Chọn các kỹ năng cần thiết cho công việc này"
+
             )
+
+
 
             FlowRow(
 
-                horizontalArrangement =
-                    Arrangement.spacedBy(
-                        8.dp
-                    ),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
 
-                verticalArrangement =
-                    Arrangement.spacedBy(
-                        8.dp
-                    )
+                verticalArrangement = Arrangement.spacedBy(8.dp)
 
             ) {
 
                 availableSkills.forEach { skill ->
 
-                    val selected =
+                    val selected = selectedSkills.contains(skill)
 
-                        selectedSkills
-                            .contains(skill)
+
 
                     FilterChip(
 
-                        selected =
-                            selected,
+                        selected = selected,
 
-                        onClick = {
-
-                            onSkillToggle(
-                                skill
-                            )
-                        },
+                        onClick = { onSkillToggle(skill) },
 
                         label = {
 
-                            Text(
-                                getSkillLabel(
-                                    skill
-                                )
-                            )
+                            Text(getSkillLabel(skill))
+
                         },
 
-                        colors =
-                            FilterChipDefaults
-                                .filterChipColors()
+                        colors = FilterChipDefaults.filterChipColors()
+
                     )
+
                 }
+
             }
+
         }
+
     }
+
 }
+

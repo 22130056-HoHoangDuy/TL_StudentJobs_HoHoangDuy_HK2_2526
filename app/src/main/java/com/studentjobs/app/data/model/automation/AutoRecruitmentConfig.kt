@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.automation
 
+import java.util.Date
+
 data class AutoRecruitmentConfig(
 
     // ===== OWNER =====
@@ -22,7 +24,6 @@ data class AutoRecruitmentConfig(
     val skillMatchingEnabled: Boolean = true,
 
     val locationMatchingEnabled: Boolean = true,
-
     // ===== SYSTEM =====
-    val updatedAt: Long = 0L
+    val updatedAt: Date? = null
 )

@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.user
 
+import java.util.Date
+
 data class UserCore(
 
     // identity
@@ -21,9 +23,9 @@ data class UserCore(
 
     // subscription FREE / PLUS, default is FREE
     val subscriptionPlan: SubscriptionPlan = SubscriptionPlan.FREE,
-    val subscriptionExpiredAt: Long? = null,
+    val subscriptionExpiredAt: Date? = null,
 
     // system log
-    val createdAt: Long = 0L,
-    val updatedAt: Long = 0L
+    val createdAt: Date? = null,
+    val updatedAt: Date? = null
 )

@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.job
 
+import java.util.Date
+
 data class JobEntity(
 
     // ===== ID =====
@@ -43,8 +45,8 @@ data class JobEntity(
     val acceptedApplicants: Int = 0,
 
     // ===== SYSTEM =====
-    val createdAt: Long = 0L,
-    val updatedAt: Long = 0L
+    val createdAt: Date?= null,
+    val updatedAt: Date? = null
 
 
 )

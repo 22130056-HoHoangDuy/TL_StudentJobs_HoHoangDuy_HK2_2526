@@ -114,7 +114,7 @@ fun TrustScoreCard(
 
             // Dòng subtext hướng dẫn tăng điểm
             Text(
-                text = "Hoàn thành các bước xác thực danh tính để tăng điểm uy tín, nhận job nhanh hơn nha!",
+                text = "Hoàn thành các bước xác thực danh tính để tăng điểm uy tín nha!",
                 color = Color.White.copy(alpha = 0.65f),
                 style = MaterialTheme.typography.bodySmall
             )

@@ -19,129 +19,58 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun JobPreviewCard(
-
     title: String,
-
     salaryMin: String,
-
     salaryMax: String,
-
     businessName: String,
-
     selectedSkillCount: Int
-
 ) {
-
     Card(
-
         modifier = Modifier.fillMaxWidth(),
-
-        elevation =
-            CardDefaults.cardElevation(
-                defaultElevation = 6.dp
-            )
-
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        )
     ) {
-
         Column(
-
             modifier = Modifier.padding(16.dp),
-
-            verticalArrangement =
-                Arrangement.spacedBy(8.dp)
-
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             Text(
-
-                text = "👀 Job Preview",
-
-                style =
-                    MaterialTheme.typography
-                        .titleMedium
+                text = "👀 Xem trước tin tuyển dụng",
+                style = MaterialTheme.typography.titleMedium
             )
 
             Text(
-
-                text =
-                    if (title.isBlank())
-
-                        "Untitled Job"
-                    else
-
-                        title,
-
-                style =
-                    MaterialTheme.typography
-                        .headlineSmall
+                text = if (title.isBlank()) "Công việc chưa có tiêu đề" else title,
+                style = MaterialTheme.typography.headlineSmall
             )
 
-            Row(
-
-                horizontalArrangement =
-                    Arrangement.spacedBy(
-                        6.dp
-                    )
-
-            ) {
-
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Icon(
-
-                    imageVector =
-                        Icons.Default.Work,
-
-                    contentDescription =
-                        null
+                    imageVector = Icons.Default.Work,
+                    contentDescription = null
                 )
-
                 Text(
-
-                    text =
-
-                        if (
-
-                            salaryMin.isNotBlank()
-                            &&
-                            salaryMax.isNotBlank()
-
-                        ) {
-
-                            "$salaryMin - $salaryMax VND/hour"
-
-                        } else {
-
-                            "Salary not specified"
-                        }
+                    text = if (salaryMin.isNotBlank() && salaryMax.isNotBlank()) {
+                        "$salaryMin - $salaryMax VNĐ/giờ"
+                    } else {
+                        "Mức lương thỏa thuận"
+                    }
                 )
             }
 
-            Row(
-
-                horizontalArrangement =
-                    Arrangement.spacedBy(
-                        6.dp
-                    )
-
-            ) {
-
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Icon(
-
-                    imageVector =
-                        Icons.Default.LocationOn,
-
-                    contentDescription =
-                        null
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = null
                 )
-
                 Text(
-                    text = businessName
+                    text = businessName.ifBlank { "Tên doanh nghiệp" }
                 )
             }
 
             Text(
-
-                text =
-                    "🎯 Skills Selected: $selectedSkillCount"
+                text = "🎯 Kỹ năng yêu cầu: $selectedSkillCount"
             )
         }
     }

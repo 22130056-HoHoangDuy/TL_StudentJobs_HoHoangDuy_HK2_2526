@@ -1,6 +1,7 @@
 package com.studentjobs.app.data.model.subscription
 
 import com.studentjobs.app.data.model.user.SubscriptionPlan
+import java.util.Date
 
 data class SubscriptionRequest(
 
@@ -33,6 +34,6 @@ data class SubscriptionRequest(
     val reviewNote: String? = null,
 
     // system log
-    val requestedAt: Long = 0L,
-    val reviewedAt: Long? = null
+    val requestedAt: Date? = null,
+    val reviewedAt: Date? = null
 )

@@ -44,6 +44,7 @@ import com.studentjobs.app.data.model.status.VerificationStatus
 import com.studentjobs.app.data.model.student.StudentVerification
 import com.studentjobs.app.firebase.firestore.VerificationService
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun StudentVerificationScreen(
@@ -209,7 +210,7 @@ fun StudentVerificationScreen(
                                     "studentCardFrontUrl" to frontUrl!!,
                                     "studentCardBackUrl" to backUrl!!,
                                     "studentCardVerified" to VerificationStatus.PENDING.name,
-                                    "updatedAt" to System.currentTimeMillis()
+                                    "updatedAt" to Date()
                                 )
                             )
                         } catch (e: Exception) {

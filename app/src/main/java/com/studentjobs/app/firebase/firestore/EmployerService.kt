@@ -78,4 +78,54 @@ class EmployerService {
             Result.failure(e)
         }
     }
+
+    // Trong EmployerService.kt
+    fun listenEmployerProfile(
+        uid: String,
+        onChange: (EmployerProfile?) -> Unit
+    ) {
+        db.collection("employers")
+            .document(uid)
+            .addSnapshotListener { snapshot, error ->
+
+                if (error != null) {
+                    android.util.Log.e(
+                        "EMPLOYER_DEBUG",
+                        "Listener Error",
+                        error
+                    )
+                    return@addSnapshotListener
+                }
+
+                android.util.Log.e(
+                    "EMPLOYER_DEBUG",
+                    "SNAPSHOT=${snapshot?.data}"
+                )
+
+                try {
+
+                    val profile =
+                        snapshot?.toObject(
+                            EmployerProfile::class.java
+                        )
+
+                    android.util.Log.e(
+                        "EMPLOYER_DEBUG",
+                        "PROFILE=$profile"
+                    )
+
+                    onChange(profile)
+
+                } catch (e: Exception) {
+
+                    android.util.Log.e(
+                        "EMPLOYER_DEBUG",
+                        "DESERIALIZE_ERROR",
+                        e
+                    )
+
+                    onChange(null)
+                }
+            }
+    }
 }

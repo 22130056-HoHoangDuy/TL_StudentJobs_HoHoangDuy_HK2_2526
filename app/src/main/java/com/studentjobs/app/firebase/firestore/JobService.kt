@@ -296,4 +296,34 @@ class JobService {
             Result.failure(e)
         }
     }
+
+    fun listenJobsByEmployer(
+        employerUid: String,
+        onChange: (List<JobEntity>) -> Unit
+    ) {
+
+        db.collection(COLLECTION)
+            .whereEqualTo(
+                "employerUid",
+                employerUid
+            )
+            .addSnapshotListener { snapshot, error ->
+
+                if (error != null) {
+
+                    error.printStackTrace()
+
+                    onChange(emptyList())
+
+                    return@addSnapshotListener
+                }
+
+                val jobs =
+                    snapshot?.toObjects(
+                        JobEntity::class.java
+                    ) ?: emptyList()
+
+                onChange(jobs)
+            }
+    }
 }

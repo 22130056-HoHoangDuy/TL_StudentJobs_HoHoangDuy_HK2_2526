@@ -1,9 +1,11 @@
 package com.studentjobs.app.feature.profile
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.studentjobs.app.data.model.employer.EmployerProfile
 import com.studentjobs.app.data.model.user.UserRole
 import com.studentjobs.app.data.repository.job.JobRepository
 import com.studentjobs.app.data.repository.profile.ProfileRepository
@@ -15,216 +17,132 @@ import com.studentjobs.app.firebase.firestore.UserServiceNew
 import com.studentjobs.app.firebase.firestore.VerificationService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class ProfileViewModel(
     application: Application
 ) : AndroidViewModel(application) {
 
-    // ========================================
-    // SERVICES
-    // ========================================
     private val repository = ProfileRepository(
-
-        userService = UserServiceNew(),
-
-        studentService = StudentService(),
-
-        employerService = EmployerService(),
-
-        verificationService = VerificationService()
+        UserServiceNew(),
+        StudentService(),
+        EmployerService(),
+        VerificationService()
     )
 
+    private val jobRepository = JobRepository(
+        JobService(),
+        ShiftService(),
+        EmployerService()
+    )
 
-    private val jobRepository =
-        JobRepository(
-            JobService(),
-            ShiftService(),
-            EmployerService()
-        )
-
-    // ========================================
-    // UI STATE
-    // ========================================
-    private val _uiState =
-        MutableStateFlow(ProfileUiState())
+    private val _uiState = MutableStateFlow(ProfileUiState())
 
     val uiState: StateFlow<ProfileUiState> =
-        _uiState
+        _uiState.asStateFlow()
 
-    // ========================================
-    // INIT
-    // ========================================
     init {
         loadProfile()
     }
 
-    // ========================================
-    // LOAD PROFILE
-    // ========================================
     fun loadProfile() {
 
-        val uid = FirebaseAuth
-            .getInstance()
-            .currentUser
-            ?.uid
+        val uid =
+            FirebaseAuth.getInstance()
+                .currentUser
+                ?.uid ?: return
 
-        if (uid == null) {
+        _uiState.update {
+            it.copy(isLoading = true)
+        }
 
-            _uiState.value =
-                _uiState.value.copy(
+        repository.listenUserCore(uid) { userCore ->
+
+            _uiState.update {
+
+                it.copy(
+                    userCore = userCore,
+                    role = userCore?.role ?: UserRole.STUDENT,
                     isLoading = false
                 )
-
-            return
-        }
-
-        viewModelScope.launch {
-
-            try {
-
-                // ========================================
-                // USER CORE
-                // ========================================
-                val userCore =
-                    repository.getUserCore(uid)
-
-                if (userCore == null) {
-
-                    _uiState.value =
-                        _uiState.value.copy(
-                            isLoading = false
-                        )
-
-                    return@launch
-                }
-
-                // ========================================
-                // STUDENT FLOW
-                // ========================================
-                if (userCore.role == UserRole.STUDENT) {
-
-                    val studentProfile =
-                        repository.getStudentProfile(uid)
-
-                    val studentVerification =
-                        repository.getStudentVerification(uid)
-
-                    // INITIAL STATE
-                    _uiState.value =
-                        _uiState.value.copy(
-
-                            // SYSTEM
-                            isLoading = false,
-
-                            // USER
-                            userCore = userCore,
-
-                            // ROLE
-                            role = userCore.role,
-
-                            // STUDENT
-                            studentProfile = studentProfile,
-
-                            studentVerification =
-                                studentVerification
-                        )
-
-                    // REALTIME LISTENER
-                    repository.listenStudentVerification(uid) {
-
-                            updatedVerification ->
-
-                        _uiState.value =
-                            _uiState.value.copy(
-
-                                studentVerification =
-                                    updatedVerification
-                            )
-                    }
-                }
-                // ========================================
-                // EMPLOYER FLOW
-                // ========================================
-                else {
-
-                    val employerProfile =
-                        repository.getEmployerProfile(uid)
-
-                    val jobs =
-                        jobRepository.getJobsByEmployer(uid)
-
-                    val totalJobs =
-                        jobs.size
-
-                    val activeJobs =
-                        jobs.count {
-                            it.status == "ACTIVE"
-                        }
-
-                    val ongoingJobs =
-                        jobs.count {
-                            it.status == "ON_GOING"
-                        }
-
-                    val completedJobs =
-                        jobs.count {
-                            it.status == "COMPLETED"
-                        }
-
-                    val employerVerification =
-                        repository.getEmployerVerification(uid)
-
-                    _uiState.value =
-                        _uiState.value.copy(
-
-                            isLoading = false,
-
-                            userCore = userCore,
-
-                            role = userCore.role,
-
-                            employerProfile = employerProfile,
-
-                            employerVerification =
-                                employerVerification,
-
-                            totalJobs =
-                                totalJobs,
-
-                            activeJobs =
-                                activeJobs,
-
-                            ongoingJobs =
-                                ongoingJobs,
-
-                            completedJobs =
-                                completedJobs
-                        )
-                }
-
-            } catch (e: Exception) {
-
-                e.printStackTrace()
-
-                _uiState.value =
-                    _uiState.value.copy(
-                        isLoading = false
-                    )
             }
-        }
-        repository.listenUserCore(uid) {
 
-                userCore ->
+            if (userCore != null) {
 
-            _uiState.value =
-                _uiState.value.copy(
-                    userCore = userCore
+                setupRoleSpecificListeners(
+                    uid,
+                    userCore.role
                 )
+            }
         }
     }
 
-    // student pick location
+    private fun setupRoleSpecificListeners(
+        uid: String,
+        role: UserRole
+    ) {
+
+        if (role == UserRole.EMPLOYER) {
+
+            repository.listenEmployerProfile(uid) { profile ->
+
+                _uiState.update {
+                    it.copy(
+                        employerProfile = profile
+                    )
+                }
+            }
+
+            repository.listenEmployerVerification(uid) { verification ->
+
+                _uiState.update {
+                    it.copy(
+                        employerVerification = verification
+                    )
+                }
+            }
+
+            observeRecruitmentStats(uid)
+        }
+    }
+
+    private fun observeRecruitmentStats(
+        employerUid: String
+    ) {
+
+        jobRepository.listenJobsByEmployer(
+            employerUid
+        ) { jobs ->
+
+            _uiState.update {
+
+                it.copy(
+
+                    totalJobs =
+                        jobs.size,
+
+                    activeJobs =
+                        jobs.count { job ->
+                            job.status == "ACTIVE"
+                        },
+
+                    ongoingJobs =
+                        jobs.count { job ->
+                            job.status == "ONGOING"
+                        },
+
+                    completedJobs =
+                        jobs.count { job ->
+                            job.status == "COMPLETED"
+                        }
+                )
+            }
+        }
+    }
+
     fun updateStudentLocation(
         latitude: Double,
         longitude: Double
@@ -237,59 +155,66 @@ class ProfileViewModel(
         viewModelScope.launch {
 
             val updatedProfile =
-
                 profile.copy(
-
                     studentLatitude = latitude,
-
                     studentLongitude = longitude,
-
                     studentLocationUrl =
                         "https://maps.google.com/?q=$latitude,$longitude",
-
-                    updatedAt =
-                        System.currentTimeMillis()
-                )
-
-            repository
-                .updateStudentProfile(
-                    updatedProfile
-                )
-
-            loadProfile()
-        }
-    }
-
-    // student selected skills
-    fun updateStudentSkills(
-        categories: List<String>,
-        skills: List<String>
-    ) {
-
-        val profile =
-            _uiState.value.studentProfile
-                ?: return
-
-        viewModelScope.launch {
-
-            val updatedProfile =
-
-                profile.copy(
-
-                    preferredJobCategories =
-                        categories,
-
-                    skills = skills,
-
-                    updatedAt =
-                        System.currentTimeMillis()
+                    updatedAt = Date()
                 )
 
             repository.updateStudentProfile(
                 updatedProfile
             )
+        }
+    }
 
-            loadProfile()
+    fun updateLocalAvatar(
+        uri: String
+    ) {
+
+        _uiState.update { currentState ->
+
+            val currentProfile =
+                currentState.employerProfile
+                    ?: EmployerProfile()
+
+            currentState.copy(
+                employerProfile =
+                    currentProfile.copy(
+                        tempAvatarUri = uri
+                    )
+            )
+        }
+    }
+
+    fun updateEmployerAvatar(
+        uri: Uri
+    ) {
+
+        val uid =
+            FirebaseAuth.getInstance()
+                .currentUser
+                ?.uid ?: return
+
+        viewModelScope.launch {
+
+            val downloadUrl =
+                repository.uploadEmployerStorageFile(
+                    "business_logos/$uid.jpg",
+                    uri
+                )
+
+            val currentProfile =
+                _uiState.value.employerProfile
+                    ?: return@launch
+
+            repository.updateEmployerProfile(
+                uid,
+                currentProfile.copy(
+                    businessLogoUrl = downloadUrl
+                )
+            )
         }
     }
 }

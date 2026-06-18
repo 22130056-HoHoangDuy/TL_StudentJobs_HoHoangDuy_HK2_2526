@@ -52,6 +52,7 @@ import com.studentjobs.app.firebase.firestore.TrustService
 import com.studentjobs.app.firebase.firestore.UserServiceNew
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -244,7 +245,7 @@ fun EmployerEmailVerificationScreen(
                                         .set(
                                             mapOf(
                                                 "businessEmailVerified" to VerificationStatus.VERIFIED.name,
-                                                "updatedAt" to System.currentTimeMillis()
+                                                "updatedAt" to Date()
                                             ),
                                             SetOptions.merge()
                                         )

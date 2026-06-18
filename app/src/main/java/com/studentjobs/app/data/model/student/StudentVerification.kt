@@ -1,6 +1,7 @@
 package com.studentjobs.app.data.model.student
 
 import com.studentjobs.app.data.model.status.VerificationStatus
+import java.util.Date
 
 data class StudentVerification(
 
@@ -29,7 +30,7 @@ data class StudentVerification(
         VerificationStatus.UNVERIFIED,
 
     // system
-    val createdAt: Long = 0L,
+    val createdAt: Date? = null,
 
-    val updatedAt: Long = 0L
+    val updatedAt: Date? = null
 )

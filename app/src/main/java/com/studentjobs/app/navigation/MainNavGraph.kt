@@ -21,6 +21,8 @@ import com.studentjobs.app.feature.application.employer.ActiveJobViewModelFactor
 import com.studentjobs.app.feature.application.employer.ApplicantListScreen
 import com.studentjobs.app.feature.application.employer.ApplicantListViewModel
 import com.studentjobs.app.feature.application.employer.ApplicantListViewModelFactory
+import com.studentjobs.app.feature.application.student.MyApplicationsScreen
+import com.studentjobs.app.feature.application.student.MyApplicationsViewModel
 import com.studentjobs.app.feature.job.JobEntryScreen
 import com.studentjobs.app.feature.job.create.CreateJobScreen
 import com.studentjobs.app.feature.job.create.CreateJobViewModel
@@ -46,76 +48,57 @@ import com.studentjobs.app.firebase.firestore.JobService
 import com.studentjobs.app.firebase.firestore.ShiftService
 import com.studentjobs.app.firebase.firestore.StudentService
 import com.studentjobs.app.firebase.firestore.UserServiceNew
-import com.studentjobs.app.feature.application.student.MyApplicationsScreen
-import com.studentjobs.app.feature.application.student.MyApplicationsViewModel
 
 @Composable
 fun MainNavGraph(
-
     navController: NavHostController,
-
     modifier: Modifier = Modifier,
-
     onLogout: () -> Unit,
 ) {
-
     NavHost(
-
         navController = navController,
-
         startDestination = "jobs",
-
         modifier = modifier
-
     ) {
 
         // ========================================
         // PROFILE
         // ========================================
-
         composable("profile") {
             ProfileScreen(
-
                 navController = navController,
-
                 onLogout = onLogout
             )
         }
 
         // ========================================
+        // 🔥 NEW: SYSTEM SETTINGS (ĐỒNG BỘ ĐƯỜNG DẪN TRÁNH CRASH)
+        // ========================================
+        composable("settings_screen") {
+            // Anh có thể thay thế Text bằng màn hình Settings thực tế của anh sau này
+            Text("Màn hình Cài đặt Hệ thống công dụng chung")
+        }
+
+        // Đồng bộ route "settings" từ VerifiedEmployerProfile trỏ thẳng về đây
+        composable("settings") {
+            Text("Màn hình Cài đặt thông tin riêng cho Nhà tuyển dụng")
+        }
+
+        // ========================================
         // SUBSCRIPTION
         // ========================================
-
-        composable(
-            "subscription/{role}"
-        ) { backStackEntry ->
-
+        composable("subscription/{role}") { backStackEntry ->
             val role = UserRole.valueOf(
-
-                backStackEntry
-                    .arguments
-                    ?.getString("role")
-
-                    ?: "STUDENT"
+                backStackEntry.arguments?.getString("role") ?: "STUDENT"
             )
 
             SubscriptionScreen(
-
                 role = role,
-
-                currentPlan =
-                    SubscriptionPlan.FREE,
-
+                currentPlan = SubscriptionPlan.FREE,
                 onUpgradePlusClick = {
-
-                    navController.navigate(
-
-                        "subscription_request/${role.name}"
-                    )
+                    navController.navigate("subscription_request/${role.name}")
                 },
-
                 onBackClick = {
-
                     navController.popBackStack()
                 }
             )
@@ -124,58 +107,32 @@ fun MainNavGraph(
         // ========================================
         // SUBSCRIPTION REQUEST
         // ========================================
-
-        composable(
-            "subscription_request/{role}"
-        ) { backStackEntry ->
-
+        composable("subscription_request/{role}") { backStackEntry ->
             val role = UserRole.valueOf(
-
-                backStackEntry
-                    .arguments
-                    ?.getString("role")
-
-                    ?: "STUDENT"
+                backStackEntry.arguments?.getString("role") ?: "STUDENT"
             )
 
             SubscriptionRequestScreen(
-
                 role = role,
-
                 onBackClick = {
-
                     navController.popBackStack()
                 },
-
                 onRequestSuccess = {
-
                     navController.popBackStack()
                 }
             )
         }
 
         // ========================================
-        // JOBS
+        // JOBS & APPLICATIONS
         // ========================================
-
         composable("jobs") {
-
-            JobEntryScreen(
-                navController
-            )
+            JobEntryScreen(navController)
         }
 
-        composable(
-            "my_applications"
-        ) {
-
-            val viewModel:
-                    MyApplicationsViewModel =
-                viewModel()
-
-            MyApplicationsScreen(
-                viewModel = viewModel
-            )
+        composable("my_applications") {
+            val viewModel: MyApplicationsViewModel = viewModel()
+            MyApplicationsScreen(viewModel = viewModel)
         }
 
         composable("trust") {
@@ -183,84 +140,40 @@ fun MainNavGraph(
         }
 
         composable("history") {
-
             Text("History")
         }
 
-        // ========================================
-        // MESSAGES
-        // ========================================
-
         composable("messages") {
-
             Text("Messages")
         }
 
         // ========================================
-        // STUDENT VERIFICATION
+        // STUDENT VERIFICATIONS
         // ========================================
-
-        composable(
-            "student_verification"
-        ) {
-
-            StudentVerificationScreen(
-                navController
-            )
+        composable("student_verification") {
+            StudentVerificationScreen(navController)
         }
 
-        // ========================================
-        // STUDENT PHONE VERIFICATION
-        // ========================================
-
-        composable(
-            "phone_verification/STUDENT"
-        ) {
-
-            StudentPhoneVerificationScreen(
-                navController
-            )
+        composable("phone_verification/STUDENT") {
+            StudentPhoneVerificationScreen(navController)
         }
 
-        // ========================================
-        // EMPLOYER PHONE VERIFICATION
-        // ========================================
-
-        composable(
-            "phone_verification/EMPLOYER"
-        ) {
-
-            EmployerPhoneVerificationScreen(
-                navController
-            )
+        composable("phone_verification/EMPLOYER") {
+            EmployerPhoneVerificationScreen(navController)
         }
 
-        // ========================================
-        // EMAIL VERIFICATION
-        // ========================================
-
-        composable(
-            "email_verification/{role}"
-        ) { backStackEntry ->
-
+        composable("email_verification/{role}") { backStackEntry ->
             val role = UserRole.valueOf(
-
-                backStackEntry
-                    .arguments
-                    ?.getString("role")
-
-                    ?: "STUDENT"
+                backStackEntry.arguments?.getString("role") ?: "STUDENT"
             )
 
             EmailVerificationScreen(
-
                 role = role,
-
                 navController = navController
             )
         }
-        composable("schedule") {
 
+        composable("schedule") {
             ScheduleScreen(
                 navController = navController,
                 currentPlan = SubscriptionPlan.PLUS
@@ -268,335 +181,130 @@ fun MainNavGraph(
         }
 
         composable("schedule_upload") {
-
             ScheduleUploadScreen(navController)
         }
+
+        // ========================================
+        // EMPLOYER ACTIONS
+        // ========================================
         composable("create_job") {
+            val repository = JobRepository(
+                jobService = JobService(),
+                shiftService = ShiftService(),
+                employerService = EmployerService()
+            )
 
-            val repository =
-
-                JobRepository(
-
-                    jobService =
-                        JobService(),
-
-                    shiftService =
-                        ShiftService(),
-
-                    employerService =
-                        EmployerService()
-                )
-
-            val factory =
-
-                CreateJobViewModelFactory(
-                    repository
-                )
-
-            val viewModel:
-                    CreateJobViewModel =
-
-                viewModel(
-                    factory = factory
-                )
-
+            val factory = CreateJobViewModelFactory(repository)
+            val viewModel: CreateJobViewModel = viewModel(factory = factory)
 
             CreateJobScreen(
-
                 employerBusinessName = "",
-
                 viewModel = viewModel,
-
-                onNavigateBack = {
-
-                    navController.popBackStack()
-                },
-
-                onNavigateToSubscription = {
-
-                    navController.navigate(
-                        "subscription/EMPLOYER"
-                    )
-                },
-
-                onJobCreated = {
-
-                    navController.popBackStack()
-                }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSubscription = { navController.navigate("subscription/EMPLOYER") },
+                onJobCreated = { navController.popBackStack() }
             )
         }
 
-        composable(
-            "employer_job_detail/{jobId}"
-        ) { backStackEntry ->
+        composable("employer_job_detail/{jobId}") { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: return@composable
 
-            val jobId =
+            val applicationRepository = ApplicationRepository(ApplicationService())
+            val studentRepository = StudentRepository(StudentService())
+            val userRepository = UserRepository(UserServiceNew())
+            val jobRepository = JobRepository(JobService(), ShiftService(), EmployerService())
 
-                backStackEntry
-                    .arguments
-                    ?.getString("jobId")
-                    ?: return@composable
-
-            val applicationRepository =
-
-                ApplicationRepository(
-                    ApplicationService()
-                )
-
-            val studentRepository =
-
-                StudentRepository(
-                    StudentService()
-                )
-
-            val userRepository =
-
-                UserRepository(
-                    UserServiceNew()
-                )
-
-            val jobRepository =
-
-                JobRepository(
-                    JobService(),
-                    ShiftService(),
-                    EmployerService()
-                )
-
-            val factory =
-
-                ApplicantListViewModelFactory(
-
-                    applicationRepository,
-
-                    studentRepository,
-
-                    userRepository,
-
-                    jobRepository,
-
-                    jobId
-                )
-
-            val viewModel:
-                    ApplicantListViewModel =
-
-                viewModel(
-                    factory = factory
-                )
-
-            ApplicantListScreen(
-
-                viewModel = viewModel
+            val factory = ApplicantListViewModelFactory(
+                applicationRepository,
+                studentRepository,
+                userRepository,
+                jobRepository,
+                jobId
             )
+
+            val viewModel: ApplicantListViewModel = viewModel(factory = factory)
+            ApplicantListScreen(viewModel = viewModel)
         }
 
+        // ========================================
+        // SHARED TOOLS (MAPS & SKILLS)
+        // ========================================
         composable("location_picker") {
-
             LocationPickerScreen(
-
                 onConfirmLocation = { lat, lng ->
-
-                    navController
-                        .previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("selected_lat", lat)
-
-                    navController
-                        .previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("selected_lng", lng)
-
+                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_lat", lat)
+                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_lng", lng)
                     navController.popBackStack()
                 },
-
                 onBack = {
-
                     navController.popBackStack()
                 }
             )
         }
+
         composable("manage_skills") {
-
             ManageSkillsScreen(
-
                 currentCategories = emptyList(),
-
                 currentSkills = emptyList(),
-
                 isPlus = false,
-
                 onSave = { categories, skills ->
-
-                    navController
-                        .previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(
-                            "selected_categories",
-                            categories
-                        )
-
-                    navController
-                        .previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(
-                            "selected_skills",
-                            skills
-                        )
-
+                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_categories", categories)
+                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_skills", skills)
                     navController.popBackStack()
                 }
             )
         }
-        composable(
-            "job_detail/{jobId}"
-        ) { backStackEntry ->
 
-            val jobId =
+        // ========================================
+        // JOB DETAILS
+        // ========================================
+        composable("job_detail/{jobId}") { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: return@composable
 
-                backStackEntry
-                    .arguments
-                    ?.getString("jobId")
-                    ?: return@composable
+            val repository = JobRepository(
+                jobService = JobService(),
+                shiftService = ShiftService(),
+                employerService = EmployerService()
+            )
+            val applicationRepository = ApplicationRepository(ApplicationService())
+            val studentRepository = StudentRepository(StudentService())
+            val userRepository = UserRepository(UserServiceNew())
 
-            val repository =
+            val factory = JobDetailViewModelFactory(repository, jobId)
+            val viewModel: JobDetailViewModel = viewModel(factory = factory)
 
-                JobRepository(
-
-                    jobService =
-                        JobService(),
-
-                    shiftService =
-                        ShiftService(),
-
-                    employerService =
-                        EmployerService()
-                )
-            val applicationRepository =
-
-                ApplicationRepository(
-                    ApplicationService()
-                )
-
-            val studentRepository =
-
-                StudentRepository(
-                    StudentService()
-                )
-
-            val userRepository =
-
-                UserRepository(
-                    UserServiceNew()
-                )
-
-
-            val factory =
-
-                JobDetailViewModelFactory(
-
-                    repository,
-
-                    jobId
-                )
-
-            val viewModel:
-                    JobDetailViewModel =
-
-                viewModel(
-                    factory = factory
-                )
-            val applyFactory =
-
-                ApplyJobViewModelFactory(
-
-                    applicationRepository,
-
-                    studentRepository,
-
-                    repository,
-
-                    userRepository
-                )
-
-            val applyViewModel:
-                    ApplyJobViewModel =
-
-                viewModel(
-                    factory = applyFactory
-                )
+            val applyFactory = ApplyJobViewModelFactory(
+                applicationRepository,
+                studentRepository,
+                repository,
+                userRepository
+            )
+            val applyViewModel: ApplyJobViewModel = viewModel(factory = applyFactory)
 
             JobDetailScreen(
-
                 viewModel = viewModel,
-
-                applyViewModel =
-                    applyViewModel
+                applyViewModel = applyViewModel
             )
         }
-        composable(
-            "active_job_detail/{jobId}"
-        ) { backStackEntry ->
 
-            val jobId =
+        composable("active_job_detail/{jobId}") { backStackEntry ->
+            val jobId = backStackEntry.arguments?.getString("jobId") ?: return@composable
 
-                backStackEntry
-                    .arguments
-                    ?.getString("jobId")
-                    ?: return@composable
+            val applicationRepository = ApplicationRepository(ApplicationService())
+            val studentRepository = StudentRepository(StudentService())
+            val userRepository = UserRepository(UserServiceNew())
+            val jobRepository = JobRepository(JobService(), ShiftService(), EmployerService())
 
-            val applicationRepository =
-
-                ApplicationRepository(
-                    ApplicationService()
-                )
-
-            val studentRepository =
-
-                StudentRepository(
-                    StudentService()
-                )
-
-            val userRepository =
-
-                UserRepository(
-                    UserServiceNew()
-                )
-
-            val jobRepository =
-
-                JobRepository(
-                    JobService(),
-                    ShiftService(),
-                    EmployerService()
-                )
-
-            val factory =
-
-                ActiveJobViewModelFactory(
-
-                    applicationRepository,
-
-                    studentRepository,
-
-                    userRepository,
-
-                    jobRepository,
-
-                    jobId
-                )
-
-            val viewModel:
-                    ActiveJobViewModel =
-
-                viewModel(
-                    factory = factory
-                )
-
-            ActiveJobScreen(
-
-                viewModel = viewModel
+            val factory = ActiveJobViewModelFactory(
+                applicationRepository,
+                studentRepository,
+                userRepository,
+                jobRepository,
+                jobId
             )
+
+            val viewModel: ActiveJobViewModel = viewModel(factory = factory)
+            ActiveJobScreen(viewModel = viewModel)
         }
     }
 }

@@ -113,7 +113,7 @@ fun SubscriptionScreen(
                 FeatureItem(
                     title = "Auto Recruitment",
                     description =
-                        "Tự động tuyển ứng viên"
+                        "Đề xuất ứng viên phù hợp"
                 ),
 
                 FeatureItem(

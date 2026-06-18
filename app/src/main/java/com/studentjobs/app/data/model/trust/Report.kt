@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.trust
 
+import java.util.Date
+
 data class Report(
 
     // ===== ID =====
@@ -27,8 +29,8 @@ data class Report(
     val reviewNote: String? = null,
 
     // ===== SYSTEM =====
-    val createdAt: Long = 0L,
-    val reviewedAt: Long? = null
+    val createdAt: Date? = null,
+    val reviewedAt: Date? = null
 )
 
 data class ReportEvidence(

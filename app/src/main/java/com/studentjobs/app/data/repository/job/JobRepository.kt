@@ -1,6 +1,5 @@
 package com.studentjobs.app.data.repository.job
 
-import android.util.Log
 import com.studentjobs.app.data.model.job.JobEntity
 import com.studentjobs.app.data.model.job.ShiftEntity
 import com.studentjobs.app.firebase.firestore.EmployerService
@@ -8,238 +7,137 @@ import com.studentjobs.app.firebase.firestore.JobService
 import com.studentjobs.app.firebase.firestore.ShiftService
 
 class JobRepository(
-
     private val jobService: JobService,
-
     private val shiftService: ShiftService,
-
     private val employerService: EmployerService
-
 ) {
+
+    // ========================================
+    // SUGGESTED JOBS (MỚI)
+    // ========================================
+
+    suspend fun getSuggestedJobs(studentSkills: List<String>): List<JobEntity> {
+        // Lấy tất cả job đang active
+        val allJobs = jobService.getActiveJobs()
+
+        // Lọc các job mà yêu cầu kỹ năng khớp với kỹ năng sinh viên
+        // .any { it in studentSkills } kiểm tra nếu job yêu cầu ít nhất 1 kỹ năng sinh viên có
+        return allJobs.filter { job ->
+            job.requiredSkills.any { it in studentSkills }
+        }.sortedByDescending { job ->
+            // Sắp xếp ưu tiên job khớp nhiều kỹ năng nhất
+            job.requiredSkills.count { it in studentSkills }
+        }
+    }
 
     // ========================================
     // CREATE JOB + SHIFTS
     // ========================================
 
     suspend fun createJob(
-
         job: JobEntity,
-
         shifts: List<ShiftEntity>
-
     ): Result<Unit> {
-
         return try {
+            val employer = employerService.getEmployerProfile(job.employerUid)
+                ?: return Result.failure(Exception("Employer profile not found"))
 
-            val employer =
+            val completedJob = job.copy(
+                businessName = employer.businessName,
+                businessCategory = employer.businessCategory ?: "",
+                locationText = employer.businessAddressText ?: "",
+                latitude = employer.businessLatitude,
+                longitude = employer.businessLongitude
+            )
 
-                employerService.getEmployerProfile(
-                    job.employerUid
-                )
-
-                    ?: return Result.failure(
-
-                        Exception(
-                            "Employer profile not found"
-                        )
-                    )
-
-            val completedJob =
-
-                job.copy(
-                    businessName = employer.businessName,
-
-                    businessCategory = employer.businessCategory ?: "",
-
-                    locationText = employer.businessAddressText ?: "",
-
-                    latitude = employer.businessLatitude,
-
-                    longitude = employer.businessLongitude
-                )
-
-            jobService.createJob(
-                completedJob
-            ).getOrThrow()
-
-            shiftService.createShifts(
-                shifts
-            ).getOrThrow()
-
+            jobService.createJob(completedJob).getOrThrow()
+            shiftService.createShifts(shifts).getOrThrow()
             Result.success(Unit)
-
         } catch (e: Exception) {
-
             e.printStackTrace()
-
             Result.failure(e)
         }
     }
 
     // ========================================
-    // GET EMPLOYER CATEGORY
+    // GETTERS
     // ========================================
 
-    suspend fun getEmployerCategory(
-        employerUid: String
-    ): String? {
-
-        return employerService.getEmployerProfile(
-            employerUid
-        )?.businessCategory
+    suspend fun getEmployerCategory(employerUid: String): String? {
+        return employerService.getEmployerProfile(employerUid)?.businessCategory
     }
 
-    // ========================================
-    // GET EMPLOYER PROFILE
-    // ========================================
+    suspend fun getEmployerProfile(employerUid: String) =
+        employerService.getEmployerProfile(employerUid)
 
-    suspend fun getEmployerProfile(
-        employerUid: String
-    ) = employerService.getEmployerProfile(
-        employerUid
-    )
+    suspend fun getJob(jobId: String): JobEntity? = jobService.getJob(jobId)
 
-    // ========================================
-    // GET JOB
-    // ========================================
+    suspend fun getActiveJobs(): List<JobEntity> = jobService.getActiveJobs()
 
-    suspend fun getJob(
-        jobId: String
-    ): JobEntity? {
+    suspend fun getJobsByEmployer(employerUid: String): List<JobEntity> =
+        jobService.getJobsByEmployer(employerUid)
 
-        return jobService.getJob(jobId)
-    }
-
-    // ========================================
-    // GET ACTIVE JOBS
-    // ========================================
-
-    suspend fun getActiveJobs(): List<JobEntity> {
-
-        return jobService.getActiveJobs()
-    }
-
-    // ========================================
-    // GET EMPLOYER JOBS
-    // ========================================
-
-    suspend fun getJobsByEmployer(
-        employerUid: String
-    ): List<JobEntity> {
-
-        return jobService.getJobsByEmployer(
-            employerUid
-        )
-    }
-
-    // ========================================
-    // GET SHIFTS
-    // ========================================
-
-    suspend fun getShiftsByJob(
-        jobId: String
-    ): List<ShiftEntity> {
-
-        return shiftService.getShiftsByJob(
-            jobId
-        )
-    }
+    suspend fun getShiftsByJob(jobId: String): List<ShiftEntity> =
+        shiftService.getShiftsByJob(jobId)
 
     // ========================================
     // DELETE JOB
     // ========================================
 
-    suspend fun deleteJob(
-        jobId: String
-    ): Result<Unit> {
-
+    suspend fun deleteJob(jobId: String): Result<Unit> {
         return try {
-
-            shiftService.deleteShiftsByJob(
-                jobId
-            ).getOrThrow()
-
-            jobService.deleteJob(
-                jobId
-            ).getOrThrow()
-
+            shiftService.deleteShiftsByJob(jobId).getOrThrow()
+            jobService.deleteJob(jobId).getOrThrow()
             Result.success(Unit)
-
         } catch (e: Exception) {
-
             e.printStackTrace()
-
             Result.failure(e)
         }
     }
 
-    suspend fun getJobWithShifts(
-        jobId: String
-    ): Pair<JobEntity?, List<ShiftEntity>> {
-
+    suspend fun getJobWithShifts(jobId: String): Pair<JobEntity?, List<ShiftEntity>> {
         val job = jobService.getJob(jobId)
-
         val shifts = shiftService.getShiftsByJob(jobId)
-
-        return Pair(
-            job, shifts
-        )
+        return Pair(job, shifts)
     }
 
-    // application++
-    suspend fun incrementApplicantCount(
-        jobId: String
-    ): Result<Unit> {
-
-        Log.d(
-            "JOB_REPOSITORY",
-            "incrementApplicantCount = $jobId"
-        )
-
-        return jobService
-            .incrementApplicantCount(
-                jobId
-            )
-    }
-
-    // application--
-    suspend fun decrementApplicantCount(
-        jobId: String
-    ): Result<Unit> {
-
-        Log.d(
-            "JOB_REPOSITORY",
-            "decrementApplicantCount = $jobId"
-        )
-
-        return jobService
-            .decrementApplicantCount(
-                jobId
-            )
-    }
-
-    suspend fun incrementAcceptedApplicantCount(
-        jobId: String
-    ): Result<Unit> {
-
-        return jobService
-            .incrementAcceptedApplicantCount(
-                jobId
-            )
-    }
     // ========================================
-// UPDATE JOB
-// ========================================
+    // APPLICATIONS
+    // ========================================
 
-    suspend fun updateJob(
-        job: JobEntity
-    ): Result<Unit> {
+    suspend fun incrementApplicantCount(jobId: String): Result<Unit> =
+        jobService.incrementApplicantCount(jobId)
 
-        return jobService
-            .updateJob(
-                job
-            )
+    suspend fun decrementApplicantCount(jobId: String): Result<Unit> =
+        jobService.decrementApplicantCount(jobId)
+
+    suspend fun incrementAcceptedApplicantCount(jobId: String): Result<Unit> =
+        jobService.incrementAcceptedApplicantCount(jobId)
+
+    // ========================================
+    // UPDATE JOB
+    // ========================================
+
+    suspend fun updateJob(job: JobEntity): Result<Unit> = jobService.updateJob(job)
+
+    // Thêm vào JobRepository.kt
+    suspend fun getAllCategories(): List<String> {
+        val jobs = jobService.getActiveJobs()
+        // Lấy ra danh sách các category duy nhất, không trùng lặp
+        return jobs.map { it.businessCategory }
+            .filter { it.isNotEmpty() }
+            .distinct()
+            .sorted()
     }
 
+    fun listenJobsByEmployer(
+        employerUid: String,
+        onChange: (List<JobEntity>) -> Unit
+    ) {
 
+        jobService.listenJobsByEmployer(
+            employerUid,
+            onChange
+        )
+    }
 }

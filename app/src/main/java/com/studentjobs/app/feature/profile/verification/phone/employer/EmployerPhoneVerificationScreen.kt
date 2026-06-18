@@ -54,6 +54,7 @@ import com.studentjobs.app.data.model.user.UserCore
 import com.studentjobs.app.utils.calculateTrustScore
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,7 +92,7 @@ fun EmployerPhoneVerificationScreen(
         verificationDocRef.set(
             mapOf(
                 "businessPhoneVerified" to VerificationStatus.VERIFIED,
-                "updatedAt" to System.currentTimeMillis()
+                "updatedAt" to Date()
             ),
             SetOptions.merge()
         ).await()

@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.student
 
+import java.util.Date
+
 data class StudentSchedule(
 
     val uid: String = "",
@@ -18,9 +20,9 @@ data class StudentSchedule(
 
     val source: String = "OCR",
 
-    val createdAt: Long = 0L,
+    val createdAt: Date? = null,
 
-    val updatedAt: Long = 0L
+    val updatedAt: Date? = null
 )
 
 data class BusyTimeSlot(

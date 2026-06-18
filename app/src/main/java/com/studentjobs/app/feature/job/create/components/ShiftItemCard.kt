@@ -21,72 +21,35 @@ import com.studentjobs.app.utils.minuteToTime
 
 @Composable
 fun ShiftItemCard(
-
     shift: ShiftEntity,
-
     onDelete: () -> Unit
-
 ) {
-
     Card(
-
-        modifier =
-            Modifier.fillMaxWidth()
-
+        modifier = Modifier.fillMaxWidth()
     ) {
-
         Row(
-
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-
-            horizontalArrangement =
-                Arrangement.SpaceBetween
-
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
             Column {
-
                 Text(
-
-                    text =
-                        dayOfWeekText(
-                            shift.dayOfWeek
-                        ),
-
-                    style =
-                        MaterialTheme
-                            .typography
-                            .titleMedium
+                    text = dayOfWeekText(shift.dayOfWeek),
+                    style = MaterialTheme.typography.titleMedium
                 )
 
                 Text(
-
-                    text =
-                        "${minuteToTime(shift.startMinute)} - ${
-                            minuteToTime(
-                                shift.endMinute
-                            )
-                        }"
+                    text = "${minuteToTime(shift.startMinute)} - ${minuteToTime(shift.endMinute)}"
                 )
             }
 
             IconButton(
-
-                onClick =
-                    onDelete
-
+                onClick = onDelete
             ) {
-
                 Icon(
-
-                    imageVector =
-                        Icons.Default.Delete,
-
-                    contentDescription =
-                        null
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Xóa ca làm"
                 )
             }
         }

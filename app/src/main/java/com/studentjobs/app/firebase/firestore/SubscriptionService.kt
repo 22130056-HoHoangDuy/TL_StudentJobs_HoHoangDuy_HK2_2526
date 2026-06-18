@@ -5,6 +5,7 @@ import com.studentjobs.app.data.model.subscription.SubscriptionRequest
 import com.studentjobs.app.data.model.subscription.SubscriptionRequestStatus
 import com.studentjobs.app.data.model.user.SubscriptionPlan
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import java.util.UUID
 
 class SubscriptionService(
@@ -38,7 +39,7 @@ class SubscriptionService(
 
                 requestId = requestId,
 
-                requestedAt = System.currentTimeMillis(),
+                requestedAt = Date(),
 
                 status = SubscriptionRequestStatus.PENDING
             )
@@ -101,10 +102,17 @@ class SubscriptionService(
 
         return try {
 
-            val now = System.currentTimeMillis()
+            val now = Date()
 
-            val expiredAt = now +
-                    (request.durationDays * 24 * 60 * 60 * 1000L)
+            val durationMillis =
+                request.durationDays *
+                        24L *
+                        60L *
+                        60L *
+                        1000L
+
+            val expiredAt =
+                Date(now.time + durationMillis)
 
             firestore.runBatch { batch ->
 
@@ -182,7 +190,7 @@ class SubscriptionService(
 
                         "reviewNote" to reason,
 
-                        "reviewedAt" to System.currentTimeMillis()
+                        "reviewedAt" to Date()
                     )
                 )
                 .await()
