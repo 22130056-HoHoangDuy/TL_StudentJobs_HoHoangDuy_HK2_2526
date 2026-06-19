@@ -392,7 +392,7 @@ if (!alreadyRewarded) {
             extractedStudentSchoolName: school,
             extractedStudentDob: dob,
             studentCardVerified: "VERIFIED",
-            updatedAt: Date.now(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
 
              // cleanup old legacy fields
                 isCardVerified:
