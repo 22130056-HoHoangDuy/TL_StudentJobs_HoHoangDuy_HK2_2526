@@ -85,6 +85,23 @@ class ProfileViewModel(
         role: UserRole
     ) {
 
+        if (role == UserRole.STUDENT) {
+
+            repository.listenStudentVerification(uid) { verification ->
+
+                android.util.Log.d(
+                    "PROFILE_DEBUG",
+                    "STUDENT_VERIFICATION = $verification"
+                )
+
+                _uiState.update {
+                    it.copy(
+                        studentVerification = verification
+                    )
+                }
+            }
+        }
+
         if (role == UserRole.EMPLOYER) {
 
             repository.listenEmployerProfile(uid) { profile ->

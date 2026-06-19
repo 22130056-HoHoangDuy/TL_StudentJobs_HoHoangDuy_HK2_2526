@@ -251,8 +251,8 @@ class UserServiceNew {
                     "businessLicenseUrl" to businessLicenseUrl,
                     "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
                     "submissionStatus" to "PENDING",
-                    "submittedAt" to Timestamp.now(),
-                    "updatedAt" to Timestamp.now()
+                    "submittedAt" to Date(),
+                    "updatedAt" to Date()
                 ), SetOptions.merge()
             ).await()
 
@@ -267,7 +267,7 @@ class UserServiceNew {
                     "businessLatitude" to businessLatitude,
                     "businessLongitude" to businessLongitude,
                     "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
-                    "updatedAt" to now
+                    "updatedAt" to Date()
                 ), SetOptions.merge()
             ).await()
 

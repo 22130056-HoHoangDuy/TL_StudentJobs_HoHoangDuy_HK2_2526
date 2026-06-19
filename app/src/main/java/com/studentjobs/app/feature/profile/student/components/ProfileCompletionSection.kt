@@ -25,6 +25,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,18 +58,28 @@ fun ProfileCompletionSection(
         label = "ProgressAnimation"
     )
 
-    // Bảng nền LIGHT MODE Gen Z: Trắng loang dần sang Cyan và Hồng pastel siêu mượt
+    // Bảng nền Gen Z chuẩn đét: Tím chuyển sang Mint dịu mắt
     val lightScreenGradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFFFFFFFF),
-            Color(0xFFE0F2FE), // Xanh dương nhạt mát mắt
-            Color(0xFFFCE7F3)  // Hồng pastel năng động
+            Color(0xFF6366F1),
+            Color(0xFFC7D2FE),
+            Color(0xFFA7F3D0)
         )
     )
 
-    // Thanh tiến độ màu cực đậm đà rực rỡ
+    // Thanh tiến độ màu Tím đậm rực rỡ
     val progressGradient = Brush.horizontalGradient(
-        colors = listOf(Color(0xFFF43F5E), Color(0xFF06B6D4))
+        colors = listOf(Color(0xFF4F46E5), Color(0xFF6366F1))
+    )
+
+    // Matrix đảo ngược màu sắc: Biến chữ trắng tàng hình thành chữ đen cá tính
+    val invertMatrix = ColorMatrix(
+        floatArrayOf(
+            -1f, 0f, 0f, 0f, 255f, // Red
+            0f, -1f, 0f, 0f, 255f, // Green
+            0f, 0f, -1f, 0f, 255f, // Blue
+            0f, 0f, 0f, 1f, 0f  // Alpha
+        )
     )
 
     Box(
@@ -83,12 +96,12 @@ fun ProfileCompletionSection(
             verticalArrangement = Arrangement.Center
         ) {
 
-            // Tiêu đề chữ Đậm đen cá tính, nổi bật 100%
+            // Tiêu đề chữ Đậm cá tính, nổi bần bật
             Text(
-                text = "Nâng Cấp Uy Tín Bồ Ơi! ✨",
+                text = "Nâng Cấp Uy Tín Bồ Ơi!",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF1E1B4B), // Tím than siêu đậm, cực kỳ nổi
+                    color = Color(0xFF1E1B4B),
                     letterSpacing = 0.5.sp
                 ),
                 textAlign = TextAlign.Center
@@ -99,7 +112,7 @@ fun ProfileCompletionSection(
             Text(
                 text = "Hoàn thành các bước xác thực bên dưới\nđể tăng 100% cơ hội được các chủ quán chốt đơn nhé!",
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color(0xFF4B5563), // Màu xám thanh lịch, dễ đọc
+                    color = Color(0xFF1F2937),
                     lineHeight = 22.sp,
                     fontWeight = FontWeight.Medium
                 ),
@@ -108,7 +121,7 @@ fun ProfileCompletionSection(
 
             Spacer(Modifier.height(36.dp))
 
-            // Khu vực hiển thị tiến độ (Light theme)
+            // Khu vực hiển thị tiến độ
             Row(
                 modifier = Modifier.fillMaxWidth(0.85f),
                 verticalAlignment = Alignment.CenterVertically
@@ -118,7 +131,7 @@ fun ProfileCompletionSection(
                         .weight(1f)
                         .height(12.dp)
                         .clip(RoundedCornerShape(6.dp))
-                        .background(Color(0xFFE5E7EB)) // Nền thanh xám nhạt
+                        .background(Color(0x40FFFFFF))
                 ) {
                     Box(
                         modifier = Modifier
@@ -134,17 +147,17 @@ fun ProfileCompletionSection(
                     text = "$completed/$total",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Black,
-                        color = Color(0xFF0284C7)
+                        color = Color(0xFF1E1B4B)
                     )
                 )
             }
 
             Spacer(Modifier.height(44.dp))
 
-            // DANH SÁCH 3 MỤC QUAN TRỌNG: Tách ra từng Card trắng có shadow đổ bóng, chữ đen của anh sẽ nổi bần bật!
+            // DANH SÁCH 3 MỤC QUAN TRỌNG: Giữ nguyên logic cấu trúc gốc
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp) // Tạo khoảng cách thoáng đãng giữa các mục
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
                 // Card 1: Thẻ sinh viên
@@ -153,9 +166,16 @@ fun ProfileCompletionSection(
                         .fillMaxWidth()
                         .shadow(8.dp, RoundedCornerShape(20.dp)),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = Color.White) // Giữ nền Card trắng tinh khôi
                 ) {
-                    Box(modifier = Modifier.padding(4.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            // Tuyệt chiêu: Chỉ đảo ngược màu sắc của nội dung bên trong Component con (Trắng -> Đen)
+                            .graphicsLayer {
+                                colorFilter = ColorFilter.colorMatrix(invertMatrix)
+                            }
+                    ) {
                         VerificationTaskItem(
                             title = "Xác thực Thẻ Sinh Viên 🎓",
                             isDone = isStudentVerified,
@@ -172,7 +192,13 @@ fun ProfileCompletionSection(
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
-                    Box(modifier = Modifier.padding(4.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .graphicsLayer {
+                                colorFilter = ColorFilter.colorMatrix(invertMatrix)
+                            }
+                    ) {
                         VerificationTaskItem(
                             title = "Xác thực Số Điện Thoại 📱",
                             isDone = isPhoneVerified,
@@ -189,7 +215,13 @@ fun ProfileCompletionSection(
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
-                    Box(modifier = Modifier.padding(4.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .graphicsLayer {
+                                colorFilter = ColorFilter.colorMatrix(invertMatrix)
+                            }
+                    ) {
                         VerificationTaskItem(
                             title = "Xác thực Email Trường (.edu) ✉️",
                             isDone = isStudentEmailVerified,
