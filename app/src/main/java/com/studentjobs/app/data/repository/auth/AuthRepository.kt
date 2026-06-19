@@ -13,6 +13,7 @@ import com.studentjobs.app.firebase.firestore.EmployerService
 import com.studentjobs.app.firebase.firestore.StudentService
 import com.studentjobs.app.firebase.firestore.UserServiceNew
 import com.studentjobs.app.firebase.firestore.VerificationService
+import java.util.Date
 
 class AuthRepository(
 
@@ -63,8 +64,7 @@ class AuthRepository(
                     )
                 )
 
-            val currentTime =
-                System.currentTimeMillis()
+            val currentTime = Date()
 
             // =========================
             // CREATE USER CORE
@@ -90,11 +90,9 @@ class AuthRepository(
                 status =
                     UserStatus.ACTIVE,
 
-                createdAt =
-                    currentTime,
+                createdAt = Date(),
 
-                updatedAt =
-                    currentTime
+                updatedAt = Date()
             )
 
             val userResult =
@@ -127,11 +125,9 @@ class AuthRepository(
 
                         studentEmail = email,
 
-                        createdAt =
-                            currentTime,
+                        createdAt = Date(),
 
-                        updatedAt =
-                            currentTime
+                        updatedAt = Date()
                     )
 
                 val studentVerification =
@@ -140,11 +136,9 @@ class AuthRepository(
 
                         uid = uid,
 
-                        createdAt =
-                            currentTime,
+                        createdAt = Date(),
 
-                        updatedAt =
-                            currentTime
+                        updatedAt = Date()
                     )
 
                 studentService
@@ -170,11 +164,9 @@ class AuthRepository(
 
                         uid = uid,
 
-                        createdAt =
-                            currentTime,
+                        createdAt = Date(),
 
-                        updatedAt =
-                            currentTime
+                        updatedAt = Date(),
                     )
 
                 val employerVerification =
@@ -183,11 +175,9 @@ class AuthRepository(
 
                         uid = uid,
 
-                        submittedAt =
-                            currentTime,
+                        submittedAt = Date(),
 
-                        reviewedAt =
-                            currentTime
+                        reviewedAt = Date()
                     )
 
                 employerService
@@ -260,8 +250,48 @@ class AuthRepository(
             Result.failure(e)
         }
     }
+
     //logout
     fun logout() {
         authService.logout()
+    }
+
+    suspend fun forgotPassword(
+        email: String
+    ): Result<Unit> {
+
+        return try {
+
+            val user =
+
+                userService.getUserByEmail(
+                    email
+                )
+
+            if (user == null) {
+
+                return Result.failure(
+                    Exception(
+                        "Email chưa được đăng ký"
+                    )
+                )
+            }
+
+            authService
+                .sendPasswordResetEmail(
+                    email
+                )
+
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+
+            Result.failure(e)
+        }
+    }
+
+    // Trong class AuthRepository
+    fun getCurrentUserUid(): String? {
+        return authService.getCurrentUser()?.uid
     }
 }

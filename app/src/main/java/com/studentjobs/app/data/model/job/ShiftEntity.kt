@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.job
 
+import java.util.Date
+
 data class ShiftEntity(
 
     // ========================================
@@ -43,6 +45,5 @@ data class ShiftEntity(
     // ========================================
     // SYSTEM
     // ========================================
-
-    val createdAt: Long = 0L
+    val createdAt: Date? = null
 )

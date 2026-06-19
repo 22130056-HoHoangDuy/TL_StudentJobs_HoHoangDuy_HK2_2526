@@ -44,13 +44,13 @@ fun ShiftSection(
 
     val days = mapOf(
 
-        1 to "Mon",
-        2 to "Tue",
-        3 to "Wed",
-        4 to "Thu",
-        5 to "Fri",
-        6 to "Sat",
-        7 to "Sun"
+        1 to "Thứ 2",
+        2 to "Thứ 3",
+        3 to "Thứ 4",
+        4 to "Thứ 5",
+        5 to "Thứ 6",
+        6 to "Thứ 7",
+        7 to "Chủ nhật"
     )
 
     Card(
@@ -77,14 +77,14 @@ fun ShiftSection(
 
             Text(
 
-                text = "🕒 Working Shifts",
+                text = "🕒 Lịch làm việc",
 
                 style =
                     MaterialTheme.typography.titleMedium
             )
 
             Text(
-                text = "Add one or more working shifts"
+                text = "Thêm một hoặc nhiều lịch làm việc"
             )
 
             // =========================
@@ -136,7 +136,7 @@ fun ShiftSection(
                 label = {
 
                     Text(
-                        "Start Time"
+                        "Giờ bắt đầu"
                     )
                 },
 
@@ -162,7 +162,7 @@ fun ShiftSection(
                 label = {
 
                     Text(
-                        "End Time"
+                        "Giờ kết thúc"
                     )
                 },
 
@@ -182,7 +182,7 @@ fun ShiftSection(
                 label = {
 
                     Text(
-                        "➕ Add Shift"
+                        "➕ Thêm ca làm"
                     )
                 }
             )

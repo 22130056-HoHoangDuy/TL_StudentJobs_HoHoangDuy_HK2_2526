@@ -40,7 +40,7 @@ const processStudentCardV2 = onObjectFinalized(
           step: "FUNCTION_TRIGGERED",
           filePath: filePath,
           bucketName: bucketName,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       // ======================================
@@ -53,7 +53,7 @@ const processStudentCardV2 = onObjectFinalized(
           .collection("debug_logs")
           .add({
             step: "NO_FILE_PATH",
-            createdAt: Date.now(),
+            createdAt: new Date(),
           });
 
         return;
@@ -66,7 +66,7 @@ const processStudentCardV2 = onObjectFinalized(
           .add({
             step: "INVALID_FOLDER",
             filePath: filePath,
-            createdAt: Date.now(),
+            createdAt: new Date(),
           });
 
         return;
@@ -80,7 +80,7 @@ const processStudentCardV2 = onObjectFinalized(
           .add({
             step: "SKIP_BACK_IMAGE",
             filePath: filePath,
-            createdAt: Date.now(),
+            createdAt: new Date(),
           });
 
         return;
@@ -107,7 +107,7 @@ const processStudentCardV2 = onObjectFinalized(
         .add({
           step: "FILE_DOWNLOADED",
           tempFilePath: tempFilePath,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       // ======================================
@@ -128,7 +128,7 @@ const processStudentCardV2 = onObjectFinalized(
           step: "OCR_DONE",
           textLength: text.length,
           preview: text.substring(0, 300),
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       const lines = text
@@ -233,7 +233,7 @@ const processStudentCardV2 = onObjectFinalized(
         .add({
           step: "PATH_SPLIT",
           parts: parts,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       if (parts.length < 2) {
@@ -243,7 +243,7 @@ const processStudentCardV2 = onObjectFinalized(
           .add({
             step: "INVALID_UID",
             filePath: filePath,
-            createdAt: Date.now(),
+            createdAt: new Date(),
           });
 
         return;
@@ -256,7 +256,7 @@ const processStudentCardV2 = onObjectFinalized(
         .add({
           step: "UID_PARSED",
           uid: uid,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       // ======================================
@@ -273,7 +273,7 @@ const processStudentCardV2 = onObjectFinalized(
           school: school,
           major: major,
           dob: dob,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 // ======================================
 // TRUST SCORE
@@ -349,7 +349,7 @@ if (!alreadyRewarded) {
       "Xác thực sinh viên thành công",
 
     createdAt:
-      Date.now()
+      new Date()
   });
 
   await admin.firestore()
@@ -365,7 +365,7 @@ if (!alreadyRewarded) {
         20,
 
       createdAt:
-        Date.now()
+        new Date()
     });
 }
       // ======================================
@@ -377,7 +377,7 @@ if (!alreadyRewarded) {
         .add({
           step: "BEFORE_VERIFICATION_UPDATE",
           uid: uid,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       await admin
@@ -392,7 +392,7 @@ if (!alreadyRewarded) {
             extractedStudentSchoolName: school,
             extractedStudentDob: dob,
             studentCardVerified: "VERIFIED",
-            updatedAt: Date.now(),
+            updatedAt: new Date()
 
              // cleanup old legacy fields
                 isCardVerified:
@@ -414,7 +414,7 @@ if (!alreadyRewarded) {
         .add({
           step: "AFTER_VERIFICATION_UPDATE",
           uid: uid,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       // ======================================
@@ -448,7 +448,7 @@ if (!alreadyRewarded) {
         .add({
           step: "AFTER_PROFILE_UPDATE",
           uid: uid,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
     } catch (err) {
@@ -459,7 +459,7 @@ if (!alreadyRewarded) {
           step: "ERROR",
           error: err.toString(),
           stack: err.stack || "",
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       console.error("ERROR:", err);

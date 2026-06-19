@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.studentjobs.app.data.model.trust.TrustLog
 import java.text.SimpleDateFormat
-import java.util.Date
 
 @Composable
 fun TrustHistoryCard(logs: List<TrustLog>) {
@@ -98,11 +97,16 @@ fun TrustLogItem(log: TrustLog) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            val formattedDate =
+                log.createdAt?.let {
+                    SimpleDateFormat(
+                        "dd/MM/yyyy HH:mm",
+                        LocalLocale.current.platformLocale
+                    ).format(it)
+                } ?: "N/A"
+
             Text(
-                text = SimpleDateFormat(
-                    "dd/MM/yyyy HH:mm",
-                    LocalLocale.current.platformLocale
-                ).format(Date(log.createdAt)),
+                text = formattedDate,
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF94A3B8)
             )

@@ -8,6 +8,7 @@ import com.studentjobs.app.data.model.employer.EmployerVerification
 import com.studentjobs.app.data.model.status.VerificationStatus
 import com.studentjobs.app.data.model.student.StudentVerification
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 class VerificationService {
 
@@ -24,8 +25,7 @@ class VerificationService {
         return try {
 
             db.collection("student_verifications").document(verification.uid)
-                .set(verification, SetOptions.merge())
-                .await()
+                .set(verification, SetOptions.merge()).await()
 
             Result.success(Unit)
 
@@ -67,8 +67,7 @@ class VerificationService {
         return try {
 
             db.collection("employer_verifications").document(verification.uid)
-                .set(verification, SetOptions.merge())
-                .await()
+                .set(verification, SetOptions.merge()).await()
 
             Result.success(Unit)
 
@@ -101,16 +100,12 @@ class VerificationService {
     }
 
     suspend fun updateStudentVerificationFields(
-        uid: String,
-        fields: Map<String, Any>
+        uid: String, fields: Map<String, Any>
     ): Result<Unit> {
 
         return try {
 
-            db.collection("student_verifications")
-                .document(uid)
-                .update(fields)
-                .await()
+            db.collection("student_verifications").document(uid).update(fields).await()
 
             Result.success(Unit)
 
@@ -132,10 +127,7 @@ class VerificationService {
 
         return try {
 
-            db.collection("employer_verifications")
-                .document(uid)
-                .update(fields)
-                .await()
+            db.collection("employer_verifications").document(uid).update(fields).await()
 
             Result.success(Unit)
 
@@ -287,13 +279,9 @@ class VerificationService {
                             VerificationStatus.UNVERIFIED
                         },
 
-                        createdAt =
-                            (data?.get("createdAt") as? Long)
-                                ?: 0L,
+                        createdAt = (data?.get("createdAt") as? Date),
 
-                        updatedAt =
-                            (data?.get("updatedAt") as? Long)
-                                ?: 0L
+                        updatedAt = (data?.get("updatedAt") as? Date)
                     )
 
                     onChange(verification)
@@ -315,8 +303,7 @@ class VerificationService {
 
     ) {
 
-        db.collection("employer_verifications")
-            .document(uid)
+        db.collection("employer_verifications").document(uid)
             .addSnapshotListener { snapshot, error ->
 
                 if (error != null) {
@@ -341,54 +328,43 @@ class VerificationService {
 
                     val verification = EmployerVerification(
 
-                        uid =
-                            data?.get("uid") as? String
-                                ?: "",
+                        uid = data?.get("uid") as? String ?: "",
 
-                        businessLicenseUrl =
-                            data?.get(
-                                "businessLicenseUrl"
-                            ) as? String,
+                        businessLicenseUrl = data?.get(
+                            "businessLicenseUrl"
+                        ) as? String,
 
-                        businessName =
-                            data?.get(
-                                "businessName"
-                            ) as? String,
+                        businessName = data?.get(
+                            "businessName"
+                        ) as? String,
 
-                        businessCategory =
-                            data?.get(
-                                "businessCategory"
-                            ) as? String,
+                        businessCategory = data?.get(
+                            "businessCategory"
+                        ) as? String,
 
-                        businessDescription =
-                            data?.get(
-                                "businessDescription"
-                            ) as? String,
+                        businessDescription = data?.get(
+                            "businessDescription"
+                        ) as? String,
 
-                        businessLocationUrl =
-                            data?.get(
-                                "businessLocationUrl"
-                            ) as? String,
+                        businessLocationUrl = data?.get(
+                            "businessLocationUrl"
+                        ) as? String,
 
-                        businessAddressText =
-                            data?.get(
-                                "businessAddressText"
-                            ) as? String,
+                        businessAddressText = data?.get(
+                            "businessAddressText"
+                        ) as? String,
 
-                        businessLatitude =
-                            data?.get(
-                                "businessLatitude"
-                            ) as? Double,
+                        businessLatitude = data?.get(
+                            "businessLatitude"
+                        ) as? Double,
 
-                        businessLongitude =
-                            data?.get(
-                                "businessLongitude"
-                            ) as? Double,
+                        businessLongitude = data?.get(
+                            "businessLongitude"
+                        ) as? Double,
 
-                        businessStoreFrontImageUrl =
-                            data?.get(
-                                "businessStoreFrontImageUrl"
-                            ) as? String,
+                        businessStoreFrontImageUrl = data?.get(
+                            "businessStoreFrontImageUrl"
+                        ) as? String,
 
                         businessLicenseVerified = try {
 
@@ -396,8 +372,7 @@ class VerificationService {
 
                                 data?.get(
                                     "businessLicenseVerified"
-                                ) as? String
-                                    ?: "UNVERIFIED"
+                                ) as? String ?: "UNVERIFIED"
                             )
 
                         } catch (e: Exception) {
@@ -411,8 +386,7 @@ class VerificationService {
 
                                 data?.get(
                                     "businessEmailVerified"
-                                ) as? String
-                                    ?: "UNVERIFIED"
+                                ) as? String ?: "UNVERIFIED"
                             )
 
                         } catch (e: Exception) {
@@ -426,8 +400,7 @@ class VerificationService {
 
                                 data?.get(
                                     "businessPhoneVerified"
-                                ) as? String
-                                    ?: "UNVERIFIED"
+                                ) as? String ?: "UNVERIFIED"
                             )
 
                         } catch (e: Exception) {
@@ -441,8 +414,7 @@ class VerificationService {
 
                                 data?.get(
                                     "submissionStatus"
-                                ) as? String
-                                    ?: "UNVERIFIED"
+                                ) as? String ?: "UNVERIFIED"
                             )
 
                         } catch (e: Exception) {
@@ -450,25 +422,17 @@ class VerificationService {
                             VerificationStatus.UNVERIFIED
                         },
 
-                        rejectionReason =
-                            data?.get(
-                                "rejectionReason"
-                            ) as? String,
+                        rejectionReason = data?.get(
+                            "rejectionReason"
+                        ) as? String,
 
-                        submittedAt =
-                            (data?.get(
-                                "submittedAt"
-                            ) as? Long) ?: 0L,
+                        submittedAt = (data?.get("submittedAt") as? Date),
 
-                        reviewedAt =
-                            data?.get(
-                                "reviewedAt"
-                            ) as? Long,
+                        reviewedAt = (data?.get("reviewedAt") as? Date),
 
-                        reviewedBy =
-                            data?.get(
-                                "reviewedBy"
-                            ) as? String
+                        reviewedBy = data?.get(
+                            "reviewedBy"
+                        ) as? String
                     )
 
                     onChange(verification)

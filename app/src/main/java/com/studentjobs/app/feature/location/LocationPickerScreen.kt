@@ -96,15 +96,15 @@ fun LocationPickerScreen(
                 ) {
 
                     Text(
-                        text = "Selected Location",
+                        text = "Lựa chọn vị trí gần đúng",
                         style = MaterialTheme.typography.titleMedium
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Text("Latitude: $selectedLat")
+                    Text("Vĩ độ: $selectedLat")
 
-                    Text("Longitude: $selectedLng")
+                    Text("Kinh độ: $selectedLng")
 
                     Spacer(modifier = Modifier.height(16.dp))
 

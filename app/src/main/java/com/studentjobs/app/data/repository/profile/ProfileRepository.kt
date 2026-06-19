@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.repository.profile
 
+import android.net.Uri
+import com.google.firebase.storage.FirebaseStorage
 import com.studentjobs.app.data.model.employer.EmployerProfile
 import com.studentjobs.app.data.model.employer.EmployerVerification
 import com.studentjobs.app.data.model.student.StudentProfile
@@ -10,179 +12,112 @@ import com.studentjobs.app.firebase.firestore.EmployerService
 import com.studentjobs.app.firebase.firestore.StudentService
 import com.studentjobs.app.firebase.firestore.UserServiceNew
 import com.studentjobs.app.firebase.firestore.VerificationService
+import kotlinx.coroutines.tasks.await
 
 class ProfileRepository(
-
     private val userService: UserServiceNew,
-
     private val studentService: StudentService,
-
     private val employerService: EmployerService,
-
     private val verificationService: VerificationService
-
 ) {
 
     // ========================================
     // GET USER CORE
     // ========================================
-    suspend fun getUserCore(
-        uid: String
-    ): UserCore? {
-
-        return userService
-            .getUserCore(uid)
+    suspend fun getUserCore(uid: String): UserCore? {
+        return userService.getUserCore(uid)
     }
 
     // ========================================
     // STUDENT PROFILE
     // ========================================
-    suspend fun getStudentProfile(
-        uid: String
-    ): StudentProfile? {
-
-        return studentService
-            .getStudentProfile(uid)
+    suspend fun getStudentProfile(uid: String): StudentProfile? {
+        return studentService.getStudentProfile(uid)
     }
 
-    suspend fun updateStudentProfile(
-        profile: StudentProfile
-    ): Result<Unit> {
-
-        return studentService
-            .updateStudentProfile(profile)
+    suspend fun updateStudentProfile(profile: StudentProfile): Result<Unit> {
+        return studentService.updateStudentProfile(profile)
     }
 
     // ========================================
     // STUDENT VERIFICATION
     // ========================================
-    suspend fun getStudentVerification(
-        uid: String
-    ): StudentVerification? {
-
-        return verificationService
-            .getStudentVerification(uid)
+    suspend fun getStudentVerification(uid: String): StudentVerification? {
+        return verificationService.getStudentVerification(uid)
     }
+
     suspend fun updateStudentVerificationFields(
-
         uid: String,
-
         fields: Map<String, Any>
-
     ): Result<Unit> {
-
-        return verificationService
-            .updateStudentVerificationFields(
-
-                uid = uid,
-
-                fields = fields
-            )
+        return verificationService.updateStudentVerificationFields(uid = uid, fields = fields)
     }
 
     // ========================================
     // EMPLOYER PROFILE
     // ========================================
-    suspend fun getEmployerProfile(
-        uid: String
-    ): EmployerProfile? {
-
-        return employerService
-            .getEmployerProfile(uid)
+    suspend fun getEmployerProfile(uid: String): EmployerProfile? {
+        return employerService.getEmployerProfile(uid)
     }
 
-    suspend fun updateEmployerProfile(
-        profile: EmployerProfile
-    ): Result<Unit> {
-
-        return employerService
-            .updateEmployerProfile(profile)
+    // Hàm này đã có sẵn khớp với ViewModel của anh
+    suspend fun updateEmployerProfile(uid: String, profile: EmployerProfile): Result<Unit> {
+        return employerService.updateEmployerProfile(profile)
     }
 
     // ========================================
     // EMPLOYER VERIFICATION
     // ========================================
-    suspend fun getEmployerVerification(
-        uid: String
-    ): EmployerVerification? {
-
-        return verificationService
-            .getEmployerVerification(uid)
+    suspend fun getEmployerVerification(uid: String): EmployerVerification? {
+        return verificationService.getEmployerVerification(uid)
     }
+
     suspend fun updateEmployerVerificationFields(
-
         uid: String,
-
         fields: Map<String, Any>
-
     ): Result<Unit> {
-
-        return verificationService
-            .updateEmployerVerificationFields(
-
-                uid = uid,
-
-                fields = fields
-            )
+        return verificationService.updateEmployerVerificationFields(uid = uid, fields = fields)
     }
+
     // ========================================
-    // CHECK ROLE
+    // 🔥 FIREBASE STORAGE (THÊM MỚI ĐỂ UP AVATAR/LOGO)
     // ========================================
-    suspend fun isStudent(
-        uid: String
-    ): Boolean {
-
-        val user =
-            userService.getUserCore(uid)
-
-        return user?.role ==
-                UserRole.STUDENT
+    suspend fun uploadEmployerStorageFile(path: String, uri: Uri): String {
+        val storageRef = FirebaseStorage.getInstance().reference.child(path)
+        storageRef.putFile(uri).await()
+        return storageRef.downloadUrl.await().toString()
     }
 
-    suspend fun isEmployer(
-        uid: String
-    ): Boolean {
-
-        val user =
-            userService.getUserCore(uid)
-
-        return user?.role ==
-                UserRole.EMPLOYER
+    // ========================================
+    // CHECK ROLE & LISTENERS
+    // ========================================
+    suspend fun isStudent(uid: String): Boolean {
+        val user = userService.getUserCore(uid)
+        return user?.role == UserRole.STUDENT
     }
 
-    suspend fun updateStudentVerifiedStatus(
-        uid: String,
-        verified: Boolean
-    ): Result<Unit> {
-
-        return userService
-            .updateStudentVerificationStatus(
-                uid,
-                verified
-            )
+    suspend fun isEmployer(uid: String): Boolean {
+        val user = userService.getUserCore(uid)
+        return user?.role == UserRole.EMPLOYER
     }
 
-    fun listenStudentVerification(
-        uid: String,
-        onChange: (StudentVerification?) -> Unit
-    ) {
-
-        verificationService
-            .listenStudentVerification(
-                uid,
-                onChange
-            )
+    suspend fun updateStudentVerifiedStatus(uid: String, verified: Boolean): Result<Unit> {
+        return userService.updateStudentVerificationStatus(uid, verified)
     }
 
-    fun listenUserCore(
-        uid: String,
-        onChange: (UserCore?) -> Unit
-    ) {
-
-        userService.listenUserCore(
-            uid,
-            onChange
-        )
+    fun listenStudentVerification(uid: String, onChange: (StudentVerification?) -> Unit) {
+        verificationService.listenStudentVerification(uid, onChange)
     }
 
+    fun listenUserCore(uid: String, onChange: (UserCore?) -> Unit) {
+        userService.listenUserCore(uid, onChange)
+    }
+    // Trong ProfileRepository.kt
+    fun listenEmployerProfile(uid: String, onChange: (EmployerProfile?) -> Unit) {
+        employerService.listenEmployerProfile(uid, onChange)
+    }
+
+    fun listenEmployerVerification(uid: String, onChange: (EmployerVerification?) -> Unit) {
+        verificationService.listenEmployerVerification(uid, onChange)
+    }
 }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 import java.util.UUID
 
 class CreateJobViewModel(
@@ -245,8 +246,7 @@ class CreateJobViewModel(
                     _uiState.value.endMinute
                 ),
 
-            createdAt =
-                System.currentTimeMillis()
+            createdAt = Date()
         )
 
         _uiState.value =
@@ -388,11 +388,9 @@ class CreateJobViewModel(
                         autoRecruitmentEnabled =
                             _uiState.value.autoRecruitmentEnabled,
 
-                        createdAt =
-                            System.currentTimeMillis(),
+                        createdAt = Date(),
 
-                        updatedAt =
-                            System.currentTimeMillis()
+                        updatedAt = Date()
                     )
 
                 repository.createJob(

@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.application
 
+import java.util.Date
+
 data class ApplicationEntity(
 
     val applicationId: String = "",
@@ -22,5 +24,5 @@ data class ApplicationEntity(
 
     val businessName: String = "",
 
-    val appliedAt: Long = 0L
+    val appliedAt: Date? = null
 )

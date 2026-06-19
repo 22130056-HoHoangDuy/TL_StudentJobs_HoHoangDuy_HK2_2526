@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.studentjobs.app.feature.auth.AuthViewModel
 import com.studentjobs.app.feature.auth.LoginScreen
 import com.studentjobs.app.feature.auth.RegisterScreen
+import com.studentjobs.app.feature.auth.forgot.ForgotPasswordScreen
 import com.studentjobs.app.feature.onboarding.OnBoardingScreen
 import com.studentjobs.app.feature.role.RoleSelectionScreen
 import com.studentjobs.app.ui.MainScreen
@@ -73,9 +74,15 @@ fun AppNavGraph(viewModel: AuthViewModel) {
         composable("login") {
             LoginScreen(
                 viewModel = viewModel,
+
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
+
+                onForgotPasswordClick = {
+                    navController.navigate("forgot_password")
+                },
+
                 onLoginSuccess = { user ->
 
                     prefs.saveUserRole(
@@ -101,6 +108,16 @@ fun AppNavGraph(viewModel: AuthViewModel) {
                     navController.navigate("login") {
                         popUpTo("register") { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable("forgot_password") {
+
+            ForgotPasswordScreen(
+
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }

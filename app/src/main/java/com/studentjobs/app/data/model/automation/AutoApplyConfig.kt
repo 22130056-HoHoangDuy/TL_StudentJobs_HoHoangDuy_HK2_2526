@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.automation
 
+import java.util.Date
+
 data class AutoApplyConfig(
 
     // ===== OWNER =====
@@ -26,7 +28,6 @@ data class AutoApplyConfig(
 
     // ===== LIMIT =====
     val maxPendingApplications: Int = 5,
-
     // ===== SYSTEM =====
-    val updatedAt: Long = 0L
+    val updatedAt: Date? = null
 )

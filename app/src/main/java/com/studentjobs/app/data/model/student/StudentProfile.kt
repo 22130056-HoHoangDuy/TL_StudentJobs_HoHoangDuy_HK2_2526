@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.student
 
+import java.util.Date
+
 data class StudentProfile(
 
     // uid
@@ -35,6 +37,6 @@ data class StudentProfile(
     val preferredSalaryMin: Double? = null,
 
     // system log
-    val createdAt: Long = 0L,
-    val updatedAt: Long = 0L
+    val createdAt: Date? = null,
+    val updatedAt: Date? = null
 )

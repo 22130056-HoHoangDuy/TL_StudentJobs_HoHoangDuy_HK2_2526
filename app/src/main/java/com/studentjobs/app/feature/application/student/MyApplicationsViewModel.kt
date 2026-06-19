@@ -66,7 +66,8 @@ class MyApplicationsViewModel : ViewModel() {
                         userService.getUserCore(
                             app.employerUid
                         )
-
+// DEBUG: In ra để xem status trong Firestore thực tế đang lưu là gì
+                    println("DEBUG_STATUS: Job: ${app.jobTitle}, Status in DB: '${app.status}'")
                     StudentApplicationItem(
 
                         application = app,

@@ -2,6 +2,7 @@ package com.studentjobs.app.feature.profile.employer.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,15 +37,12 @@ import com.studentjobs.app.feature.profile.ProfileUiState
 @Composable
 fun BusinessHeaderCard(
     state: ProfileUiState,
-    onEditHeader: () -> Unit
+    onEditAvatar: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val profile = state.employerProfile
     val gradient = Brush.linearGradient(
-        colors = listOf(
-            Color(0xFF6366F1),
-            Color(0xFFA855F7),
-            Color(0xFFEC4899)
-        ) // Màu sắc rực rỡ hơn
+        colors = listOf(Color(0xFF6366F1), Color(0xFFA855F7), Color(0xFFEC4899))
     )
 
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -55,65 +54,90 @@ fun BusinessHeaderCard(
             Column(
                 modifier = Modifier
                     .background(gradient)
-                    .padding(top = 40.dp, bottom = 24.dp, start = 24.dp, end = 24.dp),
+                    .padding(top = 54.dp, bottom = 28.dp, start = 24.dp, end = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Avatar với viền Neon
-                Box(contentAlignment = Alignment.Center) {
+                // Avatar tương tác click để đổi ảnh trực tiếp
+                Box(
+                    contentAlignment = Alignment.BottomEnd,
+                    modifier = Modifier.clickable { onEditAvatar() }
+                ) {
+                    // ... trong BusinessHeaderCard.kt ...
+
                     AsyncImage(
-                        model = profile?.businessLogoUrl,
-                        contentDescription = null,
+                        // 🔥 Cập nhật dòng này: Ưu tiên ảnh tạm trong RAM trước
+                        model = profile?.tempAvatarUri?.ifBlank { null }
+                            ?: profile?.businessLogoUrl,
+                        contentDescription = "Business Logo",
                         modifier = Modifier
-                            .size(100.dp)
+                            .size(96.dp)
                             .clip(CircleShape)
                             .border(3.dp, Color.White, CircleShape)
                     )
+                    // Badge bút chì nhỏ góc avatar báo hiệu đổi được ảnh
+                    Surface(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .border(2.dp, Color.White, CircleShape)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Default.Edit,
+                                null,
+                                modifier = Modifier.size(12.dp),
+                                tint = Color.White
+                            )
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Text(
                     text = profile?.businessName ?: "Chưa cập nhật",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
                     fontWeight = FontWeight.ExtraBold
                 )
 
-                // Chip danh mục kiểu GenZ
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Surface(
-                    color = Color.White.copy(alpha = 0.2f),
-                    shape = CircleShape,
-                    modifier = Modifier.padding(top = 8.dp)
+                    color = Color.White.copy(alpha = 0.15f),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Row(
-                        Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.Verified,
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp), // Set kích thước ở Modifier nha anh
-                            tint = Color(0xFF22C55E)
+                            modifier = Modifier.size(14.dp),
+                            tint = Color.White
                         )
-                        Spacer(Modifier.width(4.dp))
+                        Spacer(Modifier.width(6.dp))
                         Text(
-                            profile?.businessCategory ?: "Category",
+                            text = profile?.businessCategory ?: "Doanh nghiệp",
                             color = Color.White,
-                            style = MaterialTheme.typography.labelMedium
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
         }
 
-        // Nút Edit Header nổi
+        // 🔥 THÊM NÚT SETTINGS chuẩn phong cách như của Student tuyển dụng
         IconButton(
-            onClick = onEditHeader,
+            onClick = onSettingsClick,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(16.dp)
+                .padding(top = 16.dp, end = 16.dp)
         ) {
-            Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White)
+            Icon(Icons.Default.Settings, contentDescription = "Cài đặt", tint = Color.White)
         }
     }
 }

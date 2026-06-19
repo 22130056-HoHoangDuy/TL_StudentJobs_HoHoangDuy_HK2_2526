@@ -4,6 +4,7 @@ import android.net.Uri
 import com.studentjobs.app.data.model.student.StudentSchedule
 import com.studentjobs.app.firebase.firestore.StudentScheduleService
 import com.studentjobs.app.firebase.storage.ScheduleStorageService
+import java.util.Date
 
 class ScheduleRepository {
 
@@ -56,11 +57,9 @@ class ScheduleRepository {
 
                     ocrProcessed = false,
 
-                    createdAt =
-                        System.currentTimeMillis(),
+                    createdAt = Date(),
 
-                    updatedAt =
-                        System.currentTimeMillis()
+                    updatedAt = Date()
                 )
 
             firestoreService

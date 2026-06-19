@@ -242,7 +242,7 @@ fun CreateJobScreen(
                         }
 
                         Text(
-                            "Tự động tìm kiếm và mời các sinh viên có TrustScore cao phù hợp nhất.",
+                            "Tự động tìm kiếm và đề xuất các ứng viên phù hợp nhất với công việc của bạn.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(vertical = 12.dp)

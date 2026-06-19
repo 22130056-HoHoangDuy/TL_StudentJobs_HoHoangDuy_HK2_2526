@@ -1,5 +1,6 @@
 package com.studentjobs.app.firebase.firestore
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.studentjobs.app.data.model.user.SubscriptionPlan
@@ -7,8 +8,10 @@ import com.studentjobs.app.data.model.user.UserCore
 import com.studentjobs.app.data.model.user.UserRole
 import com.studentjobs.app.data.model.user.UserStatus
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 class UserServiceNew {
+
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -129,7 +132,7 @@ class UserServiceNew {
                     SubscriptionPlan.FREE
                 },
 
-                subscriptionExpiredAt = doc.getLong(
+                subscriptionExpiredAt = doc.getDate(
                     "subscriptionExpiredAt"
                 ),
 
@@ -145,9 +148,9 @@ class UserServiceNew {
                     UserStatus.ACTIVE
                 },
 
-                createdAt = doc.getLong("createdAt") ?: 0L,
+                createdAt = doc.getDate("createdAt"),
 
-                updatedAt = doc.getLong("updatedAt") ?: 0L
+                updatedAt = doc.getDate("updatedAt")
             )
 
         } catch (e: Exception) {
@@ -178,7 +181,7 @@ class UserServiceNew {
 
                     "userVerified" to verified,
 
-                    "updatedAt" to System.currentTimeMillis()
+                    "updatedAt" to Date(),
                 )
             ).await()
 
@@ -233,7 +236,7 @@ class UserServiceNew {
         businessStoreFrontImageUrl: String
     ): Result<Unit> {
         return try {
-            val now = System.currentTimeMillis()
+            val now = Date()
 
             db.collection("employer_verifications").document(uid).set(
                 mapOf(
@@ -248,8 +251,8 @@ class UserServiceNew {
                     "businessLicenseUrl" to businessLicenseUrl,
                     "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
                     "submissionStatus" to "PENDING",
-                    "submittedAt" to now,
-                    "updatedAt" to now
+                    "submittedAt" to Date(),
+                    "updatedAt" to Date()
                 ), SetOptions.merge()
             ).await()
 
@@ -264,7 +267,7 @@ class UserServiceNew {
                     "businessLatitude" to businessLatitude,
                     "businessLongitude" to businessLongitude,
                     "businessStoreFrontImageUrl" to businessStoreFrontImageUrl,
-                    "updatedAt" to now
+                    "updatedAt" to Date()
                 ), SetOptions.merge()
             ).await()
 
@@ -292,7 +295,7 @@ class UserServiceNew {
 
                     "userVerified" to verified,
 
-                    "updatedAt" to System.currentTimeMillis()
+                    "updatedAt" to Date()
 
                 ),
 
@@ -327,8 +330,7 @@ class UserServiceNew {
 
                         "trustScore" to score,
 
-                        "updatedAt" to
-                                System.currentTimeMillis()
+                        "updatedAt" to Date()
                     )
                 )
                 .await()
@@ -340,6 +342,43 @@ class UserServiceNew {
             e.printStackTrace()
 
             Result.failure(e)
+        }
+    }
+
+    suspend fun getUserByEmail(
+        email: String
+    ): UserCore? {
+
+        return try {
+
+            val snapshot =
+
+                db.collection("users")
+                    .whereEqualTo(
+                        "email",
+                        email
+                    )
+                    .limit(1)
+                    .get()
+                    .await()
+
+            if (snapshot.isEmpty) {
+
+                null
+
+            } else {
+
+                snapshot.documents.first()
+                    .toObject(
+                        UserCore::class.java
+                    )
+            }
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            null
         }
     }
 }

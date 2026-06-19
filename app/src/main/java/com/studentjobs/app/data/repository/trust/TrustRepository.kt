@@ -3,6 +3,7 @@ package com.studentjobs.app.data.repository.trust
 import com.studentjobs.app.data.model.trust.TrustLog
 import com.studentjobs.app.firebase.firestore.TrustService
 import com.studentjobs.app.firebase.firestore.UserServiceNew
+import java.util.Date
 import java.util.UUID
 
 class TrustRepository(
@@ -135,8 +136,7 @@ class TrustRepository(
                         description =
                             description,
 
-                        createdAt =
-                            System.currentTimeMillis()
+                        createdAt = Date()
                     )
                 )
 

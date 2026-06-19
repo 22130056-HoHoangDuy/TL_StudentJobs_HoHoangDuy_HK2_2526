@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.trust
 
+import java.util.Date
+
 data class Rating(
 
     // ===== ID =====
@@ -17,5 +19,5 @@ data class Rating(
     val comment: String? = null,
 
     // ===== SYSTEM =====
-    val createdAt: Long = 0L
+    val createdAt: Date? = null
 )

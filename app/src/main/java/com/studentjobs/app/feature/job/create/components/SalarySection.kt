@@ -17,134 +17,65 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SalarySection(
-
     salaryMin: String,
-
     salaryMax: String,
-
     onSalaryMinChange: (String) -> Unit,
-
     onSalaryMaxChange: (String) -> Unit
-
 ) {
-
     val quickValues = listOf(
-
         "25000",
-
         "30000",
-
         "35000",
-
         "50000"
     )
 
     Card(
-
-        modifier =
-            Modifier.fillMaxWidth(),
-
-        elevation =
-            CardDefaults.cardElevation(
-                defaultElevation = 4.dp
-            )
-
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        )
     ) {
-
         Column(
-
-            modifier =
-                Modifier.padding(16.dp),
-
-            verticalArrangement =
-                Arrangement.spacedBy(12.dp)
-
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
             Text(
-
-                text =
-                    "💰 Salary",
-
-                style =
-                    MaterialTheme.typography
-                        .titleMedium
+                text = "💰 Mức lương",
+                style = MaterialTheme.typography.titleMedium
             )
 
             Text(
-
-                text =
-                    "Quick Select"
+                text = "Chọn nhanh"
             )
 
             FlowRow(
-
-                horizontalArrangement =
-                    Arrangement.spacedBy(
-                        8.dp
-                    )
-
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-
                 quickValues.forEach {
-
                     AssistChip(
-
                         onClick = {
-
-                            onSalaryMinChange(
-                                it
-                            )
-
-                            onSalaryMaxChange(
-                                it
-                            )
+                            onSalaryMinChange(it)
+                            onSalaryMaxChange(it)
                         },
-
                         label = {
-
-                            Text(
-                                "${it}đ"
-                            )
+                            Text("${it}đ/giờ")
                         }
                     )
                 }
             }
 
             OutlinedTextField(
-
                 value = salaryMin,
-
-                onValueChange =
-                    onSalaryMinChange,
-
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                label = {
-
-                    Text(
-                        "Minimum Salary"
-                    )
-                }
+                onValueChange = onSalaryMinChange,
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Lương tối thiểu (VNĐ)") }
             )
 
             OutlinedTextField(
-
                 value = salaryMax,
-
-                onValueChange =
-                    onSalaryMaxChange,
-
-                modifier =
-                    Modifier.fillMaxWidth(),
-
-                label = {
-
-                    Text(
-                        "Maximum Salary"
-                    )
-                }
+                onValueChange = onSalaryMaxChange,
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Lương tối đa (VNĐ)") }
             )
         }
     }

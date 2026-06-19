@@ -1,5 +1,7 @@
 package com.studentjobs.app.data.model.trust
 
+import java.util.Date
+
 data class TrustLog(
 
     // ===== ID =====
@@ -19,5 +21,5 @@ data class TrustLog(
     val description: String? = null,
 
     // ===== SYSTEM =====
-    val createdAt: Long = 0L
+    val createdAt: Date? = null
 )

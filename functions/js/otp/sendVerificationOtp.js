@@ -53,7 +53,7 @@ const sendVerificationOtp = onCall(
         .set({
           email: email,
           otp: otp,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         });
 
       // SEND EMAIL

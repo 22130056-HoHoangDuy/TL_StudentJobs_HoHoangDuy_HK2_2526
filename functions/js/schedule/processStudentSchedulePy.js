@@ -75,7 +75,7 @@ exports.processStudentSchedulePy =
                         true,
 
                     updatedAt:
-                        Date.now()
+                        new Date()
                 });
 
                 return null;

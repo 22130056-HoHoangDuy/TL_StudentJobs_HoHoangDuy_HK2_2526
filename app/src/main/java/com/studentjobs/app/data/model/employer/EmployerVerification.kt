@@ -1,6 +1,7 @@
 package com.studentjobs.app.data.model.employer
 
 import com.studentjobs.app.data.model.status.VerificationStatus
+import java.util.Date
 
 data class EmployerVerification(
     // uid
@@ -36,7 +37,7 @@ data class EmployerVerification(
     val rejectionReason: String? = null,
 
     // system log
-    val submittedAt: Long = 0L,
-    val reviewedAt: Long? = null,
+    val submittedAt: Date? = null,
+    val reviewedAt: Date? = null,
     val reviewedBy: String? = null,
 )

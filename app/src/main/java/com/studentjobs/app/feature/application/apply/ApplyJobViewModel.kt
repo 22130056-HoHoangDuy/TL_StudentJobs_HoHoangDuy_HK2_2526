@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 import java.util.UUID
 
 class ApplyJobViewModel(
@@ -253,8 +254,7 @@ class ApplyJobViewModel(
                         businessName =
                             job.businessName,
 
-                        appliedAt =
-                            System.currentTimeMillis()
+                        appliedAt = Date()
                     )
 
                 Log.d(
