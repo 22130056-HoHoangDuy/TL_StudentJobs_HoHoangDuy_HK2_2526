@@ -118,22 +118,22 @@ fun ProfileScreen(
                 Icon(Icons.Default.Settings, "Cài đặt", tint = Color.White)
             }
 
-            DropdownMenu(
-                expanded = showSettingsMenu,
-                onDismissRequest = { showSettingsMenu = false }) {
-                DropdownMenuItem(
-                    text = { Text("Cài đặt hệ thống") },
-                    onClick = {
-                        navController.navigate("settings_screen"); showSettingsMenu = false
-                    },
-                    leadingIcon = { Icon(Icons.Default.Settings, null) }
-                )
-                DropdownMenuItem(
-                    text = { Text("Đăng xuất", color = Color(0xFFF87171)) },
-                    onClick = { showLogoutDialog = true; showSettingsMenu = false },
-                    leadingIcon = { Icon(Icons.Default.Logout, null, tint = Color(0xFFF87171)) }
-                )
-            }
+//            DropdownMenu(
+//                expanded = showSettingsMenu,
+//                onDismissRequest = { showSettingsMenu = false }) {
+//                DropdownMenuItem(
+//                    text = { Text("Cài đặt hệ thống") },
+//                    onClick = {
+//                        navController.navigate("settings_screen"); showSettingsMenu = false
+//                    },
+//                    leadingIcon = { Icon(Icons.Default.Settings, null) }
+//                )
+//                DropdownMenuItem(
+//                    text = { Text("Đăng xuất", color = Color(0xFFF87171)) },
+//                    onClick = { showLogoutDialog = true; showSettingsMenu = false },
+//                    leadingIcon = { Icon(Icons.Default.Logout, null, tint = Color(0xFFF87171)) }
+//                )
+//            }
 
             // Nội dung chính
             Column(Modifier.fillMaxSize()) {
@@ -190,19 +190,19 @@ fun ProfileScreen(
 
     // Dialogs
     if (showLogoutDialog) {
-        AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Đăng xuất") },
-            text = { Text("Bạn có chắc chắn muốn đăng xuất?") },
-            confirmButton = {
-                TextButton(onClick = { showLogoutDialog = false; onLogout() }) {
-                    Text(
-                        "Đăng xuất",
-                        color = Color(0xFFF87171)
-                    )
-                }
-            },
-            dismissButton = { TextButton(onClick = { showLogoutDialog = false }) { Text("Hủy") } }
-        )
+//        AlertDialog(
+//            onDismissRequest = { showLogoutDialog = false },
+//            title = { Text("Đăng xuất") },
+//            text = { Text("Bạn có chắc chắn muốn đăng xuất?") },
+//            confirmButton = {
+//                TextButton(onClick = { showLogoutDialog = false; onLogout() }) {
+//                    Text(
+//                        "Đăng xuất",
+//                        color = Color(0xFFF87171)
+//                    )
+//                }
+//            },
+//            dismissButton = { TextButton(onClick = { showLogoutDialog = false }) { Text("Hủy") } }
+//        )
     }
 }
