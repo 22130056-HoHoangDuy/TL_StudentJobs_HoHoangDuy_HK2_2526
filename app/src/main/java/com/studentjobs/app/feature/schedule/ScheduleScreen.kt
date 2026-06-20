@@ -2,6 +2,7 @@ package com.studentjobs.app.feature.schedule
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,15 +46,9 @@ fun ScheduleScreen(
     val uiState by viewModel.uiState.collectAsState()
     val uid = FirebaseAuth.getInstance().currentUser?.uid
 
-    // ========================================
-    // 🔥 FIX LỖI GIẬT MÀN HÌNH CHÍNH Ở ĐÂY 🔥
-    // Bọc trong LaunchedEffect để chỉ chạy duy nhất 1 lần khi màn hình khởi tạo
-    // ========================================
     LaunchedEffect(uid) {
         if (uid != null) {
-            viewModel.observeSchedule(
-                uid
-            )
+            viewModel.observeSchedule(uid)
         }
     }
 
@@ -62,7 +58,7 @@ fun ScheduleScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = Color(0xFF0F172A) // Ép tone tối Cyberpunk đồng bộ hệ thống
+        containerColor = Color(0xFF0F172A)
     ) { padding ->
 
         // ========================================
@@ -78,26 +74,47 @@ fun ScheduleScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "Tính năng tải thời khóa biểu OCR chỉ dành riêng cho tài khoản hội viên PLUS ⭐",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Tính năng tải thời khóa biểu OCR chỉ dành riêng cho tài khoản hội viên PLUS ⭐",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            color = Color.White,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Nâng cấp ngay để AI tự bóc tách lịch học và giúp bạn né bẫy trùng ca làm việc nhé!",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.White.copy(alpha = 0.6f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
                     onClick = { navController.navigate("subscription") },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFFB300) // Vàng Gold nổi bật
-                    ),
-                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFB300)),
+                    shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
+                        .height(56.dp)
                 ) {
-                    Text("Nhận diện lịch học", color = Color.Black, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "Nâng Cấp Hội Viên PLUS",
+                        color = Color.Black,
+                        fontWeight = FontWeight.ExtraBold,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
             return@Scaffold
@@ -116,13 +133,47 @@ fun ScheduleScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 CircularProgressIndicator(
-                    color = Color(0xFF06B6D4), // Xanh cyan thương hiệu
-                    modifier = Modifier.size(44.dp)
+                    color = Color(0xFF06B6D4),
+                    modifier = Modifier.size(48.dp),
+                    strokeWidth = 4.dp
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = "AI đang xử lý thời khóa biểu của bạn...",
-                    color = Color.White.copy(alpha = 0.7f),
+                    text = "AI đang quét thời khóa biểu của bạn...",
+                    color = Color(0xFF06B6D4),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                )
+            }
+            return@Scaffold
+        }
+
+        // ========================================
+        // 3. TRẠNG THÁI ĐANG XỬ LÝ OCR (PROCESSING)
+        // ========================================
+        if (uiState.isProcessingOcr) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF0F172A))
+                    .padding(padding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    color = Color(0xFF38BDF8),
+                    modifier = Modifier.size(56.dp),
+                    strokeWidth = 4.dp
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "Hệ thống đang phân tích thời khóa biểu...",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Chờ tí nhé, quét bằng AI siêu tốc trong vài giây thui!",
+                    color = Color.White.copy(alpha = 0.6f),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -130,47 +181,8 @@ fun ScheduleScreen(
         }
 
         // ========================================
-        // 3. TRẠNG THÁI TRỐNG (EMPTY STATE)
+        // 4. TRẠNG THÁI TRỐNG (EMPTY STATE)
         // ========================================
-
-        //PROCESSING
-        if (uiState.isProcessingOcr) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-
-                horizontalAlignment =
-                    Alignment.CenterHorizontally,
-
-                verticalArrangement =
-                    Arrangement.Center
-            ) {
-
-                CircularProgressIndicator()
-
-                Spacer(
-                    Modifier.height(16.dp)
-                )
-
-                Text(
-                    "Hệ thống đang phân tích thời khóa biểu..."
-                )
-
-                Spacer(
-                    Modifier.height(8.dp)
-                )
-
-                Text(
-                    "Quá trình này có thể mất vài giây"
-                )
-            }
-
-            return@Scaffold
-        }
-
-
         if (uiState.schedule == null) {
             Column(
                 modifier = Modifier
@@ -183,45 +195,41 @@ fun ScheduleScreen(
             ) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFF1E293B) // Card xám tối đồng bộ
-                    )
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
                 ) {
                     Column(modifier = Modifier.padding(24.dp)) {
                         Text(
-                            text = "Chưa có dữ liệu lịch học 📅",
-                            style = MaterialTheme.typography.titleMedium,
+                            text = "Trống lịch học rồi nè! 📅",
+                            style = MaterialTheme.typography.titleLarge,
                             color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
+                        Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "Hãy tải ảnh chụp thời khóa biểu từ trường của bạn lên. Hệ thống sẽ tự động bóc tách để kích hoạt tính năng Cảnh báo trùng ca làm việc khi tìm việc.",
+                            text = "Hãy tải ảnh chụp thời khóa biểu từ trường của bạn lên. Hệ thống AI sẽ tự động bóc tách để kích hoạt tính năng Cảnh báo trùng ca làm việc khi tìm việc part-time.",
                             color = Color.White.copy(alpha = 0.7f),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.3
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Button(
                     onClick = { navController.navigate("schedule_upload") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(54.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF06B6D4)
-                    )
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF06B6D4))
                 ) {
                     Text(
-                        "Tải Thời Khóa Biểu Lên",
+                        text = "Tải Thời Khóa Biểu Lên Ngay",
                         color = Color.White,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold,
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
@@ -229,18 +237,20 @@ fun ScheduleScreen(
         }
 
         // ========================================
-        // 4. HIỂN THỊ LỊCH HỌC KHI ĐÃ CÓ DỮ LIỆU
+        // 5. HIỂN THỊ LỊCH HỌC KHI ĐÃ CÓ DỮ LIỆU
         // ========================================
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFF0F172A))
                 .padding(padding)
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 ScheduleCard(schedule = uiState.schedule!!)
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
