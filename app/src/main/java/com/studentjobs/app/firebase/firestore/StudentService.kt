@@ -78,4 +78,27 @@ class StudentService {
             Result.failure(e)
         }
     }
+
+    fun listenStudentProfile(
+        uid: String,
+        onChange: (StudentProfile?) -> Unit
+    ) {
+
+        db.collection("students")
+            .document(uid)
+            .addSnapshotListener { snapshot, error ->
+
+                if (error != null) {
+                    error.printStackTrace()
+                    onChange(null)
+                    return@addSnapshotListener
+                }
+
+                onChange(
+                    snapshot?.toObject(
+                        StudentProfile::class.java
+                    )
+                )
+            }
+    }
 }

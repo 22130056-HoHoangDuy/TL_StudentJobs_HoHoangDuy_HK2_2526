@@ -76,7 +76,7 @@ class AuthRepository(
 
                 role = role,
 
-                loginEmail = email,
+                email = email,
 
                 phoneNumber = null,
 

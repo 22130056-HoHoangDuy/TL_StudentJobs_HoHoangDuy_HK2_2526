@@ -68,6 +68,12 @@ fun ProfileScreen(
     }
 
     LaunchedEffect(Unit) {
+        android.util.Log.e(
+            "PROFILE_TEST",
+            "LAUNCHED EFFECT RUN"
+        )
+
+        //save location
         savedStateHandle?.get<Double>("selected_lat")?.let { lat ->
             savedStateHandle.get<Double>("selected_lng")?.let { lng ->
                 viewModel.updateStudentLocation(lat, lng)
@@ -75,6 +81,29 @@ fun ProfileScreen(
                 savedStateHandle.remove<Double>("selected_lng")
             }
         }
+        // save student skills
+        savedStateHandle
+            ?.get<List<String>>("selected_categories")
+            ?.let { categories ->
+
+                val skills =
+                    savedStateHandle.get<List<String>>(
+                        "selected_skills"
+                    ) ?: emptyList()
+
+                viewModel.updateStudentSkills(
+                    categories,
+                    skills
+                )
+
+                savedStateHandle.remove<List<String>>(
+                    "selected_categories"
+                )
+
+                savedStateHandle.remove<List<String>>(
+                    "selected_skills"
+                )
+            }
     }
 
     if (state.isLoading) {
@@ -141,12 +170,28 @@ fun ProfileScreen(
                     UserRole.STUDENT -> {
                         if (isStudentVerified) {
                             VerifiedStudentProfile(
-                                state,
-                                {},
-                                {},
-                                {},
-                                {},
-                                { showLogoutDialog = true })
+                                state = state,
+
+                                onUpgradePlusClick = {
+                                    navController.navigate("subscription/STUDENT")
+                                },
+
+                                onScheduleClick = {
+                                    navController.navigate("schedule")
+                                },
+
+                                onSelectLocation = {
+                                    navController.navigate("location_picker")
+                                },
+
+                                onManageSkills = {
+                                    navController.navigate("manage_skills")
+                                },
+
+                                onLogoutClick = {
+                                    showLogoutDialog = true
+                                }
+                            )
                         } else {
                             ProfileCompletionSection(
                                 isStudentVerified = state.studentVerification?.studentCardVerified == VerificationStatus.VERIFIED,

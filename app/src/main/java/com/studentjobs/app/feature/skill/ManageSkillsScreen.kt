@@ -199,7 +199,7 @@ fun ManageSkillsScreen(
 
             if (availableSkills.isEmpty()) {
                 Text(
-                    text = "Vui lòng tick chọn ít nhất một ngành nghề phía trên để AI hiển thị bộ kỹ năng gợi ý.",
+                    text = "Vui lòng tick chọn ít nhất một ngành nghề phía trên để hệ thống hiển thị bộ kỹ năng gợi ý.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray.copy(alpha = 0.8f),
                     modifier = Modifier.padding(vertical = 8.dp)

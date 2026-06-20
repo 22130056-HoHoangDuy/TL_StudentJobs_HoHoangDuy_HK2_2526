@@ -117,7 +117,7 @@ fun StudentEmailVerificationScreen(
             OutlinedTextField(
                 value = studentEmail,
                 onValueChange = { studentEmail = it },
-                label = { Text("Email Sinh viên (ví dụ: nguyenvanb@hcmut.edu.vn)") },
+                label = { Text("Email Sinh viên (ví dụ: 22130056@st.hcmuaf.edu.vn)") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(4.dp, RoundedCornerShape(16.dp)),

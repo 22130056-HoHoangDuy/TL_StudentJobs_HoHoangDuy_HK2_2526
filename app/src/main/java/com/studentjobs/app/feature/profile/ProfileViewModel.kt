@@ -91,9 +91,23 @@ class ProfileViewModel(
 
         if (role == UserRole.STUDENT) {
 
+            repository.listenStudentProfile(uid) { profile ->
+
+                android.util.Log.e(
+                    "PROFILE_DEBUG",
+                    "STUDENT_PROFILE = $profile"
+                )
+
+                _uiState.update {
+                    it.copy(
+                        studentProfile = profile
+                    )
+                }
+            }
+
             repository.listenStudentVerification(uid) { verification ->
 
-                android.util.Log.d(
+                android.util.Log.e(
                     "PROFILE_DEBUG",
                     "STUDENT_VERIFICATION = $verification"
                 )
@@ -236,6 +250,51 @@ class ProfileViewModel(
                     businessLogoUrl = downloadUrl
                 )
             )
+        }
+    }
+
+    fun updateStudentSkills(
+        categories: List<String>,
+        skills: List<String>
+    ) {
+
+        val profile =
+            _uiState.value.studentProfile
+                ?: return
+
+        viewModelScope.launch {
+
+            val updatedProfile =
+                profile.copy(
+
+                    preferredJobCategories =
+                        categories,
+
+                    skills =
+                        skills,
+
+                    updatedAt =
+                        Date()
+                )
+
+            repository.updateStudentProfile(
+                updatedProfile
+            )
+                .onSuccess {
+
+                    android.util.Log.e(
+                        "PROFILE_TEST",
+                        "SAVE SKILLS SUCCESS"
+                    )
+                }
+                .onFailure {
+
+                    android.util.Log.e(
+                        "PROFILE_TEST",
+                        "SAVE SKILLS FAIL",
+                        it
+                    )
+                }
         }
     }
 }

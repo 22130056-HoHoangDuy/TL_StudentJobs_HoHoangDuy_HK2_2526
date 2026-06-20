@@ -380,35 +380,37 @@ if (!alreadyRewarded) {
           createdAt: new Date(),
         });
 
-      await admin
-        .firestore()
-        .collection("student_verifications")
-        .doc(uid)
-        .set(
-          {
-            extractedStudentName: name,
-            extractedStudentId: studentId,
-            extractedStudentMajor: major,
-            extractedStudentSchoolName: school,
-            extractedStudentDob: dob,
-            studentCardVerified: "VERIFIED",
-            updatedAt: new Date()
+     await admin
+       .firestore()
+       .collection("student_verifications")
+       .doc(uid)
+       .set(
+         {
+           extractedStudentName: name,
+           extractedStudentId: studentId,
+           extractedStudentMajor: major,
+           extractedStudentSchoolName: school,
+           extractedStudentDob: dob,
 
-             // cleanup old legacy fields
-                isCardVerified:
-                    admin.firestore.FieldValue.delete(),
+           studentCardVerified: "VERIFIED",
 
-                  verificationStatus:
-                    admin.firestore.FieldValue.delete(),
+           updatedAt: new Date(),
 
-                  cardVerified:
-                    admin.firestore.FieldValue.delete(),
-            verificationStatus:
-              "PENDING, WAIT ANOTHER VERIFICATION FLOW...",
-          },
-          { merge: true }
-        );
+           // cleanup old legacy fields
+           isCardVerified:
+             admin.firestore.FieldValue.delete(),
 
+           verificationStatus:
+             admin.firestore.FieldValue.delete(),
+
+           cardVerified:
+             admin.firestore.FieldValue.delete(),
+
+           verificationStatus:
+             "PENDING, WAIT ANOTHER VERIFICATION FLOW..."
+         },
+         { merge: true }
+       );
       await admin.firestore()
         .collection("debug_logs")
         .add({

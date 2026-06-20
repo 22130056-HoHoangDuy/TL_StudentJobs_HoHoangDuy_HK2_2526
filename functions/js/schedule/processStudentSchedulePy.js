@@ -1,3 +1,4 @@
+const admin = require("firebase-admin");
 const axios = require("axios");
 
 const {
@@ -74,8 +75,7 @@ exports.processStudentSchedulePy =
                     ocrProcessed:
                         true,
 
-                    updatedAt:
-                        new Date()
+                    updatedAt: admin.firestore.FieldValue.serverTimestamp()
                 });
 
                 return null;

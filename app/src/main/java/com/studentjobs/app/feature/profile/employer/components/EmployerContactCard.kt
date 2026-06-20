@@ -78,7 +78,7 @@ fun EmployerContactCard(
             BentoInfoRow(
                 icon = Icons.Default.Email,
                 label = "Email đăng nhập",
-                value = state.userCore?.loginEmail ?: "Chưa cập nhật"
+                value = state.userCore?.email ?: "Chưa cập nhật"
             )
 
             // Đảm bảo modifier được truyền vào BentoInfoRow nếu hàm đó có hỗ trợ

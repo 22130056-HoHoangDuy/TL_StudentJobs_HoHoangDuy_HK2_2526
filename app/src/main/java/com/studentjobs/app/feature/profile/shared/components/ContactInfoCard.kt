@@ -111,7 +111,7 @@ fun ContactInfoCard(
                     )
                 },
                 label = "Email tài khoản hệ thống",
-                value = userCore?.loginEmail
+                value = userCore?.email
             )
         }
     }

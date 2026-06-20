@@ -90,4 +90,13 @@ class ScheduleRepository {
         return firestoreService
             .getSchedule(uid)
     }
+    fun listenSchedule(
+        uid: String,
+        onChange: (StudentSchedule?) -> Unit
+    ) {
+        firestoreService.listenSchedule(
+            uid,
+            onChange
+        )
+    }
 }

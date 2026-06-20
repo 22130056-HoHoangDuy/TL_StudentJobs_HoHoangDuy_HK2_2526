@@ -37,7 +37,7 @@ class UserServiceNew {
 
                 // ===== AUTH =====
 
-                "email" to user.loginEmail,
+                "email" to user.email,
 
                 "phoneNumber" to user.phoneNumber,
 
@@ -110,7 +110,7 @@ class UserServiceNew {
                     UserRole.STUDENT
                 },
 
-                loginEmail = doc.getString("email") ?: "",
+                email = doc.getString("email") ?: "",
 
                 phoneNumber = doc.getString("phoneNumber"),
 
