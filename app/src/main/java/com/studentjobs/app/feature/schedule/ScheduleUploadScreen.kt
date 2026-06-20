@@ -240,7 +240,6 @@ fun ScheduleUploadScreen(
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
-
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
