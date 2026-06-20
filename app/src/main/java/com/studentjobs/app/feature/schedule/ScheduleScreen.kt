@@ -50,7 +50,9 @@ fun ScheduleScreen(
     // ========================================
     LaunchedEffect(uid) {
         if (uid != null) {
-            viewModel.loadSchedule(uid)
+            viewModel.observeSchedule(
+                uid
+            )
         }
     }
 
@@ -130,6 +132,45 @@ fun ScheduleScreen(
         // ========================================
         // 3. TRẠNG THÁI TRỐNG (EMPTY STATE)
         // ========================================
+
+        //PROCESSING
+        if (uiState.isProcessingOcr) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+
+                horizontalAlignment =
+                    Alignment.CenterHorizontally,
+
+                verticalArrangement =
+                    Arrangement.Center
+            ) {
+
+                CircularProgressIndicator()
+
+                Spacer(
+                    Modifier.height(16.dp)
+                )
+
+                Text(
+                    "Hệ thống đang phân tích thời khóa biểu..."
+                )
+
+                Spacer(
+                    Modifier.height(8.dp)
+                )
+
+                Text(
+                    "Quá trình này có thể mất vài giây"
+                )
+            }
+
+            return@Scaffold
+        }
+
+
         if (uiState.schedule == null) {
             Column(
                 modifier = Modifier

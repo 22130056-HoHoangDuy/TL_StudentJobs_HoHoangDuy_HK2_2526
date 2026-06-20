@@ -41,4 +41,22 @@ class StudentScheduleService {
             .await()
             .toObject(StudentSchedule::class.java)
     }
+    // action
+    fun listenSchedule(
+        uid: String,
+        onChange: (StudentSchedule?) -> Unit
+    ) {
+
+        firestore
+            .collection(COLLECTION)
+            .document(uid)
+            .addSnapshotListener { snapshot, _ ->
+
+                onChange(
+                    snapshot?.toObject(
+                        StudentSchedule::class.java
+                    )
+                )
+            }
+    }
 }

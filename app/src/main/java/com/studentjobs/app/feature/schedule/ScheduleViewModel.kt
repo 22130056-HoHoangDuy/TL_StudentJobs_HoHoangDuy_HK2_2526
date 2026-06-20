@@ -173,4 +173,22 @@ class ScheduleViewModel(
                 errorMessage = null
             )
     }
+    fun observeSchedule(
+        uid: String
+    ) {
+
+        repository.listenSchedule(
+            uid
+        ) { schedule ->
+
+            _uiState.value =
+                _uiState.value.copy(
+
+                    schedule = schedule,
+
+                    isProcessingOcr =
+                        schedule?.ocrProcessed == false
+                )
+        }
+    }
 }
