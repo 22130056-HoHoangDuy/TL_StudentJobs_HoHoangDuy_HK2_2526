@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ButtonDefaults
@@ -33,8 +35,8 @@ fun VerifiedEmployerProfile(
     state: ProfileUiState,
     onEditSection: (String) -> Unit,
     onUpgradePlusClick: () -> Unit,
-    onLogoutClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onLogoutClick: () -> Unit
 ) {
     if (state.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -101,13 +103,13 @@ fun VerifiedEmployerProfile(
         item {
             TextButton(
                 onClick = onLogoutClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
+                modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFEF4444))
             ) {
                 Text("Đăng xuất tài khoản", style = MaterialTheme.typography.bodyMedium)
             }
         }
+
+        item { Spacer(modifier = Modifier.height(24.dp)) }
     }
 }

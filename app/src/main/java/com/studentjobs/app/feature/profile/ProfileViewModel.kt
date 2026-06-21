@@ -84,6 +84,10 @@ class ProfileViewModel(
         uid: String,
         role: UserRole
     ) {
+        android.util.Log.e(
+            "PROFILE_LOOP",
+            "SETUP ROLE LISTENER"
+        )
 
         if (role == UserRole.STUDENT) {
 

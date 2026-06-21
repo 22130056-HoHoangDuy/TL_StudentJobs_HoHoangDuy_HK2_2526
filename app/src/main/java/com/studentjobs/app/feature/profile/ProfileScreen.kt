@@ -137,30 +137,77 @@ fun ProfileScreen(
                 .padding(paddingValues)
         ) {
 
-            // Nút Settings & Menu
+            // Sửa 1: Thay IconButton cài đặt đổi màu linh hoạt theo trạng thái định danh
             IconButton(
-                onClick = { showSettingsMenu = true },
+                onClick = {
+                    showSettingsMenu = true
+                },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
             ) {
-                Icon(Icons.Default.Settings, "Cài đặt", tint = Color.White)
+
+                val iconColor =
+                    if (
+                        (state.role == UserRole.STUDENT && !isStudentVerified) ||
+                        (state.role == UserRole.EMPLOYER && !isEmployerVerified)
+                    ) {
+                        Color.Black
+                    } else {
+                        Color.White
+                    }
+
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Cài đặt",
+                    tint = iconColor
+                )
             }
 
+            // Sửa 2: Khôi phục DropdownMenu (Bỏ toàn bộ comment)
             DropdownMenu(
                 expanded = showSettingsMenu,
-                onDismissRequest = { showSettingsMenu = false }) {
+                onDismissRequest = {
+                    showSettingsMenu = false
+                }
+            ) {
+
                 DropdownMenuItem(
-                    text = { Text("Cài đặt hệ thống") },
-                    onClick = {
-                        navController.navigate("settings_screen"); showSettingsMenu = false
+                    text = {
+                        Text("Cài đặt hệ thống")
                     },
-                    leadingIcon = { Icon(Icons.Default.Settings, null) }
+                    onClick = {
+                        navController.navigate(
+                            "settings_screen"
+                        )
+                        showSettingsMenu = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Settings,
+                            null
+                        )
+                    }
                 )
+
                 DropdownMenuItem(
-                    text = { Text("Đăng xuất", color = Color(0xFFF87171)) },
-                    onClick = { showLogoutDialog = true; showSettingsMenu = false },
-                    leadingIcon = { Icon(Icons.Default.Logout, null, tint = Color(0xFFF87171)) }
+                    text = {
+                        Text(
+                            "Đăng xuất",
+                            color = Color(0xFFF87171)
+                        )
+                    },
+                    onClick = {
+                        showSettingsMenu = false
+                        showLogoutDialog = true
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Logout,
+                            null,
+                            tint = Color(0xFFF87171)
+                        )
+                    }
                 )
             }
 
@@ -233,21 +280,43 @@ fun ProfileScreen(
         }
     }
 
-    // Dialogs
+    // Sửa 3: Khôi phục Logout Dialog định dạng chuẩn
     if (showLogoutDialog) {
+
         AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Đăng xuất") },
-            text = { Text("Bạn có chắc chắn muốn đăng xuất?") },
+            onDismissRequest = {
+                showLogoutDialog = false
+            },
+            title = {
+                Text("Đăng xuất")
+            },
+            text = {
+                Text(
+                    "Bạn có chắc chắn muốn đăng xuất?"
+                )
+            },
             confirmButton = {
-                TextButton(onClick = { showLogoutDialog = false; onLogout() }) {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        onLogout()
+                    }
+                ) {
                     Text(
-                        "Đăng xuất",
+                        text = "Đăng xuất",
                         color = Color(0xFFF87171)
                     )
                 }
             },
-            dismissButton = { TextButton(onClick = { showLogoutDialog = false }) { Text("Hủy") } }
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                    }
+                ) {
+                    Text("Hủy")
+                }
+            }
         )
     }
 }
