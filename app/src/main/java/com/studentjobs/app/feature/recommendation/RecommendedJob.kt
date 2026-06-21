@@ -6,5 +6,8 @@ data class RecommendedJob(
 
     val job: JobEntity,
 
-    val recommendation: RecommendationResult
+    val recommendation:
+    RecommendationResult,
+
+    val employerTrustScore: Int = 0
 )

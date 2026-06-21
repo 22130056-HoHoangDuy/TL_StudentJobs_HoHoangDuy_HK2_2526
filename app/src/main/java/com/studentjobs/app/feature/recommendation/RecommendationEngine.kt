@@ -11,9 +11,7 @@ object RecommendationEngine {
 
         job: JobEntity,
 
-        employerTrustScore: Int,
-
-        employerVerified: Boolean
+        employerTrustScore: Int
 
     ): RecommendationResult {
 
@@ -37,22 +35,13 @@ object RecommendationEngine {
                 .coerceIn(0, 100)
                 .toDouble()
 
-        val verificationScore =
-
-            if (employerVerified)
-                100.0
-            else
-                0.0
-
         val finalScore =
 
-            skillScore * 0.4 +
+            skillScore * 0.5 +
 
                     distanceScore * 0.3 +
 
-                    trustScore * 0.2 +
-
-                    verificationScore * 0.1
+                    trustScore * 0.2
 
         return RecommendationResult(
 
@@ -62,10 +51,7 @@ object RecommendationEngine {
 
             distanceScore = distanceScore,
 
-            trustScore = trustScore,
-
-            verificationScore =
-                verificationScore
+            trustScore = trustScore
         )
     }
 
@@ -80,6 +66,7 @@ object RecommendationEngine {
         if (
             job.requiredSkills.isEmpty()
         ) {
+
             return 100.0
         }
 
@@ -87,22 +74,28 @@ object RecommendationEngine {
 
             job.requiredSkills.count {
 
-                student.skills.any { skill ->
+                    requiredSkill ->
 
-                    skill.equals(
-                        it,
+                student.skills.any {
+
+                        studentSkill ->
+
+                    studentSkill.equals(
+                        requiredSkill,
                         ignoreCase = true
                     )
                 }
             }
 
-        return
+        return (
 
-        matched.toDouble() /
+                matched.toDouble()
 
-                job.requiredSkills.size
+                        /
 
-        * 100.0
+                        job.requiredSkills.size
+
+                ) * 100.0
     }
 
     private fun calculateDistanceScore(
@@ -185,19 +178,19 @@ object RecommendationEngine {
 
         student: StudentProfile,
 
-        jobs: List<JobEntity>,
-
-        employerTrustScoreProvider:
-            (String) -> Int,
-
-        employerVerifiedProvider:
-            (String) -> Boolean
+        jobs: List<Pair<JobEntity, Int>>
 
     ): List<RecommendedJob> {
 
         return jobs
 
-            .map { job ->
+            .map { pair ->
+
+                val job =
+                    pair.first
+
+                val trustScore =
+                    pair.second
 
                 val result =
 
@@ -207,18 +200,17 @@ object RecommendationEngine {
 
                         job,
 
-                        employerTrustScoreProvider(
-                            job.employerUid
-                        ),
-
-                        employerVerifiedProvider(
-                            job.employerUid
-                        )
+                        trustScore
                     )
 
                 RecommendedJob(
+
                     job = job,
-                    recommendation = result
+
+                    recommendation = result,
+
+                    employerTrustScore =
+                        trustScore
                 )
             }
 

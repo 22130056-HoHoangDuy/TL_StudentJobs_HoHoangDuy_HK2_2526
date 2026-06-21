@@ -8,7 +8,5 @@ data class RecommendationResult(
 
     val distanceScore: Double = 0.0,
 
-    val trustScore: Double = 0.0,
-
-    val verificationScore: Double = 0.0
+    val trustScore: Double = 0.0
 )

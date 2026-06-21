@@ -35,19 +35,6 @@ object RecommendationFilter {
         return job.status == "ACTIVE"
     }
 
-    private fun hasVacancy(
-
-        job: JobEntity
-
-    ): Boolean {
-
-        return
-
-        job.currentApplicants <
-
-                job.requiredApplicants
-    }
-
     private fun withinDistance(
 
         student: StudentProfile,
@@ -96,5 +83,43 @@ object RecommendationFilter {
                 )
 
         return distanceKm <= 20
+    }
+
+    fun categoryMatched(
+
+        student: StudentProfile,
+
+        job: JobEntity
+
+    ): Boolean {
+
+        if (
+            student.preferredJobCategories
+                .isEmpty()
+        ) {
+
+            return true
+        }
+
+        return student
+            .preferredJobCategories
+            .any {
+
+                it.equals(
+                    job.businessCategory,
+                    ignoreCase = true
+                )
+            }
+    }
+
+    fun hasVacancy(
+
+        job: JobEntity
+
+    ): Boolean {
+
+        return job.currentApplicants <
+
+                job.requiredApplicants
     }
 }
