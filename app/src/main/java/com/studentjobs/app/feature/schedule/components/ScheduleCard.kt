@@ -13,58 +13,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.studentjobs.app.data.model.student.StudentSchedule
 
 @Composable
 fun ScheduleCard(
-
     schedule: StudentSchedule
-
 ) {
-
     Card(
-
-        modifier =
-            Modifier.fillMaxWidth(),
-
-        colors =
-            CardDefaults.cardColors(
-
-                containerColor =
-                    Color.White
-            )
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
     ) {
-
         Column(
-
-            modifier =
-                Modifier.padding(20.dp),
-
-            verticalArrangement =
-                Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
             Text(
-
-                text = "Your Timetable",
-
-                style =
-                    MaterialTheme
-                        .typography
-                        .titleLarge
+                text = "Thời Khóa Biểu Của Bạn",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                color = Color.White
             )
 
-            Spacer(
-                modifier =
-                    Modifier.height(10.dp)
-            )
+            Spacer(modifier = Modifier.height(4.dp))
 
             schedule.busySlots.forEach {
-
-                SubjectCard(
-                    item = it
-                )
+                SubjectCard(item = it)
             }
         }
     }

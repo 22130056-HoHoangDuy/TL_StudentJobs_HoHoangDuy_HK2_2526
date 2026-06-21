@@ -48,10 +48,10 @@ fun PlusBannerCard(
     // Việt hóa các tính năng xịn sò theo từng Role cụ thể
     val benefits = when (role) {
         UserRole.STUDENT ->
-            "Ứng Tuyển Tự Động • Quét Lịch Học OCR • Cảnh Báo Trùng Ca Học"
+            "Ứng Tuyển Tự Động • Nhận diện lịch học • Gợi ý công việc thông minh"
 
         UserRole.EMPLOYER ->
-            "Tuyển Dụng Thông Minh • Lọc Ứng Viên VIP • Đẩy Tin Lên Xu Hướng"
+            "Tuyển Dụng Thông Minh • Đề Xuất Ứng Viên VIP • Đẩy Tin Lên Xu Hướng"
     }
 
     Card(

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.studentjobs.app.data.repository.auth.AuthRepository
 import com.studentjobs.app.data.repository.job.JobRepository
+import com.studentjobs.app.data.repository.recommendation.RecommendationRepository
 import com.studentjobs.app.data.repository.student.StudentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,10 +21,6 @@ class JobListViewModel(
     private val _uiState = MutableStateFlow(JobListUiState())
     val uiState: StateFlow<JobListUiState> = _uiState.asStateFlow()
 
-    init {
-        loadJobs()
-    }
-
     fun loadJobs() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -38,21 +35,6 @@ class JobListViewModel(
 
     fun toggleAutoApply() {
         _uiState.update { it.copy(isAutoApplyEnabled = !it.isAutoApplyEnabled) }
-    }
-
-    fun toggleSuggestedJobs() {
-        viewModelScope.launch {
-            val isSuggested = !_uiState.value.isViewingSuggested
-            _uiState.update { it.copy(isLoading = true, isViewingSuggested = isSuggested) }
-            val jobs = if (isSuggested) {
-                val uid = authRepository.getCurrentUserUid()
-                val profile = uid?.let { studentRepository.getStudentProfile(it) }
-                jobRepository.getSuggestedJobs(profile?.skills ?: emptyList())
-            } else {
-                jobRepository.getActiveJobs()
-            }
-            _uiState.update { it.copy(jobs = jobs, isLoading = false) }
-        }
     }
 
     // Trong JobListViewModel
@@ -118,6 +100,69 @@ class JobListViewModel(
                     minSalary = minSalary,
                     selectedSkills = skills,
                     filterDistance = distance
+                )
+            }
+        }
+    }
+
+    private val recommendationRepository =
+        RecommendationRepository()
+
+    fun toggleSuggestedJobs() {
+
+        viewModelScope.launch {
+
+            val isSuggested =
+
+                !_uiState.value
+                    .isViewingSuggested
+
+            _uiState.update {
+
+                it.copy(
+
+                    isLoading = true,
+
+                    isViewingSuggested =
+                        isSuggested
+                )
+            }
+
+            val jobs =
+
+                if (isSuggested) {
+
+                    val uid =
+
+                        authRepository
+                            .getCurrentUserUid()
+
+                    if (uid == null) {
+
+                        emptyList()
+
+                    } else {
+
+                        recommendationRepository
+
+                            .getRecommendations(uid)
+
+                            .map { it.job }
+                    }
+
+                } else {
+
+                    jobRepository
+                        .getActiveJobs()
+                }
+
+            _uiState.update {
+
+                it.copy(
+
+                    jobs = jobs,
+
+                    isLoading = false
                 )
             }
         }

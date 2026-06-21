@@ -37,6 +37,7 @@ fun VerifiedStudentProfile(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp) // Tự tạo khoảng cách, không cần lạm dụng Spacer
     ) {
+
         item { GradientHeader(state = state) }
 
         item {
@@ -46,7 +47,7 @@ fun VerifiedStudentProfile(
                 onUpgradePlusClick = onUpgradePlusClick
             )
         }
-
+//
         item { ScheduleFeatureCard(onClick = onScheduleClick) }
 
         item { TrustScoreCard(state = state) }
@@ -60,7 +61,7 @@ fun VerifiedStudentProfile(
         item { LocationInfoCard(state = state, onSelectLocation = onSelectLocation) }
 
         item { SkillsCard(state = state, onManageSkills = onManageSkills) }
-
+//
         // Nút Đăng xuất đồng bộ ở đáy danh sách Sinh viên
         item {
             TextButton(
@@ -74,4 +75,5 @@ fun VerifiedStudentProfile(
 
         item { Spacer(modifier = Modifier.height(24.dp)) }
     }
+
 }

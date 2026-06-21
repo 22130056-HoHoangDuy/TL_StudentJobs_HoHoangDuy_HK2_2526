@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,15 +43,12 @@ import com.studentjobs.app.feature.subscription.components.SubscriptionTopBar
 
 @Composable
 fun ScheduleUploadScreen(
-    navController: NavController, // Thêm NavController để điều hướng quay lại
+    navController: NavController,
     viewModel: ScheduleViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val currentUser = FirebaseAuth.getInstance().currentUser
 
-    // ========================================
-    // KÍCH HOẠT TRÌNH CHỌN ẢNH TỪ THƯ VIỆN
-    // ========================================
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -59,12 +57,11 @@ fun ScheduleUploadScreen(
 
     Scaffold(
         topBar = {
-            // Tích hợp thanh TopBar đồng bộ, có sẵn nút Back
             SubscriptionTopBar(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = Color(0xFF0F172A) // Ép cứng nền tối sang xịn mịn
+        containerColor = Color(0xFF0F172A)
     ) { padding ->
 
         Column(
@@ -72,55 +69,46 @@ fun ScheduleUploadScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = 20.dp)
-                .verticalScroll(rememberScrollState()), // Chống tràn màn hình khi hiện preview ảnh to
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "Tải Lên Thời Khóa Biểu",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
+                text = "Cập Nhật Thời Khóa Biểu",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
+                color = Color.White
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // ========================================
-            // BANNER HƯỚNG DẪN (ĐÃ ĐỘ DARK MODE)
-            // ========================================
+            // BANNER HƯỚNG DẪN TỐI ƯU VISUAL
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF1E293B) // Đổi từ xanh nhạt cũ sang xám Slate tối
-                ),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)),
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
                         text = "Hãy chọn ảnh chụp lịch học rõ nét để kích hoạt tính năng Rải CV thông minh.",
                         color = Color.White,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
                     )
-
                     Spacer(modifier = Modifier.height(8.dp))
-
                     Text(
                         text = "Hệ thống AI (Python OCR) sẽ tự động bóc tách dữ liệu và cảnh báo nếu công việc bạn ứng tuyển bị trùng giờ học trên lớp.",
                         color = Color.White.copy(alpha = 0.6f),
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        lineHeight = MaterialTheme.typography.bodySmall.lineHeight * 1.2
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ========================================
             // KHU VỰC HIỂN THỊ ẢNH PREVIEW
-            // ========================================
             if (uiState.selectedImageUri != null) {
                 Image(
                     painter = rememberAsyncImagePainter(uiState.selectedImageUri),
@@ -130,16 +118,15 @@ fun ScheduleUploadScreen(
                         .height(280.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(Color(0xFF1E293B)),
-                    contentScale = ContentScale.Fit // Đổi sang Fit để sinh viên nhìn trọn vẹn được tấm ảnh lịch học không bị mất chữ
+                    contentScale = ContentScale.Fit
                 )
             } else {
-                // Hiển thị khung trống nếu chưa chọn ảnh cho UI bớt đơn điệu
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp),
+                        .height(200.dp),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B).copy(alpha = 0.5f))
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B).copy(alpha = 0.4f))
                 ) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -147,7 +134,7 @@ fun ScheduleUploadScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Chưa có ảnh nào được chọn",
+                            text = "Chưa có ảnh nào được chọn 📸",
                             color = Color.White.copy(alpha = 0.4f),
                             style = MaterialTheme.typography.bodyMedium
                         )
@@ -155,20 +142,16 @@ fun ScheduleUploadScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-            // ========================================
             // NÚT CHỌN ẢNH (PICK IMAGE)
-            // ========================================
             Button(
                 onClick = { launcher.launch("image/*") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF334155) // Tone màu xám sang xịn không tranh chấp với nút submit chính
-                )
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF334155))
             ) {
                 Text(
                     text = if (uiState.selectedImageUri == null) "Chọn Ảnh Thời Khóa Biểu" else "Thay Đổi Ảnh Khác",
@@ -180,9 +163,7 @@ fun ScheduleUploadScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // ========================================
             // NÚT PHÂN TÍCH & TẢI LÊN (UPLOAD)
-            // ========================================
             val isUploadEnabled = uiState.selectedImageUri != null && !uiState.isLoading
 
             Button(
@@ -193,9 +174,9 @@ fun ScheduleUploadScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF06B6D4), // Xanh cyan công nghệ rực rỡ
+                    containerColor = Color(0xFF06B6D4),
                     disabledContainerColor = Color(0xFF1E293B).copy(alpha = 0.4f),
                     disabledContentColor = Color.White.copy(alpha = 0.3f)
                 )
@@ -210,7 +191,7 @@ fun ScheduleUploadScreen(
                     Text(
                         text = "Bắt Đầu Phân Tích Lịch Học",
                         color = if (isUploadEnabled) Color.White else Color.White.copy(alpha = 0.3f),
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.ExtraBold,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -218,30 +199,47 @@ fun ScheduleUploadScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ========================================
             // THÔNG BÁO KẾT QUẢ TRẠNG THÁI (SUCCESS / ERROR)
-            // ========================================
             uiState.successMessage?.let {
-                Text(
-                    text = "🎉 $it",
-                    color = Color(0xFF4ADE80), // Xanh neon mượt mắt
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF065F46).copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                ) {
+                    Text(
+                        text = "🎉 $it",
+                        color = Color(0xFF4ADE80),
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth().padding(12.dp)
+                    )
+                }
             }
 
             uiState.errorMessage?.let {
-                Text(
-                    text = "❌ $it",
-                    color = Color(0xFFF87171), // Đỏ Coral nổi bật chống lỗi màu
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF991B1B).copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                ) {
+                    Text(
+                        text = "❌ $it",
+                        color = Color(0xFFF87171),
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth().padding(12.dp)
+                    )
+                }
             }
-
             Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+
+    LaunchedEffect(uiState.successMessage) {
+        if (uiState.successMessage != null) {
+            navController.popBackStack()
         }
     }
 }

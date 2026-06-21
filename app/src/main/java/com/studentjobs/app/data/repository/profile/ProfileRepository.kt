@@ -120,4 +120,13 @@ class ProfileRepository(
     fun listenEmployerVerification(uid: String, onChange: (EmployerVerification?) -> Unit) {
         verificationService.listenEmployerVerification(uid, onChange)
     }
+    fun listenStudentProfile(
+        uid: String,
+        onChange: (StudentProfile?) -> Unit
+    ) {
+        studentService.listenStudentProfile(
+            uid,
+            onChange
+        )
+    }
 }

@@ -9,7 +9,7 @@ data class UserCore(
     val role: UserRole = UserRole.STUDENT,
 
     // auth
-    val loginEmail: String = "",
+    val email: String = "",
     val phoneNumber: String? = null,
 
     // default state of user before verified is FALSE
