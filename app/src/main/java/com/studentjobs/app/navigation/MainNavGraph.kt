@@ -140,7 +140,7 @@ fun MainNavGraph(
         }
 
         composable("history") {
-            Text("History")
+            Text("Chưa có lịch sử hoạt động")
         }
 
         composable("messages") {
