@@ -12,6 +12,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TrustViewModel : ViewModel() {
+    init {
+
+        Log.d("JOB_VM","CREATE")
+    }
+
+    override fun onCleared() {
+
+        Log.d("JOB_VM","DESTROY")
+
+        super.onCleared()
+    }
 
     private val auth =
         FirebaseAuth.getInstance()

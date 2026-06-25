@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.studentjobs.app.data.model.user.UserCore
+import com.studentjobs.app.session.UserSession
 import com.studentjobs.app.utils.UiState
 
 @Composable
@@ -205,10 +206,12 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 when (val s = state) {
-                    is UiState.Loading -> CircularProgressIndicator(
-                        color = Color(0xFFEC4899),
-                        modifier = Modifier.size(36.dp)
-                    )
+                    is UiState.Loading -> {
+                        CircularProgressIndicator(
+                            color = Color(0xFFEC4899),
+                            modifier = Modifier.size(36.dp)
+                        )
+                    }
 
                     is UiState.Error -> {
                         // Bộ lọc việt hóa lỗi dựa vào từ khóa tiếng Anh từ Server trả về
@@ -255,8 +258,14 @@ fun LoginScreen(
                     is UiState.Success<*> -> {
                         val user = s.data as? UserCore
                         if (user != null) {
-                            LaunchedEffect(user.uid) {
+                            LaunchedEffect(Unit) {
+
+                                UserSession.shouldShowVerificationDialog =
+                                    !user.userVerified
+
                                 onLoginSuccess(user)
+
+                                viewModel.resetLoginState()
                             }
                         }
                     }

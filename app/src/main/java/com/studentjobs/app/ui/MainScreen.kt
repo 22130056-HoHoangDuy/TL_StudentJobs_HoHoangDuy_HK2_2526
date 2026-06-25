@@ -1,5 +1,6 @@
 package com.studentjobs.app.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,6 +12,8 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Work
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -19,7 +22,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -28,17 +35,32 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.studentjobs.app.navigation.MainNavGraph
+import com.studentjobs.app.session.UserSession
 
 @Composable
 fun MainScreen(
     onLogout: () -> Unit
 ) {
+    DisposableEffect(Unit) {
+
+        Log.d("MAIN_SCREEN", "CREATE")
+
+        onDispose {
+
+            Log.d("MAIN_SCREEN", "DESTROY")
+        }
+    }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     // Ép kiểu chuỗi an toàn (gán mặc định rỗng nếu null) để tránh lỗi crash hoặc lỗi so khớp
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
+    var showVerificationDialog by remember {
 
+        mutableStateOf(
+            UserSession.shouldShowVerificationDialog
+        )
+    }
     Scaffold(
         containerColor = Color(0xFFF8FAFC),
         bottomBar = {
@@ -69,8 +91,8 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("jobs") {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+//                                restoreState = true
+//                                popUpTo(navController.graph.startDestinationId) { saveState = true }
                             }
                         },
                         icon = { Icon(Icons.Default.Work, contentDescription = null) },
@@ -100,8 +122,8 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("trust") {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+//                                restoreState = true
+//                                popUpTo(navController.graph.startDestinationId) { saveState = true }
                             }
                         },
                         icon = { Icon(Icons.Default.Star, contentDescription = null) },
@@ -133,8 +155,8 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("history") {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+//                                restoreState = true
+//                                popUpTo(navController.graph.startDestinationId) { saveState = true }
                             }
                         },
                         icon = { Icon(Icons.Default.History, contentDescription = null) },
@@ -173,8 +195,8 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("profile") {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+//                                restoreState = true
+//                                popUpTo(navController.graph.startDestinationId) { saveState = true }
                             }
                         },
                         icon = { Icon(Icons.Default.Person, contentDescription = null) },
@@ -195,7 +217,8 @@ fun MainScreen(
                 }
             }
         }
-    ) { padding ->
+    )
+    { padding ->
         Box(
             modifier = Modifier
                 .background(Color(0xFFF8FAFC))
@@ -206,5 +229,40 @@ fun MainScreen(
                 onLogout = onLogout
             )
         }
+    }
+    if (showVerificationDialog) {
+
+        AlertDialog(
+
+            onDismissRequest = {},
+
+            title = {
+                Text("Hoàn tất hồ sơ")
+            },
+
+            text = {
+                Text(
+                    "Bạn cần hoàn tất hồ sơ xác thực để sử dụng đầy đủ các tính năng của StudentJobs."
+                )
+            },
+
+            confirmButton = {
+
+                Button(
+
+                    onClick = {
+
+                        showVerificationDialog = false
+
+                        UserSession.shouldShowVerificationDialog = false
+
+                        navController.navigate("profile")
+                    }
+                ) {
+
+                    Text("Đi tới hồ sơ")
+                }
+            }
+        )
     }
 }

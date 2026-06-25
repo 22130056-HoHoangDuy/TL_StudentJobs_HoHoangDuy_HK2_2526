@@ -1,5 +1,6 @@
 package com.studentjobs.app.data.repository.auth
 
+import com.google.firebase.auth.FirebaseUser
 import com.studentjobs.app.data.model.employer.EmployerProfile
 import com.studentjobs.app.data.model.employer.EmployerVerification
 import com.studentjobs.app.data.model.student.StudentProfile
@@ -45,10 +46,6 @@ class AuthRepository(
 
         return try {
 
-            // =========================
-            // FIREBASE AUTH
-            // =========================
-
             val result =
                 authService.register(
                     email,
@@ -56,19 +53,9 @@ class AuthRepository(
                 )
 
             val uid = result.user?.uid
-
                 ?: return Result.failure(
-
-                    Exception(
-                        "User ID is null"
-                    )
+                    Exception("User ID is null")
                 )
-
-            val currentTime = Date()
-
-            // =========================
-            // CREATE USER CORE
-            // =========================
 
             val userCore = UserCore(
 
@@ -84,11 +71,9 @@ class AuthRepository(
 
                 trustScore = 0,
 
-                subscriptionPlan =
-                    SubscriptionPlan.FREE,
+                subscriptionPlan = SubscriptionPlan.FREE,
 
-                status =
-                    UserStatus.ACTIVE,
+                status = UserStatus.ACTIVE,
 
                 createdAt = Date(),
 
@@ -96,28 +81,20 @@ class AuthRepository(
             )
 
             val userResult =
-                userService
-                    .createUserCore(userCore)
+                userService.createUserCore(userCore)
 
             if (userResult.isFailure) {
 
                 return Result.failure(
 
                     userResult.exceptionOrNull()
-
-                        ?: Exception(
-                            "Failed to create user"
-                        )
+                        ?: Exception("Failed to create user")
                 )
             }
 
-            // =========================
-            // CREATE STUDENT DOMAIN
-            // =========================
-
             if (role == UserRole.STUDENT) {
 
-                val studentProfile =
+                studentService.createStudentProfile(
 
                     StudentProfile(
 
@@ -129,8 +106,9 @@ class AuthRepository(
 
                         updatedAt = Date()
                     )
+                )
 
-                val studentVerification =
+                verificationService.createStudentVerification(
 
                     StudentVerification(
 
@@ -140,25 +118,12 @@ class AuthRepository(
 
                         updatedAt = Date()
                     )
-
-                studentService
-                    .createStudentProfile(
-                        studentProfile
-                    )
-
-                verificationService
-                    .createStudentVerification(
-                        studentVerification
-                    )
+                )
             }
-
-            // =========================
-            // CREATE EMPLOYER DOMAIN
-            // =========================
 
             if (role == UserRole.EMPLOYER) {
 
-                val employerProfile =
+                employerService.createEmployerProfile(
 
                     EmployerProfile(
 
@@ -166,10 +131,11 @@ class AuthRepository(
 
                         createdAt = Date(),
 
-                        updatedAt = Date(),
+                        updatedAt = Date()
                     )
+                )
 
-                val employerVerification =
+                verificationService.createEmployerVerification(
 
                     EmployerVerification(
 
@@ -179,16 +145,7 @@ class AuthRepository(
 
                         reviewedAt = Date()
                     )
-
-                employerService
-                    .createEmployerProfile(
-                        employerProfile
-                    )
-
-                verificationService
-                    .createEmployerVerification(
-                        employerVerification
-                    )
+                )
             }
 
             Result.success(userCore)
@@ -221,24 +178,16 @@ class AuthRepository(
                     password
                 )
 
-            val uid = result.user?.uid
-
-                ?: return Result.failure(
-
-                    Exception(
-                        "User ID is null"
+            val uid =
+                result.user?.uid
+                    ?: return Result.failure(
+                        Exception("User ID is null")
                     )
-                )
 
             val userCore =
-
                 userService.getUserCore(uid)
-
                     ?: return Result.failure(
-
-                        Exception(
-                            "User not found"
-                        )
+                        Exception("User not found")
                     )
 
             Result.success(userCore)
@@ -251,10 +200,39 @@ class AuthRepository(
         }
     }
 
-    //logout
+    // ========================================
+    // SESSION
+    // ========================================
+
+    fun getCurrentUser(): FirebaseUser? {
+
+        return authService.getCurrentUser()
+    }
+
+    fun getCurrentUserUid(): String? {
+
+        return authService
+            .getCurrentUser()
+            ?.uid
+    }
+
+    fun isLoggedIn(): Boolean {
+
+        return authService.getCurrentUser() != null
+    }
+
+    // ========================================
+    // LOGOUT
+    // ========================================
+
     fun logout() {
+
         authService.logout()
     }
+
+    // ========================================
+    // FORGOT PASSWORD
+    // ========================================
 
     suspend fun forgotPassword(
         email: String
@@ -263,24 +241,16 @@ class AuthRepository(
         return try {
 
             val user =
-
-                userService.getUserByEmail(
-                    email
-                )
+                userService.getUserByEmail(email)
 
             if (user == null) {
 
                 return Result.failure(
-                    Exception(
-                        "Email chưa được đăng ký"
-                    )
+                    Exception("Email chưa được đăng ký")
                 )
             }
 
-            authService
-                .sendPasswordResetEmail(
-                    email
-                )
+            authService.sendPasswordResetEmail(email)
 
             Result.success(Unit)
 
@@ -288,10 +258,5 @@ class AuthRepository(
 
             Result.failure(e)
         }
-    }
-
-    // Trong class AuthRepository
-    fun getCurrentUserUid(): String? {
-        return authService.getCurrentUser()?.uid
     }
 }

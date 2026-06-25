@@ -1,7 +1,7 @@
 package com.studentjobs.app.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,74 +13,132 @@ import com.studentjobs.app.feature.auth.RegisterScreen
 import com.studentjobs.app.feature.auth.forgot.ForgotPasswordScreen
 import com.studentjobs.app.feature.onboarding.OnBoardingScreen
 import com.studentjobs.app.feature.role.RoleSelectionScreen
+import com.studentjobs.app.feature.splash.SplashScreen
+import com.studentjobs.app.session.UserSession
 import com.studentjobs.app.ui.MainScreen
 import com.studentjobs.app.utils.AppPreferences
 
 @Composable
-fun AppNavGraph(viewModel: AuthViewModel) {
+fun AppNavGraph(
+    viewModel: AuthViewModel
+) {
 
     val navController = rememberNavController()
+
     val context = LocalContext.current
+
     val prefs = AppPreferences(context)
-
-    val DEBUG_ALWAYS_SHOW_ONBOARDING = true
-
-    val currentUser =
-
-        FirebaseAuth
-            .getInstance()
-            .currentUser
-
-    val startDestination = when {
-
-        currentUser != null -> "main"
-
-        prefs.isOnboardingShown() -> "login"
-
-        else -> "onboarding"
-    }
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = "splash"
     ) {
 
-        // ONBOARDING
-        composable("onboarding") {
-            OnBoardingScreen(
-                onFinish = {
-                    prefs.setOnboardingShown()
-                    navController.navigate("role") {
-                        popUpTo("onboarding") { inclusive = true }
-                    }
-                }
-            )
-        }
+        // ========================================
+        // SPLASH
+        // ========================================
 
-        // ROLE
-        composable("role") {
-            RoleSelectionScreen(
-                onContinue = { role ->
-                    prefs.saveUserRole(role.name)
+        composable("splash") {
+
+            SplashScreen(
+
+                onNavigateLogin = {
 
                     navController.navigate("login") {
-                        popUpTo("role") { inclusive = true }
+
+                        popUpTo("splash") {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                },
+
+                onNavigateMain = { showDialog ->
+
+                    UserSession.shouldShowVerificationDialog =
+                        showDialog
+
+                    navController.navigate("main") {
+
+                        popUpTo("splash") {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
                     }
                 }
             )
         }
 
+        // ========================================
+        // ONBOARDING
+        // ========================================
+
+        composable("onboarding") {
+
+            OnBoardingScreen(
+
+                onFinish = {
+
+                    prefs.setOnboardingShown()
+
+                    navController.navigate("role") {
+
+                        popUpTo("onboarding") {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        // ========================================
+        // ROLE
+        // ========================================
+
+        composable("role") {
+
+            RoleSelectionScreen(
+
+                onContinue = { role ->
+
+                    prefs.saveUserRole(
+                        role.name
+                    )
+
+                    navController.navigate("login") {
+
+                        popUpTo("role") {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+
+        // ========================================
         // LOGIN
+        // ========================================
+
         composable("login") {
+
             LoginScreen(
+
                 viewModel = viewModel,
 
                 onNavigateToRegister = {
-                    navController.navigate("register")
+
+                    navController.navigate(
+                        "register"
+                    )
                 },
 
                 onForgotPasswordClick = {
-                    navController.navigate("forgot_password")
+
+                    navController.navigate(
+                        "forgot_password"
+                    )
                 },
 
                 onLoginSuccess = { user ->
@@ -94,57 +152,89 @@ fun AppNavGraph(viewModel: AuthViewModel) {
                         popUpTo("login") {
                             inclusive = true
                         }
+
+                        launchSingleTop = true
                     }
                 }
             )
         }
 
-        // REGISTER (🔥 FIX QUAN TRỌNG)
+        // ========================================
+        // REGISTER
+        // ========================================
+
         composable("register") {
+
             RegisterScreen(
+
                 viewModel = viewModel,
+
                 onRegisterSuccess = {
-                    // 👉 Sau khi register → quay về login
+
                     navController.navigate("login") {
-                        popUpTo("register") { inclusive = true }
+
+                        popUpTo("register") {
+                            inclusive = true
+                        }
                     }
                 }
             )
         }
+
+        // ========================================
+        // FORGOT PASSWORD
+        // ========================================
 
         composable("forgot_password") {
 
             ForgotPasswordScreen(
 
                 onBackClick = {
+
                     navController.popBackStack()
                 }
             )
         }
 
+        // ========================================
+        // MAIN
+        // ========================================
+
         composable("main") {
 
-            MainScreen(
+            val currentUid =
+                FirebaseAuth
+                    .getInstance()
+                    .currentUser
+                    ?.uid
+                    ?: "guest"
 
-                onLogout = {
+            key(currentUid) {
 
-                    viewModel.logout()
+                MainScreen(
 
-                    navController.navigate("login") {
+                    onLogout = {
 
-                        popUpTo("main") {
-                            inclusive = true
+                        // reset session flags
+                        UserSession.shouldShowVerificationDialog = false
+
+                        // firebase sign out
+                        viewModel.logout()
+
+                        // clear entire nav stack
+                        navController.navigate("login") {
+
+                            popUpTo(
+                                navController.graph.id
+                            ) {
+                                inclusive = true
+                            }
+
+                            launchSingleTop = true
                         }
-
-                        launchSingleTop = true
                     }
-
-                    Log.d(
-                        "LOGOUT",
-                        "AFTER NAVIGATE"
-                    )
-                }
-            )
+                )
+            }
         }
     }
 }
