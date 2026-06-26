@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.UUID
+import com.studentjobs.app.data.model.notification.NotificationEntity
+import com.studentjobs.app.data.model.notification.NotificationType
+import com.studentjobs.app.data.repository.notification.NotificationRepository
+
 
 class ApplyJobViewModel(
 
@@ -29,7 +33,10 @@ class ApplyJobViewModel(
     JobRepository,
 
     private val userRepository:
-    UserRepository
+    UserRepository,
+
+    private val notificationRepository:
+    NotificationRepository
 
 ) : ViewModel() {
 
@@ -275,6 +282,31 @@ class ApplyJobViewModel(
                     .incrementApplicantCount(
                         job.jobId
                     )
+                notificationRepository.createNotification(
+
+                    NotificationEntity(
+
+                        notificationId =
+                            UUID.randomUUID().toString(),
+
+                        receiverUid = uid,
+
+                        title = "Ứng tuyển thành công",
+
+                        message =
+                            "Bạn đã ứng tuyển vào công việc ${job.title}.",
+
+                        type =
+                            NotificationType
+                                .JOB_APPLIED
+                                .name,
+
+                        relatedId =
+                            job.jobId,
+
+                        createdAt = Date()
+                    )
+                )
 
                 Log.d(
                     "APPLY_JOB",

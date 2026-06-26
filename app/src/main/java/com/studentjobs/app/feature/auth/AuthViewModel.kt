@@ -113,7 +113,18 @@ class AuthViewModel(
     }
 
     //logout
+
+    fun resetLoginState() {
+
+        _loginState.value = UiState.Idle
+    }
+
     fun logout() {
+
         repository.logout()
+
+        _loginState.value = UiState.Idle
+
+        _registerState.value = UiState.Idle
     }
 }

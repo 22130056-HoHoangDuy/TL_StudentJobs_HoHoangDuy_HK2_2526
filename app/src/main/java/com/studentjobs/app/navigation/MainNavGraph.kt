@@ -11,6 +11,7 @@ import com.studentjobs.app.data.model.user.SubscriptionPlan
 import com.studentjobs.app.data.model.user.UserRole
 import com.studentjobs.app.data.repository.application.ApplicationRepository
 import com.studentjobs.app.data.repository.job.JobRepository
+import com.studentjobs.app.data.repository.notification.NotificationRepository
 import com.studentjobs.app.data.repository.student.StudentRepository
 import com.studentjobs.app.data.repository.user.UserRepository
 import com.studentjobs.app.feature.application.apply.ApplyJobViewModel
@@ -45,9 +46,13 @@ import com.studentjobs.app.feature.trust.TrustScreen
 import com.studentjobs.app.firebase.firestore.ApplicationService
 import com.studentjobs.app.firebase.firestore.EmployerService
 import com.studentjobs.app.firebase.firestore.JobService
+import com.studentjobs.app.firebase.firestore.NotificationService
 import com.studentjobs.app.firebase.firestore.ShiftService
 import com.studentjobs.app.firebase.firestore.StudentService
 import com.studentjobs.app.firebase.firestore.UserServiceNew
+import com.studentjobs.app.feature.notification.NotificationScreen
+import com.studentjobs.app.feature.notification.NotificationViewModel
+import com.studentjobs.app.feature.notification.NotificationViewModelFactory
 
 @Composable
 fun MainNavGraph(
@@ -143,6 +148,47 @@ fun MainNavGraph(
             Text("Chưa có lịch sử hoạt động")
         }
 
+        // notification
+        composable("notification") {
+
+            val repository =
+
+                NotificationRepository(
+
+                    NotificationService()
+
+                )
+
+            val factory =
+
+                NotificationViewModelFactory(
+
+                    repository
+
+                )
+
+            val viewModel: NotificationViewModel =
+
+                viewModel(
+
+                    factory = factory
+
+                )
+
+            NotificationScreen(
+
+                viewModel = viewModel,
+
+                onBack = {
+
+                    navController.popBackStack()
+
+                }
+
+            )
+        }
+
+        // message
         composable("messages") {
             Text("Messages")
         }
@@ -248,8 +294,14 @@ fun MainNavGraph(
                 currentSkills = emptyList(),
                 isPlus = false,
                 onSave = { categories, skills ->
-                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_categories", categories)
-                    navController.previousBackStackEntry?.savedStateHandle?.set("selected_skills", skills)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "selected_categories",
+                        categories
+                    )
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "selected_skills",
+                        skills
+                    )
                     navController.popBackStack()
                 }
             )
@@ -269,15 +321,27 @@ fun MainNavGraph(
             val applicationRepository = ApplicationRepository(ApplicationService())
             val studentRepository = StudentRepository(StudentService())
             val userRepository = UserRepository(UserServiceNew())
+            val notificationRepository =
+
+                NotificationRepository(
+
+                    NotificationService()
+
+                )
 
             val factory = JobDetailViewModelFactory(repository, jobId)
             val viewModel: JobDetailViewModel = viewModel(factory = factory)
 
             val applyFactory = ApplyJobViewModelFactory(
-                applicationRepository,
-                studentRepository,
-                repository,
-                userRepository
+                applicationRepository = applicationRepository,
+
+                studentRepository = studentRepository,
+
+                jobRepository = repository,
+
+                userRepository = userRepository,
+
+                notificationRepository = notificationRepository
             )
             val applyViewModel: ApplyJobViewModel = viewModel(factory = applyFactory)
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.studentjobs.app.data.repository.auth.AuthRepository
 import com.studentjobs.app.data.repository.job.JobRepository
+import com.studentjobs.app.data.repository.recommendation.RecommendationRepository
 import com.studentjobs.app.data.repository.student.StudentRepository
 import com.studentjobs.app.feature.job.employer.EmployerJobScreen
 import com.studentjobs.app.feature.job.employer.EmployerJobViewModel
@@ -52,12 +53,24 @@ fun JobEntryScreen(
                 verificationService
             )
 
-            // 3. Khởi tạo Factory với ĐỦ 3 tham số
-            val factory = JobListViewModelFactory(
-                jobRepository = jobRepository,
-                studentRepository = studentRepository,
-                authRepository = authRepository
-            )
+            val recommendationRepository =
+                RecommendationRepository()
+
+            val factory =
+                JobListViewModelFactory(
+
+                    jobRepository =
+                        jobRepository,
+
+                    studentRepository =
+                        studentRepository,
+
+                    authRepository =
+                        authRepository,
+
+                    recommendationRepository =
+                        recommendationRepository
+                )
 
             val viewModel: JobListViewModel = viewModel(factory = factory)
 

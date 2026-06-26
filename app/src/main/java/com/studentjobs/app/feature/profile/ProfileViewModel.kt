@@ -2,6 +2,7 @@ package com.studentjobs.app.feature.profile
 
 import android.app.Application
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +26,17 @@ import java.util.Date
 class ProfileViewModel(
     application: Application
 ) : AndroidViewModel(application) {
+    init {
+
+        Log.d("JOB_VM","CREATE")
+    }
+
+    override fun onCleared() {
+
+        Log.d("JOB_VM","DESTROY")
+
+        super.onCleared()
+    }
 
     private val repository = ProfileRepository(
         UserServiceNew(),

@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
         // ====================================
         // SERVICES
         // ====================================
+
         val authService =
             AuthService()
 
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
         // ====================================
         // REPOSITORY
         // ====================================
+
         val repository =
             AuthRepository(
 
@@ -66,6 +68,7 @@ class MainActivity : ComponentActivity() {
         // ====================================
         // VIEWMODEL
         // ====================================
+
         val viewModel =
             AuthViewModel(repository)
 
@@ -78,7 +81,9 @@ class MainActivity : ComponentActivity() {
 
             StudentJobsTheme {
 
-                AppNavGraph(viewModel)
+                AppNavGraph(
+                    viewModel = viewModel
+                )
             }
         }
     }

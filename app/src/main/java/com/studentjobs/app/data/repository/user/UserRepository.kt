@@ -31,4 +31,14 @@ class UserRepository(
         return user.subscriptionPlan == SubscriptionPlan.PLUS &&
                 (user.subscriptionExpiredAt?.after(now) == true)
     }
+
+    fun listenUserCore(
+        uid: String,
+        onChange: (UserCore?) -> Unit
+    ) {
+        userService.listenUserCore(
+            uid = uid,
+            onChange = onChange
+        )
+    }
 }

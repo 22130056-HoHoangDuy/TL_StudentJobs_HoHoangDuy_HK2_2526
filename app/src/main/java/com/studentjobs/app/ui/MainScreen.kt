@@ -1,5 +1,6 @@
 package com.studentjobs.app.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,6 +20,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,19 +31,43 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.studentjobs.app.navigation.MainNavGraph
+import com.studentjobs.app.session.UserSession
+import com.studentjobs.app.ui.components.NotificationTopBar
 
 @Composable
 fun MainScreen(
     onLogout: () -> Unit
 ) {
-    val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    DisposableEffect(Unit) {
+        Log.d("MAIN_SCREEN", "CREATE")
+        onDispose {
+            Log.d("MAIN_SCREEN", "DESTROY")
+        }
+    }
 
-    // Ép kiểu chuỗi an toàn (gán mặc định rỗng nếu null) để tránh lỗi crash hoặc lỗi so khớp
+    val navController = rememberNavController()
+
+    LaunchedEffect(Unit) {
+        if (UserSession.openProfileAfterGate) {
+            UserSession.openProfileAfterGate = false
+            navController.navigate("profile") {
+                launchSingleTop = true
+            }
+        }
+    }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: ""
 
     Scaffold(
         containerColor = Color(0xFFF8FAFC),
+        topBar = {
+            NotificationTopBar(
+                onNotificationClick = {
+                    navController.navigate("notification")
+                }
+            )
+        }, // <-- SỬA LỖI: Thêm dấu phẩy ở đây
         bottomBar = {
             Surface(
                 color = Color(0xFFF8FAFC),
@@ -57,7 +84,6 @@ fun MainScreen(
 
                     // ========================================
                     // 1. JOBS (VIỆC LÀM) - DEEP BLUE
-                    // Gồm: danh sách jobs, chi tiết job, tạo job mới
                     // ========================================
                     val isJobsSelected = currentRoute == "jobs" ||
                             currentRoute.startsWith("job_detail") ||
@@ -69,8 +95,6 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("jobs") {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
                             }
                         },
                         icon = { Icon(Icons.Default.Work, contentDescription = null) },
@@ -100,8 +124,6 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("trust") {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
                             }
                         },
                         icon = { Icon(Icons.Default.Star, contentDescription = null) },
@@ -122,7 +144,6 @@ fun MainScreen(
 
                     // ========================================
                     // 3. HISTORY (HOẠT ĐỘNG) - VIBRANT PURPLE
-                    // Gồm: màn hình history và màn hình ứng tuyển của tôi
                     // ========================================
                     val isHistorySelected = currentRoute == "history" ||
                             currentRoute == "my_applications"
@@ -133,8 +154,6 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("history") {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
                             }
                         },
                         icon = { Icon(Icons.Default.History, contentDescription = null) },
@@ -155,7 +174,6 @@ fun MainScreen(
 
                     // ========================================
                     // 4. PROFILE (HỒ SƠ) - FRESH GREEN
-                    // Gồm toàn bộ các màn con: OCR lịch học, kỹ năng, map, xác thực, VIP...
                     // ========================================
                     val isProfileSelected = currentRoute == "profile" ||
                             currentRoute == "schedule" ||
@@ -173,8 +191,6 @@ fun MainScreen(
                         onClick = {
                             navController.navigate("profile") {
                                 launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
                             }
                         },
                         icon = { Icon(Icons.Default.Person, contentDescription = null) },
@@ -194,8 +210,8 @@ fun MainScreen(
                     )
                 }
             }
-        }
-    ) { padding ->
+        } // <-- Đóng ngoặc Scaffold tại đây sau khi truyền xong bottomBar
+    ) { padding -> // Content lambda nhận innerPadding từ Scaffold
         Box(
             modifier = Modifier
                 .background(Color(0xFFF8FAFC))

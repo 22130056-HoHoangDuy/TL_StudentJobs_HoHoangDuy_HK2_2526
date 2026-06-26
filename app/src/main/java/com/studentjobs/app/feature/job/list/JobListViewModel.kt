@@ -1,5 +1,6 @@
 package com.studentjobs.app.feature.job.list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.studentjobs.app.data.repository.auth.AuthRepository
@@ -13,10 +14,27 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class JobListViewModel(
+
     private val jobRepository: JobRepository,
+
     private val studentRepository: StudentRepository,
-    private val authRepository: AuthRepository
+
+    private val authRepository: AuthRepository,
+
+    private val recommendationRepository: RecommendationRepository
+
 ) : ViewModel() {
+    init {
+
+        Log.d("JOB_VM","CREATE")
+    }
+
+    override fun onCleared() {
+
+        Log.d("JOB_VM","DESTROY")
+
+        super.onCleared()
+    }
 
     private val _uiState = MutableStateFlow(JobListUiState())
     val uiState: StateFlow<JobListUiState> = _uiState.asStateFlow()
@@ -104,9 +122,6 @@ class JobListViewModel(
             }
         }
     }
-
-    private val recommendationRepository =
-        RecommendationRepository()
 
     fun toggleSuggestedJobs() {
 
