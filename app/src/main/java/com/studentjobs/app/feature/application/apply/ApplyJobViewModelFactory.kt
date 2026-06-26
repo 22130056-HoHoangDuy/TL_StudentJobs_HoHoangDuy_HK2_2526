@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.studentjobs.app.data.repository.application.ApplicationRepository
 import com.studentjobs.app.data.repository.job.JobRepository
+import com.studentjobs.app.data.repository.notification.NotificationRepository
 import com.studentjobs.app.data.repository.student.StudentRepository
 import com.studentjobs.app.data.repository.user.UserRepository
 
@@ -19,7 +20,10 @@ class ApplyJobViewModelFactory(
     JobRepository,
 
     private val userRepository:
-    UserRepository
+    UserRepository,
+
+    private val notificationRepository:
+    NotificationRepository
 
 ) : ViewModelProvider.Factory {
 
@@ -39,7 +43,9 @@ class ApplyJobViewModelFactory(
 
             jobRepository,
 
-            userRepository
+            userRepository,
+
+            notificationRepository
 
         ) as T
     }

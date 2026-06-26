@@ -6,9 +6,7 @@ sealed interface SplashUiState {
 
     data object NavigateLogin : SplashUiState
 
-    data class NavigateMain(
+    data object NavigateVerificationGate : SplashUiState
 
-        val showVerificationDialog: Boolean
-
-    ) : SplashUiState
+    data object NavigateMain : SplashUiState
 }

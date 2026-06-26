@@ -14,6 +14,7 @@ import com.studentjobs.app.feature.auth.forgot.ForgotPasswordScreen
 import com.studentjobs.app.feature.onboarding.OnBoardingScreen
 import com.studentjobs.app.feature.role.RoleSelectionScreen
 import com.studentjobs.app.feature.splash.SplashScreen
+import com.studentjobs.app.feature.verification.gate.VerificationGateScreen
 import com.studentjobs.app.session.UserSession
 import com.studentjobs.app.ui.MainScreen
 import com.studentjobs.app.utils.AppPreferences
@@ -54,12 +55,21 @@ fun AppNavGraph(
                     }
                 },
 
-                onNavigateMain = { showDialog ->
-
-                    UserSession.shouldShowVerificationDialog =
-                        showDialog
+                onNavigateMain = {
 
                     navController.navigate("main") {
+
+                        popUpTo("splash") {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                },
+
+                onNavigateVerificationGate = {
+
+                    navController.navigate("verification_gate") {
 
                         popUpTo("splash") {
                             inclusive = true
@@ -103,9 +113,7 @@ fun AppNavGraph(
 
                 onContinue = { role ->
 
-                    prefs.saveUserRole(
-                        role.name
-                    )
+                    prefs.saveUserRole(role.name)
 
                     navController.navigate("login") {
 
@@ -129,25 +137,20 @@ fun AppNavGraph(
 
                 onNavigateToRegister = {
 
-                    navController.navigate(
-                        "register"
-                    )
+                    navController.navigate("register")
                 },
 
                 onForgotPasswordClick = {
 
-                    navController.navigate(
-                        "forgot_password"
-                    )
+                    navController.navigate("forgot_password")
                 },
 
-                onLoginSuccess = { user ->
+                // Sau khi login thành công
+                // quay lại Splash để Splash quyết định
+                // Main hay VerificationGate
+                onLoginSuccess = {
 
-                    prefs.saveUserRole(
-                        user.role.name
-                    )
-
-                    navController.navigate("main") {
+                    navController.navigate("splash") {
 
                         popUpTo("login") {
                             inclusive = true
@@ -197,6 +200,44 @@ fun AppNavGraph(
         }
 
         // ========================================
+        // VERIFICATION GATE
+        // ========================================
+
+        composable("verification_gate") {
+
+            VerificationGateScreen(
+
+                onCompleteProfile = {
+
+                    UserSession.openProfileAfterGate = true
+
+                    navController.navigate("main") {
+
+                        popUpTo("verification_gate") {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                },
+
+                onLogout = {
+
+                    viewModel.logout()
+
+                    navController.navigate("login") {
+
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        // ========================================
         // MAIN
         // ========================================
 
@@ -215,18 +256,13 @@ fun AppNavGraph(
 
                     onLogout = {
 
-                        // reset session flags
-                        UserSession.shouldShowVerificationDialog = false
+                        UserSession.openProfileAfterGate = false
 
-                        // firebase sign out
                         viewModel.logout()
 
-                        // clear entire nav stack
                         navController.navigate("login") {
 
-                            popUpTo(
-                                navController.graph.id
-                            ) {
+                            popUpTo(navController.graph.id) {
                                 inclusive = true
                             }
 

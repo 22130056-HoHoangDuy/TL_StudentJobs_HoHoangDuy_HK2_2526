@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.google.firebase.auth.FirebaseAuth
+import com.studentjobs.app.firebase.firestore.UserServiceNew
 import kotlinx.coroutines.delay
 
 @Composable
@@ -17,7 +18,9 @@ fun SplashScreen(
 
     onNavigateLogin: () -> Unit,
 
-    onNavigateMain: (Boolean) -> Unit
+    onNavigateMain: () -> Unit,
+
+    onNavigateVerificationGate: () -> Unit
 
 ) {
 
@@ -26,6 +29,7 @@ fun SplashScreen(
         delay(1000)
 
         val currentUser =
+
             FirebaseAuth
                 .getInstance()
                 .currentUser
@@ -34,10 +38,28 @@ fun SplashScreen(
 
             onNavigateLogin()
 
+            return@LaunchedEffect
+        }
+
+        val user =
+
+            UserServiceNew()
+                .getUserCore(currentUser.uid)
+
+        if (user == null) {
+
+            onNavigateLogin()
+
+            return@LaunchedEffect
+        }
+
+        if (user.userVerified) {
+
+            onNavigateMain()
+
         } else {
 
-            // Tạm thời chưa kiểm tra userVerified
-            onNavigateMain(false)
+            onNavigateVerificationGate()
         }
     }
 
@@ -53,8 +75,6 @@ fun SplashScreen(
 
         CircularProgressIndicator()
 
-        Text(
-            text = "StudentJobs"
-        )
+        Text("StudentJobs")
     }
 }

@@ -74,14 +74,16 @@ class SplashViewModel(
                 // SUCCESS
                 // ==========================
 
-                _uiState.value =
+                if (userCore.userVerified) {
 
-                    SplashUiState.NavigateMain(
+                    _uiState.value =
+                        SplashUiState.NavigateMain
 
-                        showVerificationDialog =
-                            !userCore.userVerified
+                } else {
 
-                    )
+                    _uiState.value =
+                        SplashUiState.NavigateVerificationGate
+                }
 
             } catch (e: Exception) {
 

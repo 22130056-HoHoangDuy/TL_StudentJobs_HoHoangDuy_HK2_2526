@@ -46,14 +46,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.studentjobs.app.data.model.user.UserCore
-import com.studentjobs.app.session.UserSession
 import com.studentjobs.app.utils.UiState
 
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel,
-    onLoginSuccess: (UserCore) -> Unit,
+    onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onForgotPasswordClick: () -> Unit
 ) {
@@ -256,17 +254,12 @@ fun LoginScreen(
                     }
 
                     is UiState.Success<*> -> {
-                        val user = s.data as? UserCore
-                        if (user != null) {
-                            LaunchedEffect(Unit) {
 
-                                UserSession.shouldShowVerificationDialog =
-                                    !user.userVerified
+                        LaunchedEffect(Unit) {
 
-                                onLoginSuccess(user)
+                            onLoginSuccess()
 
-                                viewModel.resetLoginState()
-                            }
+                            viewModel.resetLoginState()
                         }
                     }
 
