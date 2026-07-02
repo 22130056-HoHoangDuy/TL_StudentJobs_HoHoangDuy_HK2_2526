@@ -115,7 +115,7 @@ fun AppNavGraph(
 
                     prefs.saveUserRole(role.name)
 
-                    navController.navigate("login") {
+                    navController.navigate("register") {
 
                         popUpTo("role") {
                             inclusive = true
@@ -137,7 +137,7 @@ fun AppNavGraph(
 
                 onNavigateToRegister = {
 
-                    navController.navigate("register")
+                    navController.navigate("role")
                 },
 
                 onForgotPasswordClick = {

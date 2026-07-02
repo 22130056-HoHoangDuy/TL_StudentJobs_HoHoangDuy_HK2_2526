@@ -122,4 +122,49 @@ object RecommendationFilter {
 
                 job.requiredApplicants
     }
+    fun getDistanceKm(
+
+        student: StudentProfile,
+
+        job: JobEntity
+
+    ): Double? {
+
+        val studentLat =
+            student.studentLatitude
+
+        val studentLng =
+            student.studentLongitude
+
+        val jobLat =
+            job.latitude
+
+        val jobLng =
+            job.longitude
+
+        if (
+
+            studentLat == null ||
+
+            studentLng == null ||
+
+            jobLat == null ||
+
+            jobLng == null
+
+        ) {
+
+            return null
+        }
+
+        return DistanceUtils
+            .calculateDistanceKm(
+
+                studentLat,
+                studentLng,
+
+                jobLat,
+                jobLng
+            )
+    }
 }

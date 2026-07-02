@@ -6,6 +6,7 @@ import com.studentjobs.app.feature.recommendation.RecommendationEngine
 import com.studentjobs.app.feature.recommendation.RecommendationFilter
 import com.studentjobs.app.feature.recommendation.RecommendedJob
 import com.studentjobs.app.feature.recommendation.ScheduleConflictUtils
+import com.studentjobs.app.feature.recommendation.TravelConstraintUtils
 import com.studentjobs.app.firebase.firestore.JobService
 import com.studentjobs.app.firebase.firestore.ShiftService
 import com.studentjobs.app.firebase.firestore.StudentScheduleService
@@ -127,6 +128,44 @@ class RecommendationRepository {
 
                         shifts
                     )
+            if (conflict) {
+
+                continue
+            }
+
+// =====================
+// TRAVEL BUFFER
+// =====================
+
+            val distanceKm =
+
+                RecommendationFilter
+                    .getDistanceKm(
+                        student,
+                        job
+                    )
+
+                    ?: continue
+
+            val travelPass =
+
+                TravelConstraintUtils
+                    .hasEnoughTravelTime(
+
+                        busySlots =
+                            schedule.busySlots,
+
+                        shifts =
+                            shifts,
+
+                        distanceKm =
+                            distanceKm
+                    )
+
+            if (!travelPass) {
+
+                continue
+            }
 
             if (conflict) {
 
