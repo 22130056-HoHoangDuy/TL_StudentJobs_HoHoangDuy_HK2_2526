@@ -38,8 +38,10 @@ import com.studentjobs.app.data.model.job.JobEntity
 @Composable
 fun JobCard(
     job: JobEntity,
-    onClick: () -> Unit = {}
-) {
+    distanceKm: Double?,
+    onClick: () -> Unit = {},
+
+    ) {
     val brandIndigo = Color(0xFF4F46E5)
     val brandPink = Color(0xFF0D81EC)
     val textDark = Color(0xFF0F172A)
@@ -151,7 +153,11 @@ fun JobCard(
                         )
                     }
                     Text(
-                        text = "📍 Cách bạn 1.2 km",
+                        text =
+                            if (distanceKm != null)
+                                "📍 Cách bạn %.1f km".format(distanceKm)
+                            else
+                                "📍 Chưa xác định",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                         color = brandPink.copy(alpha = 0.85f),
                         modifier = Modifier.padding(start = 18.dp) // Đã xóa "hộp" đi rồi nha haha

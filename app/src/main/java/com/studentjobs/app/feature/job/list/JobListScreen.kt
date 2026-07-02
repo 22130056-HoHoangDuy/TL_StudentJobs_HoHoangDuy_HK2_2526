@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.studentjobs.app.feature.recommendation.DistanceUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,9 +59,11 @@ fun JobListScreen(
     val state by viewModel.uiState.collectAsState()
     var showFilter by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         Text(
             "Khám phá cơ hội 🚀",
             style = MaterialTheme.typography.headlineMedium,
@@ -108,8 +111,64 @@ fun JobListScreen(
             ) { viewModel.toggleAutoApply() }
         }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(state.jobs) { job -> JobCard(job = job, onClick = { onJobClick(job.jobId) }) }
+        LazyColumn(
+            verticalArrangement =
+                Arrangement.spacedBy(12.dp)
+        ) {
+
+            items(state.jobs) { job ->
+
+                val studentLat =
+                    state.studentLatitude
+
+                val studentLng =
+                    state.studentLongitude
+
+                val jobLat =
+                    job.latitude
+
+                val jobLng =
+                    job.longitude
+
+                val distanceKm =
+
+                    if (
+
+                        studentLat != null &&
+                        studentLng != null &&
+                        jobLat != null &&
+                        jobLng != null
+
+                    ) {
+                        DistanceUtils
+                            .calculateDistanceKm(
+
+                                studentLat,
+                                studentLng,
+
+                                jobLat,
+                                jobLng
+                            )
+
+                    } else {
+
+                        null
+                    }
+
+                JobCard(
+
+                    job = job,
+
+                    distanceKm = distanceKm,
+
+                    onClick = {
+
+                        onJobClick(
+                            job.jobId
+                        )
+                    }
+                )
+            }
         }
     }
 
@@ -168,9 +227,11 @@ fun FilterBottomSheet(
     val selectedCats = remember { mutableStateListOf<String>() }
 
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier
-            .padding(16.dp)
-            .navigationBarsPadding()) {
+        Column(
+            Modifier
+                .padding(16.dp)
+                .navigationBarsPadding()
+        ) {
             Text(
                 "Lọc công việc",
                 style = MaterialTheme.typography.titleLarge,

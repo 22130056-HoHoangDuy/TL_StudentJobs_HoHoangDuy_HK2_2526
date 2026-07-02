@@ -60,8 +60,14 @@ class JobListViewModel(
     val categories: StateFlow<List<String>> = _categories.asStateFlow()
 
     init {
-        loadCategories() // Gọi khi khởi tạo
+        loadCategories()
+
         loadJobs()
+
+        viewModelScope.launch {
+
+            loadStudentLocation()
+        }
     }
 
     private fun loadCategories() {
@@ -180,6 +186,33 @@ class JobListViewModel(
                     isLoading = false
                 )
             }
+        }
+    }
+    private suspend fun loadStudentLocation() {
+
+        val uid =
+            authRepository
+                .getCurrentUserUid()
+
+                ?: return
+
+        val student =
+
+            studentRepository
+                .getStudentProfile(uid)
+
+                ?: return
+
+        _uiState.update {
+
+            it.copy(
+
+                studentLatitude =
+                    student.studentLatitude,
+
+                studentLongitude =
+                    student.studentLongitude
+            )
         }
     }
 }
